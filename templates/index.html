@@ -3061,7 +3061,15 @@
 
         const card = el("div", "guided-summary");
         card.appendChild(el("div", "section-title", "开始之前，确认一下我有没有读对题目"));
-        if (note) card.appendChild(el("div", "guided-note", note));
+        if (prep.correction_rejected) {
+            // 学生的说法和原题不一致：引用原文说明，不照着改
+            const box = el("div", "review-self");
+            box.appendChild(el("div", "saved", prep.message));
+            if (prep.quote) box.appendChild(el("div", "guided-note", `原题原文：“${prep.quote}”`));
+            card.appendChild(box);
+        } else if (note) {
+            card.appendChild(el("div", "guided-note", note));
+        }
         card.appendChild(el("div", "", "我读到的已知条件："));
         card.appendChild(bulletList(prep.understanding.known_quantities));
 
@@ -3104,6 +3112,44 @@
         }
 
         card.appendChild(actions);
+
+        // 题目文字本身有错（比如拍照识别错）：直接改题目，按新题目重新读
+        const fix = el("button", "guided-reveal", "题目文字本身有错？直接修改题目");
+        fix.type = "button";
+        fix.addEventListener("click", function () {
+            fix.disabled = true;
+            const edit = el("textarea");
+            edit.value = text;
+            const go = el("button", "guided-send", "用修改后的题目重新读题");
+            go.type = "button";
+            go.addEventListener("click", async function () {
+                const newText = edit.value.trim();
+                if (!newText || newText === text) return;
+                go.disabled = true;
+                questionText.value = newText;
+                confirmedQuestionText.value = newText;
+                showStatus("正在读修改后的题目，并自己核对一遍…", "loading");
+                try {
+                    const again = await postJSON("/api/guided/prepare", { text: newText });
+                    if (again.usable && again.understanding) {
+                        showUnderstanding(again, newText, "这是按你修改后的题目读的：");
+                        showStatus("请确认一下。", "success");
+                    } else if (again.usable) {
+                        guidedQuestion.textContent = newText;
+                        await beginGuidedSession(again.question_id);
+                    } else {
+                        showQuestionPicker((again.message || "这道题暂时不能引导。") + "\n\n你也可以从下面的题库中选一道开始：");
+                        showStatus(again.message || "这道题暂时不能引导。", "error");
+                    }
+                } catch (error) {
+                    showStatus(`读题失败：${error.message}`, "error");
+                    go.disabled = false;
+                }
+            });
+            card.append(el("div", "guided-note", "改好后，我会按新的题目文字重新读一遍、再核对一遍。"), edit, go);
+        });
+        card.appendChild(fix);
+
         guidedInput.appendChild(card);
 
     }

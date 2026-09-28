@@ -120,6 +120,14 @@ def _eval_at(expr_text: str, xv):
     return nsimplify(mc._expr(nl.normalized).subs(mc.X, xv), rational=True)
 
 
+def _is_number(v) -> bool:
+    try:
+        n = nsimplify(S(str(v).replace("％", "%").rstrip("%")), rational=True)
+    except Exception:  # noqa: BLE001
+        return False
+    return not n.free_symbols and n.is_number
+
+
 def _sympy_eq(text: str) -> str | None:
     nl = normalize_line(text)
     return nl.normalized if nl.ok and nl.kind == "equation" else None
@@ -188,10 +196,16 @@ def validate_structure(raw: dict, text: str = "") -> tuple[dict | None, list[Che
     record_stub = {"equation": eq, "e4_patterns": [p for p in raw.get("e4_patterns") or [] if p in E4_TEMPLATES]}
     e4 = sorted({pid for pid, _ in e4_variants(record_stub)})
 
-    known = []
+    # a known quantity is a NUMBER given in the problem; "小明今年的年龄：3*x" is not one
+    known, dropped = [], []
     for k in raw.get("known_quantities") or []:
-        if "name" in k and "value" in k:
+        if not (isinstance(k, dict) and "name" in k and "value" in k):
+            continue
+        if _is_number(k["value"]):
             known.append({"name": k["name"], "value": k["value"], **({"unit": k["unit"]} if k.get("unit") else {})})
+        else:
+            dropped.append(f"{k['name']}={k['value']}")
+    add("known_quantities_numeric", True, f"dropped {dropped}" if dropped else f"{len(known)} kept")
 
     record = {
         "question_id": question_id_for(text),
@@ -235,6 +249,43 @@ def _independent_agrees(record: dict, independent: dict | None) -> tuple[bool | 
 # ---------------------------------------------------------------------------
 # public entry point
 # ---------------------------------------------------------------------------
+
+JUDGE_SYSTEM = """你是初中数学老师。学生看了你对一道应用题已知条件的理解后，说你读错了。请只根据原题文字判断学生的说法对不对。
+- learner_right：原题文字支持学生的说法（你之前的理解确实有误）；
+- learner_wrong：原题文字和学生的说法不一致（学生记错或看错了）；
+- unclear：原题文字无法判断，或学生说的与已知条件无关。
+quote 必须从原题中逐字摘录相关的那一句或那一段（不能改写）。reply 用一两句话对学生说明，learner_wrong 时要引用原文指出差别。
+只输出 JSON：{"verdict": "learner_right|learner_wrong|unclear", "quote": "原题原文", "reply": "..."}"""
+
+LEARNER_RIGHT, LEARNER_WRONG, JUDGE_UNCLEAR = "learner_right", "learner_wrong", "unclear"
+
+
+def _squash(t: str) -> str:
+    return re.sub(r"[\s，,。．.、:：；;？?！!“”\"'（）()]", "", t or "")
+
+
+def judge_correction(text: str, understanding: list[str], note: str, backend) -> dict:
+    """
+    Is the learner's correction supported by the problem text? The verdict "learner_wrong" is only
+    kept when its quote really appears in the problem (whitespace/punctuation aside) — the system
+    never tells a learner they are wrong without the words of the problem to show it.
+    """
+    out = {"verdict": JUDGE_UNCLEAR, "quote": "", "reply": ""}
+    if backend is None or not note:
+        return out
+    try:
+        raw = json.loads(backend.complete(JUDGE_SYSTEM, json.dumps(
+            {"原题": text, "你之前读到的已知条件": understanding, "学生的说法": note}, ensure_ascii=False)))
+    except Exception:  # noqa: BLE001
+        return out
+    verdict = raw.get("verdict") if raw.get("verdict") in (LEARNER_RIGHT, LEARNER_WRONG, JUDGE_UNCLEAR) else JUDGE_UNCLEAR
+    quote, reply = str(raw.get("quote") or ""), str(raw.get("reply") or "")
+    quote_ok = bool(_squash(quote)) and _squash(quote) in _squash(text)
+    if verdict == LEARNER_WRONG and not quote_ok:
+        verdict = JUDGE_UNCLEAR                      # no verbatim evidence → do not claim the learner is wrong
+    out.update(verdict=verdict, quote=quote if quote_ok else "", reply=reply)
+    return out
+
 
 def extract_structure(text: str, backend, learner_note: str | None = None) -> Extraction:
     """

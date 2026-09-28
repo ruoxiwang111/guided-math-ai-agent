@@ -54,7 +54,7 @@ from core.llm_client import TutorVoice, default_backend
 from core.review import build_review
 from core.s1_options import build_s1_item, load_targets, to_submission
 from core.state_manager import INPUT_FOR_STATE, TutorSession
-from core.structure import OUT_OF_SCOPE, extract_structure, question_id_for
+from core.structure import LEARNER_WRONG, OUT_OF_SCOPE, extract_structure, judge_correction, question_id_for
 from core.variants import bank_similar, generate_similar
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -181,6 +181,16 @@ def _save_extraction(qid, text, ex, note=None, extra=None):
         pass
 
 
+def _save_judgement(qid, note, verdict):
+    try:
+        EXTRACT_DIR.mkdir(parents=True, exist_ok=True)
+        path = EXTRACT_DIR / f"{qid}.corrections.jsonl"
+        with path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps({"note": note, **verdict}, ensure_ascii=False) + "\n")
+    except OSError:
+        pass
+
+
 def _usable_body(qid, source, q):
     body = {"success": True, "usable": True, "source": source, "question_id": qid, "text": q["question"]}
     if source != "bank":                      # bank items are teacher-reviewed; extracted ones are checked by the learner
@@ -212,6 +222,16 @@ def prepare():
             return jsonify({"success": True, "usable": False, "source": "extracted",
                             "message": "我还是没有把握读对这道题。为了不误导你，这道题先用“快速解题”，或者从题库选一道。"})
         _corrections.setdefault(qid, []).append(correction)
+        current = _extracted.get(qid)
+        if current is not None:
+            # first check the learner's claim against the problem text itself
+            verdict = judge_correction(text, understanding_view(current)["known_quantities"], correction, _backend)
+            _save_judgement(qid, correction, verdict)
+            if verdict["verdict"] == LEARNER_WRONG:
+                body = _usable_body(qid, current.get("source", "extracted"), current)
+                body.update(correction_rejected=True, quote=verdict["quote"],
+                            message=verdict["reply"] or f"我对照了原题，原文是“{verdict['quote']}”，和你说的不一样，所以没有改。")
+                return jsonify(body)
 
     ex = extract_structure(text, _backend, learner_note=correction or None)
     _save_extraction(qid, text, ex, note=correction or None)
