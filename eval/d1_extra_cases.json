@@ -1,0 +1,480 @@
+{
+  "version": "1.0",
+  "description": "Hand-written part of D1: 10 reworded in-scope variants + 5 out-of-scope / uncertain inputs. D1-01..15 are generated from data/question_bank.json by scripts/build_d1.py.",
+  "notes": [
+    "Reworded variants change the context, wording and numbers but keep the structure of the base question (based_on).",
+    "No input_text tells the system what x is; extracting the unknown is part of the test.",
+    "reference_structure.equation uses SymPy syntax (* for multiplication), like the question bank.",
+    "reference_scope values: in_scope / out_of_scope / uncertain (evaluation_plan.md §3.8).",
+    "based_on 表示案例的来源题目；手写的 in-scope 案例必须提供自己的 reference_structure，不自动从 based_on 复制，以避免题目数字或关系发生变化后参考结构仍沿用原题。",
+    "source = with_learner_work：题目在范围内但输入附带学生作答，测试系统是否仍按题目本身提取结构（不采用学生的错误方程）。"
+  ],
+  "cases": [
+    {
+      "case_id": "D1-16",
+      "source": "reworded",
+      "based_on": "Q01",
+      "difficulty": "easy",
+      "input_text": "哥哥比弟弟大3岁，兄弟俩的年龄加起来是27岁。哥哥和弟弟今年各几岁？",
+      "reference_scope": "in_scope",
+      "reference_structure": {
+        "unknown": {
+          "symbol": "x",
+          "meaning": "弟弟今年的年龄",
+          "unit": "岁"
+        },
+        "known_quantities": [
+          {
+            "name": "年龄差",
+            "value": 3,
+            "unit": "岁"
+          },
+          {
+            "name": "年龄和",
+            "value": 27,
+            "unit": "岁"
+          }
+        ],
+        "relationship": "哥哥 = 弟弟 + 3；哥哥 + 弟弟 = 27",
+        "variable_definition": "设弟弟今年x岁，则哥哥今年(x+3)岁",
+        "equation": "x + (x + 3) = 27",
+        "answer": 12,
+        "final_answer_text": "弟弟12岁，哥哥15岁",
+        "accepted_alternatives": [
+          {
+            "variable_definition": "设哥哥今年x岁，则弟弟(x-3)岁",
+            "equation": "x + (x - 3) = 27",
+            "x_value": 15
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "D1-17",
+      "source": "reworded",
+      "based_on": "Q03",
+      "difficulty": "easy",
+      "input_text": "一双运动鞋按原价的七五折出售，现在卖240元。这双鞋原价多少元？",
+      "reference_scope": "in_scope",
+      "reference_structure": {
+        "unknown": {
+          "symbol": "x",
+          "meaning": "原价",
+          "unit": "元"
+        },
+        "known_quantities": [
+          {
+            "name": "折后价",
+            "value": 240,
+            "unit": "元"
+          },
+          {
+            "name": "折扣",
+            "value": 0.75
+          }
+        ],
+        "relationship": "折后价 = 原价 × 0.75",
+        "variable_definition": "设原价为x元",
+        "equation": "0.75*x = 240",
+        "answer": 320,
+        "final_answer_text": "原价320元",
+        "accepted_alternatives": []
+      }
+    },
+    {
+      "case_id": "D1-18",
+      "source": "reworded",
+      "based_on": "Q05",
+      "difficulty": "easy",
+      "input_text": "一块长方形菜地，长比宽多6米，沿菜地围一圈篱笆正好用了40米。菜地的长和宽各是多少米？",
+      "reference_scope": "in_scope",
+      "reference_structure": {
+        "unknown": {
+          "symbol": "x",
+          "meaning": "宽",
+          "unit": "米"
+        },
+        "known_quantities": [
+          {
+            "name": "长宽差",
+            "value": 6,
+            "unit": "米"
+          },
+          {
+            "name": "周长",
+            "value": 40,
+            "unit": "米"
+          }
+        ],
+        "relationship": "2×(长+宽) = 40；长 = 宽 + 6",
+        "variable_definition": "设宽为x米，则长为(x+6)米",
+        "equation": "2*(x + (x + 6)) = 40",
+        "answer": 7,
+        "final_answer_text": "宽7米，长13米",
+        "accepted_alternatives": [
+          {
+            "variable_definition": "设长为x米，则宽为(x-6)米",
+            "equation": "2*(x + (x - 6)) = 40",
+            "x_value": 13
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "D1-19",
+      "source": "reworded",
+      "based_on": "Q06",
+      "difficulty": "medium",
+      "input_text": "学校合唱队一共有50人，其中男生比女生少8人。合唱队里男生和女生各有多少人？",
+      "reference_scope": "in_scope",
+      "reference_structure": {
+        "unknown": {
+          "symbol": "x",
+          "meaning": "女生人数",
+          "unit": "人"
+        },
+        "known_quantities": [
+          {
+            "name": "总人数",
+            "value": 50,
+            "unit": "人"
+          },
+          {
+            "name": "人数差",
+            "value": 8,
+            "unit": "人"
+          }
+        ],
+        "relationship": "男生 = 女生 − 8；男生 + 女生 = 50",
+        "variable_definition": "设女生x人，则男生(x-8)人",
+        "equation": "x + (x - 8) = 50",
+        "answer": 29,
+        "final_answer_text": "女生29人，男生21人",
+        "accepted_alternatives": [
+          {
+            "variable_definition": "设男生x人，则女生(x+8)人",
+            "equation": "x + (x + 8) = 50",
+            "x_value": 21
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "D1-20",
+      "source": "reworded",
+      "based_on": "Q08",
+      "difficulty": "medium",
+      "input_text": "妈妈买一台电风扇，商场先打九折，结账时又用了一张20元的优惠券，最后付了250元。这台电风扇原价多少元？",
+      "reference_scope": "in_scope",
+      "reference_structure": {
+        "unknown": {
+          "symbol": "x",
+          "meaning": "原价",
+          "unit": "元"
+        },
+        "known_quantities": [
+          {
+            "name": "实付",
+            "value": 250,
+            "unit": "元"
+          },
+          {
+            "name": "折扣",
+            "value": 0.9
+          },
+          {
+            "name": "优惠券",
+            "value": 20,
+            "unit": "元"
+          }
+        ],
+        "relationship": "原价 × 0.9 − 20 = 实付",
+        "variable_definition": "设原价为x元",
+        "equation": "0.9*x - 20 = 250",
+        "answer": 300,
+        "final_answer_text": "原价300元",
+        "accepted_alternatives": []
+      }
+    },
+    {
+      "case_id": "D1-21",
+      "source": "reworded",
+      "based_on": "Q10",
+      "difficulty": "medium",
+      "input_text": "修一条水渠，甲队单独修每天能修完全长的1/10，乙队单独修每天能修完全长的1/15。两队一起修，多少天能修完？",
+      "reference_scope": "in_scope",
+      "reference_structure": {
+        "unknown": {
+          "symbol": "x",
+          "meaning": "合作完成所需天数",
+          "unit": "天"
+        },
+        "known_quantities": [
+          {
+            "name": "甲的效率",
+            "value": "1/10",
+            "unit": "工作量/天"
+          },
+          {
+            "name": "乙的效率",
+            "value": "1/15",
+            "unit": "工作量/天"
+          }
+        ],
+        "relationship": "(甲效率 + 乙效率) × 天数 = 1",
+        "variable_definition": "设两队合作x天修完",
+        "equation": "x*(1/10 + 1/15) = 1",
+        "answer": 6,
+        "final_answer_text": "6天",
+        "accepted_alternatives": []
+      }
+    },
+    {
+      "case_id": "D1-22",
+      "source": "reworded",
+      "based_on": "Q12",
+      "difficulty": "medium",
+      "input_text": "今年爸爸的年龄是儿子的5倍，再过8年，爸爸的年龄是儿子的3倍。今年爸爸和儿子各多少岁？",
+      "reference_scope": "in_scope",
+      "reference_structure": {
+        "unknown": {
+          "symbol": "x",
+          "meaning": "儿子今年的年龄",
+          "unit": "岁"
+        },
+        "known_quantities": [
+          {
+            "name": "今年倍数关系",
+            "value": 5
+          },
+          {
+            "name": "8年后倍数关系",
+            "value": 3
+          },
+          {
+            "name": "经过年数",
+            "value": 8,
+            "unit": "年"
+          }
+        ],
+        "relationship": "8年后：爸爸(5x+8) = 儿子(x+8) × 3",
+        "variable_definition": "设儿子今年x岁，则爸爸今年5x岁",
+        "equation": "5*x + 8 = 3*(x + 8)",
+        "answer": 8,
+        "final_answer_text": "儿子8岁，爸爸40岁",
+        "accepted_alternatives": [
+          {
+            "variable_definition": "设爸爸今年x岁，则儿子今年x/5岁",
+            "equation": "x + 8 = 3*(x/5 + 8)",
+            "x_value": 40
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "D1-23",
+      "source": "reworded",
+      "based_on": "Q13",
+      "difficulty": "hard",
+      "input_text": "小林从家去外婆家，路程共22千米。他先步行，每小时走4千米，走了一段后换乘公交车，公交车每小时行驶20千米，全程一共用了1.5小时。小林步行和乘车各用了多少小时？",
+      "reference_scope": "in_scope",
+      "reference_structure": {
+        "unknown": {
+          "symbol": "x",
+          "meaning": "步行的时间",
+          "unit": "小时"
+        },
+        "known_quantities": [
+          {
+            "name": "总路程",
+            "value": 22,
+            "unit": "千米"
+          },
+          {
+            "name": "步行速度",
+            "value": 4,
+            "unit": "千米/小时"
+          },
+          {
+            "name": "公交速度",
+            "value": 20,
+            "unit": "千米/小时"
+          },
+          {
+            "name": "总时间",
+            "value": 1.5,
+            "unit": "小时"
+          }
+        ],
+        "relationship": "4×步行时间 + 20×乘车时间 = 22",
+        "variable_definition": "设步行x小时，则乘车(1.5-x)小时",
+        "equation": "4*x + 20*(1.5 - x) = 22",
+        "answer": "1/2",
+        "final_answer_text": "步行0.5小时，乘车1小时",
+        "accepted_alternatives": [
+          {
+            "variable_definition": "设乘车x小时，则步行(1.5-x)小时",
+            "equation": "4*(1.5 - x) + 20*x = 22",
+            "x_value": 1
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "D1-24",
+      "source": "reworded",
+      "based_on": "Q14",
+      "difficulty": "hard",
+      "input_text": "某种水果第一天降价10%，第二天在降价后的价格基础上又涨价10%，现在每千克卖19.8元。这种水果原来每千克多少元？",
+      "reference_scope": "in_scope",
+      "reference_structure": {
+        "unknown": {
+          "symbol": "x",
+          "meaning": "原价",
+          "unit": "元/千克"
+        },
+        "known_quantities": [
+          {
+            "name": "现价",
+            "value": 19.8,
+            "unit": "元/千克"
+          },
+          {
+            "name": "降幅",
+            "value": 0.1
+          },
+          {
+            "name": "涨幅",
+            "value": 0.1
+          }
+        ],
+        "relationship": "原价 × 0.9 × 1.1 = 19.8",
+        "variable_definition": "设原价为每千克x元",
+        "equation": "x*0.9*1.1 = 19.8",
+        "answer": 20,
+        "final_answer_text": "原价每千克20元",
+        "accepted_alternatives": []
+      }
+    },
+    {
+      "case_id": "D1-25",
+      "source": "reworded",
+      "based_on": "Q15",
+      "difficulty": "hard",
+      "input_text": "班级图书角原有故事书和科普书共60本。从故事书中拿出5本放到科普书那一格后，两类书的本数正好相等。原来故事书和科普书各有多少本？",
+      "reference_scope": "in_scope",
+      "reference_structure": {
+        "unknown": {
+          "symbol": "x",
+          "meaning": "科普书原来的本数",
+          "unit": "本"
+        },
+        "known_quantities": [
+          {
+            "name": "总数",
+            "value": 60,
+            "unit": "本"
+          },
+          {
+            "name": "转移数量",
+            "value": 5,
+            "unit": "本"
+          }
+        ],
+        "relationship": "故事书 − 5 = 科普书 + 5",
+        "variable_definition": "设科普书原来x本，则故事书原来(60-x)本",
+        "equation": "60 - x - 5 = x + 5",
+        "answer": 25,
+        "final_answer_text": "故事书35本，科普书25本",
+        "accepted_alternatives": [
+          {
+            "variable_definition": "设故事书原来x本，则科普书(60-x)本",
+            "equation": "x - 5 = (60 - x) + 5",
+            "x_value": 35
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "D1-26",
+      "source": "out_of_scope",
+      "based_on": null,
+      "difficulty": null,
+      "input_text": "一块长方形地毯的面积是60平方米，长比宽多4米。这块地毯的长和宽各是多少米？",
+      "reference_scope": "out_of_scope",
+      "scope_reason": "需要列 x(x+4)=60，是一元二次方程，超出 V1 一元一次方程范围。",
+      "reference_structure": null
+    },
+    {
+      "case_id": "D1-27",
+      "source": "out_of_scope",
+      "based_on": null,
+      "difficulty": null,
+      "input_text": "小明有50元，一本笔记本6元。他最多能买几本笔记本？",
+      "reference_scope": "out_of_scope",
+      "scope_reason": "“最多”对应不等式 6x ≤ 50 并取整数解，不是一元一次方程应用题。",
+      "reference_structure": null
+    },
+    {
+      "case_id": "D1-28",
+      "source": "uncertain",
+      "based_on": "Q01",
+      "difficulty": null,
+      "input_text": "小明和小华相差5岁，两人的年龄之和是25岁。两人各多少岁？",
+      "reference_scope": "uncertain",
+      "scope_reason": "题型在范围内，但没有说明谁年龄大，关系方向无法确定；系统应先请学生确认题目，而不是直接建模。",
+      "reference_structure": null
+    },
+    {
+      "case_id": "D1-29",
+      "source": "uncertain",
+      "based_on": null,
+      "difficulty": null,
+      "input_text": "① 一件衣服打八折后售价160元，求原价。② 一个长方形的周长是28厘米，长比宽多4厘米，求长和宽。",
+      "reference_scope": "uncertain",
+      "scope_reason": "一次输入包含两道题（V1 一次只处理一道，多题输入为 P2）；系统应让学生选择要做哪一道。",
+      "reference_structure": null
+    },
+    {
+      "case_id": "D1-30",
+      "source": "with_learner_work",
+      "based_on": "Q08",
+      "difficulty": "medium",
+      "input_text": "一件商品先打八折，然后再优惠10元，最后实际支付190元。求这件商品的原价。我列的方程是 0.8(x-10)=190。",
+      "learner_work": {
+        "equation": "0.8(x-10)=190"
+      },
+      "reference_scope": "in_scope",
+      "scope_reason": "题目在范围内。输入里附带的学生方程是错的（Q08-E3），但 D1 不判断对错：系统应提取题目本身的结构，不能把学生的方程当成参考方程。错误诊断由 D2 负责。",
+      "reference_structure": {
+        "unknown": {
+          "symbol": "x",
+          "meaning": "商品原价",
+          "unit": "元"
+        },
+        "known_quantities": [
+          {
+            "name": "折扣",
+            "value": 0.8
+          },
+          {
+            "name": "优惠金额",
+            "value": 10,
+            "unit": "元"
+          },
+          {
+            "name": "实付金额",
+            "value": 190,
+            "unit": "元"
+          }
+        ],
+        "relationship": "原价 × 0.8 − 10 = 实付金额",
+        "variable_definition": "设商品原价为x元",
+        "equation": "0.8*x - 10 = 190",
+        "answer": 250,
+        "final_answer_text": "商品原价250元",
+        "accepted_alternatives": []
+      }
+    }
+  ]
+}

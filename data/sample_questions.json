@@ -1,0 +1,1793 @@
+{
+"version": "1.3",
+"source": "docs/question_bank.md V1.3 Final",
+"knowledge_point": "一元一次方程应用题",
+"notes": [
+"equation/steps 使用 SymPy 可解析的写法：乘号写 *，分数写 a/b，变量统一为 x。",
+"accepted_equivalent_forms 中带 x_value 的项表示学生设了不同的未知数，x 的取值随之不同。",
+"mutation.layer: modelling = 建模类错误方程；execution = 解题步骤错误（first_invalid_step 从1开始计）；answer = 只体现在最终答案上的错误。",
+"challenge_ai.v1_set_role 决定该题在 V1 找茬挑战中展示正确解法还是错误解法，目标比例为 9 错 : 6 对。",
+"Challenge AI 的错误类型统计只统计 v1_set_role=incorrect 的题目；v1_set_role=correct 的题目不计入错误类型覆盖统计。",
+"V1 的 E4 为封闭错误模式集合；未纳入封闭集合的自然语言关系建模错误统一按 E3 处理。"
+],
+"questions": [
+{
+"question_id": "Q01",
+"difficulty": "easy",
+"topic": "年龄关系",
+"question": "小明今年的年龄比小华大5岁，两人的年龄之和是25岁。小明和小华今年分别多少岁？",
+"known_quantities": [
+{
+"name": "年龄差",
+"value": 5,
+"unit": "岁"
+},
+{
+"name": "年龄和",
+"value": 25,
+"unit": "岁"
+}
+],
+"unknown": {
+"symbol": "x",
+"meaning": "小华今年的年龄",
+"unit": "岁"
+},
+"variable_definition": "设小华今年x岁，则小明今年(x+5)岁",
+"relationship": "小明 = 小华 + 5；小明 + 小华 = 25",
+"equation": "x + (x + 5) = 25",
+"answer": 10,
+"final_answer_text": "小华10岁，小明15岁",
+"e4_patterns": [
+"E4-01"
+],
+"accepted_equivalent_forms": [
+{
+"equation": "2*x + 5 = 25"
+},
+{
+"equation": "25 - x = x + 5"
+},
+{
+"variable_definition": "设小明今年x岁，则小华(x-5)岁",
+"equation": "x + (x - 5) = 25",
+"x_value": 15,
+"note": "与E4-01变异方程字面相同，但变量定义不同，因此是正确解法，不得判为E4"
+}
+],
+"verification_conditions": [
+{
+"description": "两人年龄和为25",
+"lhs": "x + (x + 5)",
+"op": "==",
+"rhs": "25"
+},
+{
+"description": "小明比小华大5岁",
+"lhs": "(x + 5) - x",
+"op": "==",
+"rhs": "5"
+},
+{
+"description": "年龄为正",
+"lhs": "x",
+"op": ">",
+"rhs": "0"
+}
+],
+"mutations": [
+{
+"id": "Q01-E3",
+"error": "E3",
+"layer": "modelling",
+"equation": "x + 5 = 25",
+"description": "只用小明的年龄等于年龄和，漏掉小华"
+},
+{
+"id": "Q01-E4-01",
+"error": "E4-01",
+"layer": "modelling",
+"equation": "x + (x - 5) = 25",
+"description": "“比……大5岁”方向写反：设小华为x却写小明为x-5",
+"variable_definition": "设小华今年x岁，小明为(x-5)岁"
+},
+{
+"id": "Q01-E6",
+"error": "E6",
+"layer": "execution",
+"steps": [
+"x + (x + 5) = 25",
+"2*x + 5 = 25",
+"2*x = 18",
+"x = 9"
+],
+"first_invalid_step": 3,
+"description": "25−5算成18"
+},
+{
+"id": "Q01-E7",
+"error": "E7",
+"layer": "execution",
+"steps": [
+"2*x + 5 = 25",
+"2*x = 30",
+"x = 15"
+],
+"first_invalid_step": 2,
+"description": "移项未变号：5移到右边写成+5"
+}
+],
+"challenge_ai": {
+"v1_set_role": "incorrect",
+"correct": {
+"text": "设小华年龄为x岁，那么小明是(x+5)岁。根据两人年龄和为25岁，列出x+(x+5)=25，解得x=10。所以小华10岁，小明15岁。检查：10+15=25，15−10=5，符合题意。",
+"x_value": 10
+},
+"incorrect": {
+"text": "设小华年龄为x岁，那么小明就是(x−5)岁。根据两人的年龄和为25岁，可以列出x+(x−5)=25。解得x=15，所以小华15岁，小明10岁。检查可知两人的年龄差仍然是5岁，但方向与题目不符。",
+"error": "E4-01",
+"final_answer_text": "小华15岁，小明10岁"
+}
+}
+},
+
+
+{
+  "question_id": "Q02",
+  "difficulty": "easy",
+  "topic": "文具价格",
+  "question": "小丽买了一支笔和一个笔记本，一共花了28元。笔记本比笔贵12元。笔和笔记本各多少钱？",
+  "known_quantities": [
+    {
+      "name": "总价",
+      "value": 28,
+      "unit": "元"
+    },
+    {
+      "name": "价格差",
+      "value": 12,
+      "unit": "元"
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "笔的价格",
+    "unit": "元"
+  },
+  "variable_definition": "设笔x元，则笔记本(x+12)元",
+  "relationship": "笔记本 = 笔 + 12；笔 + 笔记本 = 28",
+  "equation": "x + (x + 12) = 28",
+  "answer": 8,
+  "final_answer_text": "笔8元，笔记本20元",
+  "e4_patterns": [
+    "E4-01"
+  ],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "2*x + 12 = 28"
+    },
+    {
+      "variable_definition": "设笔记本x元，则笔(x-12)元",
+      "equation": "x + (x - 12) = 28",
+      "x_value": 20
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "总价28元",
+      "lhs": "x + (x + 12)",
+      "op": "==",
+      "rhs": "28"
+    },
+    {
+      "description": "笔记本比笔贵12元",
+      "lhs": "(x + 12) - x",
+      "op": "==",
+      "rhs": "12"
+    },
+    {
+      "description": "价格为正",
+      "lhs": "x",
+      "op": ">",
+      "rhs": "0"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q02-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "x + 12 = 28",
+      "description": "只用笔记本价格等于总价，漏掉笔的价格"
+    },
+    {
+      "id": "Q02-E4-01",
+      "error": "E4-01",
+      "layer": "modelling",
+      "equation": "x + (x - 12) = 28",
+      "description": "“比……贵12元”方向写反",
+      "variable_definition": "设笔x元，笔记本(x-12)元"
+    },
+    {
+      "id": "Q02-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "x + (x + 12) = 28",
+        "2*x + 12 = 28",
+        "2*x = 14",
+        "x = 7"
+      ],
+      "first_invalid_step": 3,
+      "description": "28−12算成14"
+    },
+    {
+      "id": "Q02-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "2*x + 12 = 28",
+        "2*x = 40",
+        "x = 20"
+      ],
+      "first_invalid_step": 2,
+      "description": "移项未变号"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "correct",
+    "correct": {
+      "text": "设笔的价格为x元，则笔记本为(x+12)元。总价28元，所以x+(x+12)=28，2x=16，x=8。因此笔8元，笔记本20元。检查：8+20=28，20−8=12。",
+      "x_value": 8
+    },
+    "incorrect": {
+      "text": "设笔的价格为x元，那么笔记本价格为(x+12)元。总价为28元，所以x+(x+12)=28。整理得2x+12=28，因此2x=40，解得x=20。所以笔20元，笔记本32元。",
+      "error": "E7",
+      "final_answer_text": "笔20元，笔记本32元"
+    }
+  }
+},
+
+{
+  "question_id": "Q03",
+  "difficulty": "easy",
+  "topic": "打折求原价",
+  "question": "一件衣服打八折后售价为160元。这件衣服的原价是多少？",
+  "known_quantities": [
+    {
+      "name": "折后价",
+      "value": 160,
+      "unit": "元"
+    },
+    {
+      "name": "折扣",
+      "value": 0.8
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "原价",
+    "unit": "元"
+  },
+  "variable_definition": "设原价为x元",
+  "relationship": "折后价 = 原价 × 0.8",
+  "equation": "0.8*x = 160",
+  "answer": 200,
+  "final_answer_text": "原价200元",
+  "e4_patterns": [
+    "E4-06"
+  ],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "x*80/100 = 160"
+    },
+    {
+      "equation": "x = 160/0.8"
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "打八折后为160元",
+      "lhs": "0.8*x",
+      "op": "==",
+      "rhs": "160"
+    },
+    {
+      "description": "原价高于折后价",
+      "lhs": "x",
+      "op": ">",
+      "rhs": "160"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q03-E4-06",
+      "error": "E4-06",
+      "layer": "modelling",
+      "equation": "x - 0.8 = 160",
+      "description": "把“打八折”理解成便宜0.8元"
+    },
+    {
+      "id": "Q03-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "0.8*x = 160",
+        "x = 160/0.8",
+        "x = 180"
+      ],
+      "first_invalid_step": 3,
+      "description": "160÷0.8算成180"
+    },
+    {
+      "id": "Q03-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "0.8*x = 160",
+        "x = 160 - 0.8",
+        "x = 159.2"
+      ],
+      "first_invalid_step": 2,
+      "description": "应两边除以0.8，却减去0.8"
+    },
+    {
+      "id": "Q03-E5",
+      "error": "E5",
+      "layer": "answer",
+      "final_answer_text": "原价200千克",
+      "description": "单位错误"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "incorrect",
+    "correct": {
+      "text": "设原价为x元。八折表示售价是原价的80%，所以0.8x=160，x=200。原价200元。检查：200×0.8=160。",
+      "x_value": 200
+    },
+    "incorrect": {
+      "text": "打八折就是从原价中减去0.8元。因此可以列出x−0.8=160。解得x=160.8元。",
+      "error": "E4-06",
+      "final_answer_text": "原价160.8元"
+    }
+  }
+},
+
+{
+  "question_id": "Q04",
+  "difficulty": "easy",
+  "topic": "往返路程",
+  "question": "小明去学校时每分钟骑300米，骑了10分钟。放学后他绕路去书店再回家，也骑了10分钟。已知他往返一共骑了5500米。求小明回家时每分钟骑多少米。",
+  "revision_note": "V1.3原题缺少“绕路”：若走同一条路，回程应同为3000米，与总路程5500米矛盾",
+  "known_quantities": [
+    {
+      "name": "去程速度",
+      "value": 300,
+      "unit": "米/分钟"
+    },
+    {
+      "name": "去程时间",
+      "value": 10,
+      "unit": "分钟"
+    },
+    {
+      "name": "回程时间",
+      "value": 10,
+      "unit": "分钟"
+    },
+    {
+      "name": "往返总路程",
+      "value": 5500,
+      "unit": "米"
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "回程速度",
+    "unit": "米/分钟"
+  },
+  "variable_definition": "设回家时每分钟骑x米",
+  "relationship": "去程路程 + 回程路程 = 5500",
+  "equation": "300*10 + 10*x = 5500",
+  "answer": 250,
+  "final_answer_text": "每分钟250米",
+  "e4_patterns": [],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "3000 + 10*x = 5500"
+    },
+    {
+      "equation": "10*x = 5500 - 3000"
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "往返共5500米",
+      "lhs": "300*10 + 10*x",
+      "op": "==",
+      "rhs": "5500"
+    },
+    {
+      "description": "速度为正",
+      "lhs": "x",
+      "op": ">",
+      "rhs": "0"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q04-E2",
+      "error": "E2",
+      "layer": "modelling",
+      "equation": "3000 + x = 5500",
+      "description": "x定义为速度，却当作回程路程使用",
+      "variable_definition": "设回家时每分钟骑x米"
+    },
+    {
+      "id": "Q04-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "300*10 = 10*x",
+      "description": "误以为往返路程相同（题目明确说明回家时绕路）"
+    },
+    {
+      "id": "Q04-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "3000 + 10*x = 5500",
+        "10*x = 2000",
+        "x = 200"
+      ],
+      "first_invalid_step": 2,
+      "description": "5500−3000算成2000"
+    },
+    {
+      "id": "Q04-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "3000 + 10*x = 5500",
+        "10*x = 2500",
+        "x = 2500*10"
+      ],
+      "first_invalid_step": 3,
+      "description": "应两边除以10，却乘了10"
+    },
+    {
+      "id": "Q04-E1",
+      "error": "E1",
+      "layer": "answer",
+      "final_answer_text": "回程2500米",
+      "description": "求的是速度，却回答了回程路程"
+    },
+    {
+      "id": "Q04-E5",
+      "error": "E5",
+      "layer": "answer",
+      "final_answer_text": "250米",
+      "description": "速度单位应为米/分钟"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "correct",
+    "correct": {
+      "text": "去程路程是300×10=3000米，所以回程路程是5500−3000=2500米。回程用了10分钟，设速度为x米/分钟，10x=2500，x=250。回家时每分钟骑250米。",
+      "x_value": 250
+    },
+    "incorrect": {
+      "text": "去程3000米，往返一共5500米，所以回程应该是2500米。因为回程用了10分钟，所以速度是2500×10=25000米/分钟。",
+      "error": "E7",
+      "final_answer_text": "每分钟25000米"
+    }
+  }
+},
+
+{
+  "question_id": "Q05",
+  "difficulty": "easy",
+  "topic": "长方形周长",
+  "question": "一个长方形的长比宽多4厘米，周长是28厘米。这个长方形的长和宽分别是多少？",
+  "known_quantities": [
+    {
+      "name": "长宽差",
+      "value": 4,
+      "unit": "厘米"
+    },
+    {
+      "name": "周长",
+      "value": 28,
+      "unit": "厘米"
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "宽",
+    "unit": "厘米"
+  },
+  "variable_definition": "设宽为x厘米，则长为(x+4)厘米",
+  "relationship": "2×(长+宽) = 28；长 = 宽 + 4",
+  "equation": "2*(x + (x + 4)) = 28",
+  "answer": 5,
+  "final_answer_text": "宽5厘米，长9厘米",
+  "e4_patterns": [
+    "E4-01"
+  ],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "4*x + 8 = 28"
+    },
+    {
+      "equation": "x + (x + 4) = 14"
+    },
+    {
+      "variable_definition": "设长为x厘米，则宽(x-4)厘米",
+      "equation": "2*(x + (x - 4)) = 28",
+      "x_value": 9
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "周长28厘米",
+      "lhs": "2*(x + (x + 4))",
+      "op": "==",
+      "rhs": "28"
+    },
+    {
+      "description": "长比宽多4厘米",
+      "lhs": "(x + 4) - x",
+      "op": "==",
+      "rhs": "4"
+    },
+    {
+      "description": "宽为正",
+      "lhs": "x",
+      "op": ">",
+      "rhs": "0"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q05-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "x + (x + 4) = 28",
+      "description": "周长公式漏乘2"
+    },
+    {
+      "id": "Q05-E4-01",
+      "error": "E4-01",
+      "layer": "modelling",
+      "equation": "2*(x + (x - 4)) = 28",
+      "description": "“长比宽多4”方向写反",
+      "variable_definition": "设宽为x厘米，长为(x-4)厘米"
+    },
+    {
+      "id": "Q05-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "2*(x + (x + 4)) = 28",
+        "x + (x + 4) = 12",
+        "2*x = 8",
+        "x = 4"
+      ],
+      "first_invalid_step": 2,
+      "description": "28÷2算成12"
+    },
+    {
+      "id": "Q05-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "2*(x + (x + 4)) = 28",
+        "4*x + 8 = 28",
+        "4*x = 36",
+        "x = 9"
+      ],
+      "first_invalid_step": 3,
+      "description": "把+8移到右边时没有变号（应为−8）"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "incorrect",
+    "correct": {
+      "text": "设宽为x厘米，那么长为(x+4)厘米。根据周长公式2(长+宽)=28，得到2[x+(x+4)]=28，4x+8=28，4x=20，x=5。所以宽5厘米，长9厘米。",
+      "x_value": 5
+    },
+    "incorrect": {
+      "text": "设宽为x厘米，长为(x+4)厘米。2[x+(x+4)]=28，4x+8=28，4x=36，x=9。所以宽9厘米，长13厘米。",
+      "error": "E7",
+      "final_answer_text": "宽9厘米，长13厘米"
+    }
+  }
+},
+
+{
+  "question_id": "Q06",
+  "difficulty": "medium",
+  "topic": "人数分组",
+  "question": "一个班男生和女生共42人，男生人数比女生少6人。这个班男生和女生各有多少人？",
+  "known_quantities": [
+    {
+      "name": "总人数",
+      "value": 42,
+      "unit": "人"
+    },
+    {
+      "name": "人数差",
+      "value": 6,
+      "unit": "人"
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "女生人数",
+    "unit": "人"
+  },
+  "variable_definition": "设女生x人，则男生(x-6)人",
+  "relationship": "男生 = 女生 − 6；男生 + 女生 = 42",
+  "equation": "x + (x - 6) = 42",
+  "answer": 24,
+  "final_answer_text": "女生24人，男生18人",
+  "e4_patterns": [
+    "E4-02"
+  ],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "2*x - 6 = 42"
+    },
+    {
+      "variable_definition": "设男生x人，则女生(x+6)人",
+      "equation": "x + (x + 6) = 42",
+      "x_value": 18
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "总人数42",
+      "lhs": "x + (x - 6)",
+      "op": "==",
+      "rhs": "42"
+    },
+    {
+      "description": "男生比女生少6人",
+      "lhs": "x - (x - 6)",
+      "op": "==",
+      "rhs": "6"
+    },
+    {
+      "description": "男生人数为正",
+      "lhs": "x - 6",
+      "op": ">",
+      "rhs": "0"
+    },
+    {
+      "description": "人数为整数",
+      "lhs": "x",
+      "op": "integer",
+      "rhs": "0"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q06-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "x + (x - 6) = 48",
+      "description": "把总人数误读为48"
+    },
+    {
+      "id": "Q06-E4-02",
+      "error": "E4-02",
+      "layer": "modelling",
+      "equation": "x + (x + 6) = 42",
+      "description": "“比……少6人”方向写反",
+      "variable_definition": "设女生x人，男生(x+6)人"
+    },
+    {
+      "id": "Q06-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "x + (x - 6) = 42",
+        "2*x - 6 = 42",
+        "2*x = 50",
+        "x = 25"
+      ],
+      "first_invalid_step": 3,
+      "description": "42+6算成50"
+    },
+    {
+      "id": "Q06-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "2*x - 6 = 42",
+        "2*x = 36",
+        "x = 18"
+      ],
+      "first_invalid_step": 2,
+      "description": "移项未变号"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "correct",
+    "correct": {
+      "text": "设女生有x人，那么男生有(x−6)人。总人数是42，所以x+(x−6)=42，2x=48，x=24。女生24人，男生18人。检查：24+18=42，24−18=6。",
+      "x_value": 24
+    },
+    "incorrect": {
+      "text": "设女生有x人，那么男生有(x−6)人。列方程x+(x−6)=42，整理得2x−6=42。移项时把6移到左边，得到2x=36，所以x=18。因此女生18人，男生12人。",
+      "error": "E7",
+      "final_answer_text": "女生18人，男生12人"
+    }
+  }
+},
+
+{
+  "question_id": "Q07",
+  "difficulty": "medium",
+  "topic": "涨价求原价",
+  "question": "某商品涨价20%后，售价为180元。求这件商品原来的价格。",
+  "known_quantities": [
+    {
+      "name": "现价",
+      "value": 180,
+      "unit": "元"
+    },
+    {
+      "name": "涨幅",
+      "value": 0.2
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "原价",
+    "unit": "元"
+  },
+  "variable_definition": "设原价为x元",
+  "relationship": "现价 = 原价 × (1 + 20%)",
+  "equation": "1.2*x = 180",
+  "answer": 150,
+  "final_answer_text": "原价150元",
+  "e4_patterns": [
+    "E4-03"
+  ],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "x + 0.2*x = 180"
+    },
+    {
+      "equation": "x*(1 + 20/100) = 180"
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "涨价20%后为180元",
+      "lhs": "1.2*x",
+      "op": "==",
+      "rhs": "180"
+    },
+    {
+      "description": "原价低于现价",
+      "lhs": "x",
+      "op": "<",
+      "rhs": "180"
+    },
+    {
+      "description": "原价为正",
+      "lhs": "x",
+      "op": ">",
+      "rhs": "0"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q07-E4-03",
+      "error": "E4-03",
+      "layer": "modelling",
+      "equation": "0.2*x = 180",
+      "description": "把“增加了20%”只写成增加量0.2x"
+    },
+    {
+      "id": "Q07-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "1.2*x = 180",
+        "x = 180/1.2",
+        "x = 120"
+      ],
+      "first_invalid_step": 3,
+      "description": "180÷1.2算成120"
+    },
+    {
+      "id": "Q07-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "1.2*x = 180",
+        "x = 180*1.2",
+        "x = 216"
+      ],
+      "first_invalid_step": 2,
+      "description": "两边应除以1.2，却乘了1.2"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "incorrect",
+    "correct": {
+      "text": "设原价为x元。增加了20%表示现价是原价的120%，所以1.2x=180，x=150。原价150元。检查：150×1.2=180。",
+      "x_value": 150
+    },
+    "incorrect": {
+      "text": "涨价20%后是180元，因此涨价部分就是原价的20%。可以直接列出0.2x=180，解得x=900元。",
+      "error": "E4-03",
+      "final_answer_text": "原价900元"
+    }
+  }
+},
+
+{
+  "question_id": "Q08",
+  "difficulty": "medium",
+  "topic": "折扣加优惠",
+  "question": "一件商品先打八折，然后再优惠10元，最后实际支付190元。求这件商品的原价。",
+  "known_quantities": [
+    {
+      "name": "实付",
+      "value": 190,
+      "unit": "元"
+    },
+    {
+      "name": "折扣",
+      "value": 0.8
+    },
+    {
+      "name": "额外优惠",
+      "value": 10,
+      "unit": "元"
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "原价",
+    "unit": "元"
+  },
+  "variable_definition": "设原价为x元",
+  "relationship": "原价 × 0.8 − 10 = 实付",
+  "equation": "0.8*x - 10 = 190",
+  "answer": 250,
+  "final_answer_text": "原价250元",
+  "e4_patterns": [
+    "E4-06"
+  ],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "0.8*x = 200"
+    },
+    {
+      "equation": "0.8*x = 190 + 10"
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "八折再减10元等于190",
+      "lhs": "0.8*x - 10",
+      "op": "==",
+      "rhs": "190"
+    },
+    {
+      "description": "原价高于实付",
+      "lhs": "x",
+      "op": ">",
+      "rhs": "190"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q08-E4-06",
+      "error": "E4-06",
+      "layer": "modelling",
+      "equation": "x - 0.8 - 10 = 190",
+      "description": "把“打八折”理解成减0.8元"
+    },
+    {
+      "id": "Q08-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "0.8*(x - 10) = 190",
+      "description": "顺序弄反：先减10元再打折（题目说先打折）"
+    },
+    {
+      "id": "Q08-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "0.8*x - 10 = 190",
+        "0.8*x = 210",
+        "x = 262.5"
+      ],
+      "first_invalid_step": 2,
+      "description": "190+10算成210"
+    },
+    {
+      "id": "Q08-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "0.8*x = 200",
+        "x = 200*0.8",
+        "x = 160"
+      ],
+      "first_invalid_step": 2,
+      "description": "应两边除以0.8，却乘了0.8"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "incorrect",
+    "correct": {
+      "text": "设原价为x元。先打八折是0.8x元，再减10元，所以0.8x−10=190，0.8x=200，x=250。原价250元。检查：250×0.8=200，200−10=190。",
+      "x_value": 250
+    },
+    "incorrect": {
+      "text": "设原价为x元。先优惠10元，再打八折，因此方程为0.8(x−10)=190。解得x=247.5元。",
+      "error": "E3",
+      "final_answer_text": "原价247.5元"
+    }
+  }
+},
+
+{
+  "question_id": "Q09",
+  "difficulty": "medium",
+  "topic": "往返时间",
+  "question": "小王去公司时每分钟行驶500米，用了12分钟。回家时每分钟行驶400米。已知这一天往返一共行驶了12000米。求小王回家用了多少分钟。",
+  "known_quantities": [
+    {
+      "name": "去程速度",
+      "value": 500,
+      "unit": "米/分钟"
+    },
+    {
+      "name": "去程时间",
+      "value": 12,
+      "unit": "分钟"
+    },
+    {
+      "name": "回程速度",
+      "value": 400,
+      "unit": "米/分钟"
+    },
+    {
+      "name": "往返总路程",
+      "value": 12000,
+      "unit": "米"
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "回程时间",
+    "unit": "分钟"
+  },
+  "variable_definition": "设回家用了x分钟",
+  "relationship": "去程路程 + 回程路程 = 12000",
+  "equation": "500*12 + 400*x = 12000",
+  "answer": 15,
+  "final_answer_text": "15分钟",
+  "e4_patterns": [],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "6000 + 400*x = 12000"
+    },
+    {
+      "equation": "400*x = 6000"
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "往返共12000米",
+      "lhs": "500*12 + 400*x",
+      "op": "==",
+      "rhs": "12000"
+    },
+    {
+      "description": "回程路程等于去程路程",
+      "lhs": "400*x",
+      "op": "==",
+      "rhs": "500*12"
+    },
+    {
+      "description": "时间为正",
+      "lhs": "x",
+      "op": ">",
+      "rhs": "0"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q09-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "6000 + 400*x = 6000",
+      "description": "把回程路程与往返总路程混淆"
+    },
+    {
+      "id": "Q09-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "6000 + 400*x = 12000",
+        "400*x = 5000",
+        "x = 12.5"
+      ],
+      "first_invalid_step": 2,
+      "description": "12000−6000算成5000"
+    },
+    {
+      "id": "Q09-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "400*x = 6000",
+        "x = 6000*400"
+      ],
+      "first_invalid_step": 2,
+      "description": "应两边除以400，却乘了400"
+    },
+    {
+      "id": "Q09-E1",
+      "error": "E1",
+      "layer": "answer",
+      "final_answer_text": "6000米",
+      "description": "求的是时间，却回答了回程路程"
+    },
+    {
+      "id": "Q09-E5",
+      "error": "E5",
+      "layer": "answer",
+      "final_answer_text": "15小时",
+      "description": "单位错误"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "correct",
+    "correct": {
+      "text": "去程路程是500×12=6000米，往返共12000米，所以回程也是6000米。设回程用x分钟，400x=6000，x=15。回家用了15分钟。",
+      "x_value": 15
+    },
+    "incorrect": {
+      "text": "去程已经是6000米，而往返总路程是12000米，所以回程也是6000米。回程速度是400米/分钟，因此需要6000×400=2400000分钟。",
+      "error": "E7",
+      "final_answer_text": "2400000分钟"
+    }
+  }
+},
+
+{
+  "question_id": "Q10",
+  "difficulty": "medium",
+  "topic": "工作效率",
+  "question": "一项工作，甲单独做每天完成全部工作的1/6，乙单独做每天完成全部工作的1/3。两人合作，需要多少天完成全部工作？",
+  "known_quantities": [
+    {
+      "name": "甲的效率",
+      "value": "1/6",
+      "unit": "工作量/天"
+    },
+    {
+      "name": "乙的效率",
+      "value": "1/3",
+      "unit": "工作量/天"
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "合作完成所需天数",
+    "unit": "天"
+  },
+  "variable_definition": "设合作x天完成",
+  "relationship": "(甲效率 + 乙效率) × 天数 = 1",
+  "equation": "x*(1/6 + 1/3) = 1",
+  "answer": 2,
+  "final_answer_text": "2天",
+  "scope_note": "边界题：涉及分数系数，但化简后仍为一元一次方程",
+  "e4_patterns": [],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "x/6 + x/3 = 1"
+    },
+    {
+      "equation": "x/2 = 1"
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "合作完成全部工作",
+      "lhs": "x*(1/6 + 1/3)",
+      "op": "==",
+      "rhs": "1"
+    },
+    {
+      "description": "天数为正",
+      "lhs": "x",
+      "op": ">",
+      "rhs": "0"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q10-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "x*(1/6 - 1/3) = 1",
+      "description": "把两人效率相减；解出负数天数，属于约束检查用例"
+    },
+    {
+      "id": "Q10-E3b",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "x = 6 + 3",
+      "description": "把两人单独完成所需天数相加"
+    },
+    {
+      "id": "Q10-E2",
+      "error": "E2",
+      "layer": "modelling",
+      "equation": "x = 1/6 + 1/3",
+      "description": "x被当作两人每天的工作量，与所求天数含义不符",
+      "variable_definition": "设x为两人一天完成的工作量"
+    },
+    {
+      "id": "Q10-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "x*(1/6 + 1/3) = 1",
+        "x*(1/3) = 1",
+        "x = 3"
+      ],
+      "first_invalid_step": 2,
+      "description": "1/6+1/3算成1/3"
+    },
+    {
+      "id": "Q10-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "x/2 = 1",
+        "x = 1/2"
+      ],
+      "first_invalid_step": 2,
+      "description": "两边应乘以2，却除以2",
+      "revision_note": "V1.3原变异“x/2=1 → x=2”是正确变形，不是错误，已替换"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "incorrect",
+    "correct": {
+      "text": "设合作x天完成。两人每天共完成1/6+1/3=1/2，所以x×1/2=1，x=2。需要2天。",
+      "x_value": 2
+    },
+    "incorrect": {
+      "text": "甲每天完成六分之一，乙每天完成三分之一，因此两人每天完成的工作量是1/6−1/3=−1/6。所以需要−6天完成工作。",
+      "error": "E3",
+      "final_answer_text": "−6天"
+    }
+  }
+},
+
+{
+  "question_id": "Q11",
+  "difficulty": "medium",
+  "topic": "混合购买",
+  "question": "小李买了2本相同的练习册和3支相同的笔，一共花了29元。一本练习册比一支笔贵2元。一本练习册和一支笔分别多少钱？",
+  "revision_note": "V1.3将总价从31元改为29元（原题无整数解），使标准答案为整数：笔5元，练习册7元",
+  "known_quantities": [
+    {
+      "name": "总价",
+      "value": 29,
+      "unit": "元"
+    },
+    {
+      "name": "价格差",
+      "value": 2,
+      "unit": "元"
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "一支笔的价格",
+    "unit": "元"
+  },
+  "variable_definition": "设一支笔x元，则一本练习册(x+2)元",
+  "relationship": "2×练习册 + 3×笔 = 29；练习册 = 笔 + 2",
+  "equation": "2*(x + 2) + 3*x = 29",
+  "answer": 5,
+  "final_answer_text": "笔5元，练习册7元",
+  "e4_patterns": [
+    "E4-01"
+  ],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "5*x + 4 = 29"
+    },
+    {
+      "variable_definition": "设一本练习册x元，则笔(x-2)元",
+      "equation": "2*x + 3*(x - 2) = 29",
+      "x_value": 7
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "总价29元",
+      "lhs": "2*(x + 2) + 3*x",
+      "op": "==",
+      "rhs": "29"
+    },
+    {
+      "description": "练习册比笔贵2元",
+      "lhs": "(x + 2) - x",
+      "op": "==",
+      "rhs": "2"
+    },
+    {
+      "description": "价格为正",
+      "lhs": "x",
+      "op": ">",
+      "rhs": "0"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q11-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "(x + 2) + 3*x = 29",
+      "description": "漏掉练习册的数量2"
+    },
+    {
+      "id": "Q11-E4-01",
+      "error": "E4-01",
+      "layer": "modelling",
+      "equation": "2*(x - 2) + 3*x = 29",
+      "description": "“比……贵2元”方向写反",
+      "variable_definition": "设一支笔x元，练习册(x-2)元"
+    },
+    {
+      "id": "Q11-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "2*(x + 2) + 3*x = 29",
+        "5*x + 4 = 29",
+        "5*x = 27",
+        "x = 27/5"
+      ],
+      "first_invalid_step": 3,
+      "description": "29−4算成27"
+    },
+    {
+      "id": "Q11-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "5*x + 4 = 29",
+        "5*x = 33",
+        "x = 33/5"
+      ],
+      "first_invalid_step": 2,
+      "description": "移项未变号"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "incorrect",
+    "correct": {
+      "text": "设一支笔x元，那么一本练习册(x+2)元。2(x+2)+3x=29，5x+4=29，5x=25，x=5。所以笔5元，练习册7元。检查：2×7+3×5=29。",
+      "x_value": 5
+    },
+    "incorrect": {
+      "text": "设一支笔为x元，那么一本练习册为(x+2)元。列式2(x+2)+3x=29，整理得5x+4=29。因此5x=27，所以x=5.4。因此一支笔5.4元，一本练习册7.4元。",
+      "error": "E6",
+      "final_answer_text": "笔5.4元，练习册7.4元"
+    }
+  }
+},
+
+{
+  "question_id": "Q12",
+  "difficulty": "medium",
+  "topic": "年龄变化",
+  "question": "小红今年的年龄是妈妈的1/4。5年后，小红的年龄是妈妈的1/3。小红和妈妈今年分别多少岁？",
+  "known_quantities": [
+    {
+      "name": "今年倍数关系",
+      "value": "1/4"
+    },
+    {
+      "name": "5年后倍数关系",
+      "value": "1/3"
+    },
+    {
+      "name": "经过年数",
+      "value": 5,
+      "unit": "年"
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "妈妈今年的年龄",
+    "unit": "岁"
+  },
+  "variable_definition": "设妈妈今年x岁，则小红今年x/4岁",
+  "relationship": "5年后：小红(x/4+5) = 妈妈(x+5) × 1/3",
+  "equation": "x/4 + 5 = (x + 5)/3",
+  "answer": 40,
+  "final_answer_text": "妈妈40岁，小红10岁",
+  "e4_patterns": [],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "3*x + 60 = 4*x + 20"
+    },
+    {
+      "equation": "3*(x/4 + 5) = x + 5"
+    },
+    {
+      "variable_definition": "设小红今年x岁，则妈妈4x岁",
+      "equation": "x + 5 = (4*x + 5)/3",
+      "x_value": 10
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "5年后小红是妈妈的1/3",
+      "lhs": "x/4 + 5",
+      "op": "==",
+      "rhs": "(x + 5)/3"
+    },
+    {
+      "description": "年龄为正",
+      "lhs": "x/4",
+      "op": ">",
+      "rhs": "0"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q12-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "x/4 = x/3",
+      "description": "忘了两人都要加5岁"
+    },
+    {
+      "id": "Q12-E2",
+      "error": "E2",
+      "layer": "modelling",
+      "equation": "x/4 + 5 = x/3",
+      "description": "设x为妈妈5年后的年龄，却当作今年年龄使用",
+      "variable_definition": "设x为妈妈5年后的年龄"
+    },
+    {
+      "id": "Q12-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "3*x + 60 = 4*x + 20",
+        "60 - 20 = x",
+        "x = 30"
+      ],
+      "first_invalid_step": 3,
+      "description": "60−20算成30"
+    },
+    {
+      "id": "Q12-E6b",
+      "error": "E6",
+      "layer": "answer",
+      "final_answer_text": "小红12岁",
+      "description": "40÷4算成12（出现在由妈妈年龄求小红年龄时）"
+    },
+    {
+      "id": "Q12-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "3*x + 60 = 4*x + 20",
+        "3*x - 4*x = 60 + 20",
+        "x = -80"
+      ],
+      "first_invalid_step": 2,
+      "description": "移项未变号"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "correct",
+    "correct": {
+      "text": "设妈妈今年x岁，小红今年x/4岁。5年后妈妈(x+5)岁，小红(x/4+5)岁。列出x/4+5=(x+5)/3，两边乘12得3x+60=4x+20，x=40。妈妈40岁，小红10岁。检查：5年后小红15岁，妈妈45岁，15是45的1/3。",
+      "x_value": 40
+    },
+    "incorrect": {
+      "text": "设妈妈今年x岁，小红今年x/4岁。5年后，两人的年龄分别是x+5和x/4+5。列出x/4+5=(x+5)/3，两边乘12得到3x+60=4x+20。移项时得到3x−4x=60+20，所以−x=80，x=−80。年龄不可能是负数，说明计算有问题。",
+      "error": "E7",
+      "final_answer_text": "x=−80",
+      "revision_note": "V1.3原文写“x=−80，因此妈妈80岁”，悄悄丢掉了负号，等于叠加了第二个错误；已改为只含一个E7错误"
+    }
+  }
+},
+
+{
+  "question_id": "Q13",
+  "difficulty": "hard",
+  "topic": "分段行程",
+  "question": "甲、乙两地相距36千米。小王先骑自行车从甲地出发，每小时骑12千米，骑了一段时间后改乘汽车，每小时行驶30千米。整个过程用了2小时。骑自行车和乘汽车分别用了多少小时？",
+  "known_quantities": [
+    {
+      "name": "总路程",
+      "value": 36,
+      "unit": "千米"
+    },
+    {
+      "name": "骑车速度",
+      "value": 12,
+      "unit": "千米/小时"
+    },
+    {
+      "name": "汽车速度",
+      "value": 30,
+      "unit": "千米/小时"
+    },
+    {
+      "name": "总时间",
+      "value": 2,
+      "unit": "小时"
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "骑自行车的时间",
+    "unit": "小时"
+  },
+  "variable_definition": "设骑自行车x小时，则乘汽车(2-x)小时",
+  "relationship": "12×骑车时间 + 30×汽车时间 = 36",
+  "equation": "12*x + 30*(2 - x) = 36",
+  "answer": "4/3",
+  "final_answer_text": "骑自行车4/3小时（80分钟），乘汽车2/3小时（40分钟）",
+  "e4_patterns": [],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "12*x + 60 - 30*x = 36"
+    },
+    {
+      "equation": "18*x = 24",
+      "note": "由-18*x=-24两边同时乘以-1得到，与原方程等价"
+    },
+    {
+      "variable_definition": "设乘汽车x小时，则骑车(2-x)小时",
+      "equation": "12*(2 - x) + 30*x = 36",
+      "x_value": "2/3"
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "总路程36千米",
+      "lhs": "12*x + 30*(2 - x)",
+      "op": "==",
+      "rhs": "36"
+    },
+    {
+      "description": "骑车时间为正",
+      "lhs": "x",
+      "op": ">",
+      "rhs": "0"
+    },
+    {
+      "description": "骑车时间少于2小时",
+      "lhs": "x",
+      "op": "<",
+      "rhs": "2"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q13-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "12*x + 30*x = 36",
+      "description": "误以为两段用时相同"
+    },
+    {
+      "id": "Q13-E2",
+      "error": "E2",
+      "layer": "modelling",
+      "equation": "12*x + 30*(2 - x) = 36",
+      "description": "方程正确，但把x定义为乘汽车的时间，结果解释反了",
+      "variable_definition": "设乘汽车x小时"
+    },
+    {
+      "id": "Q13-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "12*x + 30*(2 - x) = 36",
+        "12*x + 60 - 30*x = 36",
+        "-18*x = -24",
+        "x = 3/2"
+      ],
+      "first_invalid_step": 4,
+      "description": "24÷18算成3/2"
+    },
+    {
+      "id": "Q13-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "12*x + 30*(2 - x) = 36",
+        "42*x - 60 = 36",
+        "x = 16/7"
+      ],
+      "first_invalid_step": 2,
+      "description": "去括号时符号全部弄错"
+    },
+    {
+      "id": "Q13-E5",
+      "error": "E5",
+      "layer": "answer",
+      "final_answer_text": "骑自行车4/3分钟，乘汽车2/3分钟",
+      "description": "x的单位是小时，没有换算成分钟"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "incorrect",
+    "correct": {
+      "text": "设骑自行车x小时，则乘汽车(2−x)小时。12x+30(2−x)=36，12x+60−30x=36，−18x=−24，x=4/3。4/3小时=80分钟，所以骑车80分钟，乘汽车40分钟。",
+      "x_value": "4/3"
+    },
+    "incorrect": {
+      "text": "设骑自行车x小时，则乘汽车(2−x)小时。12x+30(2−x)=36，解得x=4/3。所以骑自行车用了4/3分钟，乘汽车用了2/3分钟。",
+      "error": "E5",
+      "final_answer_text": "骑自行车4/3分钟，乘汽车2/3分钟"
+    }
+  }
+},
+
+{
+  "question_id": "Q14",
+  "difficulty": "hard",
+  "topic": "连续百分比",
+  "question": "某商品第一次涨价20%，第二次在涨价后的价格基础上减少10%，最后价格为216元。求商品原来的价格。",
+  "known_quantities": [
+    {
+      "name": "最终售价",
+      "value": 216,
+      "unit": "元"
+    },
+    {
+      "name": "涨幅",
+      "value": 0.2
+    },
+    {
+      "name": "降幅",
+      "value": 0.1
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "原价",
+    "unit": "元"
+  },
+  "variable_definition": "设原价为x元",
+  "relationship": "原价 × 1.2 × 0.9 = 216",
+  "equation": "x*1.2*0.9 = 216",
+  "answer": 200,
+  "final_answer_text": "原价200元",
+  "e4_patterns": [
+    "E4-03"
+  ],
+  "e4_extension_candidate": "“降价10%”（→0.9x，常见误写0.1x）不在V1封闭清单中；如需诊断，按error_taxonomy §4.8新增E4-09",
+  "accepted_equivalent_forms": [
+    {
+      "equation": "1.08*x = 216"
+    },
+    {
+      "equation": "x*(1 + 0.2)*(1 - 0.1) = 216"
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "最终售价216元",
+      "lhs": "x*1.2*0.9",
+      "op": "==",
+      "rhs": "216"
+    },
+    {
+      "description": "涨价后价格高于216",
+      "lhs": "1.2*x",
+      "op": ">",
+      "rhs": "216"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q14-E4-03",
+      "error": "E4-03",
+      "layer": "modelling",
+      "equation": "0.2*x*0.9 = 216",
+      "description": "把“增加了20%”写成0.2x"
+    },
+    {
+      "id": "Q14-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "1.2*x - 0.1*x = 216",
+      "description": "第二次降价按原价计算，而不是按涨价后的价格"
+    },
+    {
+      "id": "Q14-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "1.08*x = 216",
+        "x = 216/1.08",
+        "x = 220"
+      ],
+      "first_invalid_step": 3,
+      "description": "216÷1.08算成220"
+    },
+    {
+      "id": "Q14-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "1.08*x = 216",
+        "x = 216*1.08",
+        "x = 233.28"
+      ],
+      "first_invalid_step": 2,
+      "description": "两边应除以1.08，却乘了1.08"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "correct",
+    "correct": {
+      "text": "设原价为x元。涨价20%后是1.2x元，再在此基础上降价10%，是1.2x×0.9=1.08x元。1.08x=216，x=200。原价200元。检查：200×1.2=240，240×0.9=216。",
+      "x_value": 200
+    },
+    "incorrect": {
+      "text": "设商品原价为x元。涨价20%后增加的金额是0.2x，因此涨价后的价格是0.2x。再减少10%后得到0.18x。由于最终价格为216元，所以0.18x=216，解得x=1200元。",
+      "error": "E4-03",
+      "final_answer_text": "原价1200元"
+    }
+  }
+},
+
+{
+  "question_id": "Q15",
+  "difficulty": "hard",
+  "topic": "分配与转移",
+  "question": "学校购买了一批笔记本电脑，分给甲、乙两个班。甲班拿出4台给乙班后，两个班的电脑数量相同。如果两个班原来共有56台电脑，原来甲、乙两个班分别分到多少台？",
+  "known_quantities": [
+    {
+      "name": "总数",
+      "value": 56,
+      "unit": "台"
+    },
+    {
+      "name": "转移数量",
+      "value": 4,
+      "unit": "台"
+    }
+  ],
+  "unknown": {
+    "symbol": "x",
+    "meaning": "乙班原来的数量",
+    "unit": "台"
+  },
+  "variable_definition": "设乙班原来x台，则甲班原来(56-x)台",
+  "relationship": "甲班 − 4 = 乙班 + 4",
+  "equation": "56 - x - 4 = x + 4",
+  "answer": 24,
+  "final_answer_text": "甲班32台，乙班24台",
+  "e4_patterns": [],
+  "accepted_equivalent_forms": [
+    {
+      "equation": "52 - x = x + 4"
+    },
+    {
+      "equation": "x + 4 = 56 - x - 4"
+    },
+    {
+      "equation": "x + (x + 8) = 56",
+      "note": "学生先推出甲比乙多8台再列式，正确"
+    },
+    {
+      "variable_definition": "设甲班原来x台，则乙班(56-x)台",
+      "equation": "x - 4 = (56 - x) + 4",
+      "x_value": 32
+    }
+  ],
+  "verification_conditions": [
+    {
+      "description": "转移后两班相同",
+      "lhs": "(56 - x) - 4",
+      "op": "==",
+      "rhs": "x + 4"
+    },
+    {
+      "description": "乙班数量为正",
+      "lhs": "x",
+      "op": ">",
+      "rhs": "0"
+    },
+    {
+      "description": "甲班数量为正",
+      "lhs": "56 - x",
+      "op": ">",
+      "rhs": "0"
+    },
+    {
+      "description": "台数为整数",
+      "lhs": "x",
+      "op": "integer",
+      "rhs": "0"
+    }
+  ],
+  "mutations": [
+    {
+      "id": "Q15-E3",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "(56 - x) - 4 = x",
+      "description": "只考虑甲班减少，忘了乙班增加4台"
+    },
+    {
+      "id": "Q15-E3b",
+      "error": "E3",
+      "layer": "modelling",
+      "equation": "(56 - x) + 4 = x - 4",
+      "description": "转移方向弄反：写成乙班给甲班"
+    },
+    {
+      "id": "Q15-E6",
+      "error": "E6",
+      "layer": "execution",
+      "steps": [
+        "56 - x - 4 = x + 4",
+        "52 - x = x + 4",
+        "46 = 2*x",
+        "x = 23"
+      ],
+      "first_invalid_step": 3,
+      "description": "52−4算成46"
+    },
+    {
+      "id": "Q15-E7",
+      "error": "E7",
+      "layer": "execution",
+      "steps": [
+        "52 - x = x + 4",
+        "52 + 4 = x + x",
+        "x = 28"
+      ],
+      "first_invalid_step": 2,
+      "description": "移项未变号",
+      "revision_note": "V1.3原变异“52−x=x+4 → 52−4=2x”是正确变形，不是错误，已替换"
+    }
+  ],
+  "challenge_ai": {
+    "v1_set_role": "incorrect",
+    "correct": {
+      "text": "设乙班原来有x台，甲班有(56−x)台。甲班拿出4台后有(52−x)台，乙班有(x+4)台，两者相同：52−x=x+4，x=24。乙班24台，甲班32台。检查：32−4=28，24+4=28。",
+      "x_value": 24
+    },
+    "incorrect": {
+      "text": "设乙班原来有x台，那么甲班原来有(56−x)台。甲班拿出4台后有(56−x−4)台。由于两班最后相同，可以列出56−x−4=x。解得x=26，因此乙班26台，甲班30台。甲班拿出4台后变成26台，所以两班相同。",
+      "error": "E3",
+      "final_answer_text": "甲班30台，乙班26台"
+    }
+  }
+}
+
+
+]
+}

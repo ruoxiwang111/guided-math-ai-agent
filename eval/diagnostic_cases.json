@@ -1,0 +1,2389 @@
+{
+  "version": "1.0",
+  "generated": "2026-09-28",
+  "question_bank_version": "1.3",
+  "notes": [
+    "D2a = source 'mutation'（本脚本生成，重跑会覆盖）；D2b = source 'hand_crafted' （手工标注，重跑时保留）。",
+    "primary_error 已合并子类型（E4-01 → E4）；原始标签保留在 error_subtype。",
+    "reference_status = uncertain 的样本不计入 Coverage 分母，计入 Uncertainty Appropriateness。",
+    "默认 D2a 全部为 test；如需开发集，使用 --dev-ratio，并固定 --seed 以保证可复现。"
+  ],
+  "cases": [
+    {
+      "case_id": "D2a-Q01-E3",
+      "question_id": "Q01",
+      "mutation_id": "Q01-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设小华今年x岁，则小明今年(x+5)岁",
+        "equation": "x + 5 = 25"
+      },
+      "normalized_response": {
+        "variable_definition": "设小华今年x岁，则小明今年(x+5)岁",
+        "equation": "x+5=25"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "只用小明的年龄等于年龄和，漏掉小华；方程 x + 5 = 25",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q01-E4-01",
+      "question_id": "Q01",
+      "mutation_id": "Q01-E4-01",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "easy",
+      "variable_definition_source": "mutation",
+      "learner_response": {
+        "variable_definition": "设小华今年x岁，小明为(x-5)岁",
+        "equation": "x + (x - 5) = 25"
+      },
+      "normalized_response": {
+        "variable_definition": "设小华今年x岁，小明为(x-5)岁",
+        "equation": "x+(x-5)=25"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": "E4-01",
+      "candidate_errors": [
+        "E4"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "“比……大5岁”方向写反：设小华为x却写小明为x-5；方程 x + (x - 5) = 25",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q01-E6",
+      "question_id": "Q01",
+      "mutation_id": "Q01-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设小华今年x岁，则小明今年(x+5)岁",
+        "steps": [
+          "x + (x + 5) = 25",
+          "2*x + 5 = 25",
+          "2*x = 18",
+          "x = 9"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设小华今年x岁，则小明今年(x+5)岁",
+        "steps": [
+          "x+(x+5)=25",
+          "2*x+5=25",
+          "2*x=18",
+          "x=9"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第3行 '2*x = 18'（上一行 '2*x + 5 = 25'）：25−5算成18",
+      "first_invalid_step": 3,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q01-E7",
+      "question_id": "Q01",
+      "mutation_id": "Q01-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设小华今年x岁，则小明今年(x+5)岁",
+        "steps": [
+          "2*x + 5 = 25",
+          "2*x = 30",
+          "x = 15"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设小华今年x岁，则小明今年(x+5)岁",
+        "steps": [
+          "2*x+5=25",
+          "2*x=30",
+          "x=15"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 '2*x = 30'（上一行 '2*x + 5 = 25'）：移项未变号：5移到右边写成+5",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q02-E3",
+      "question_id": "Q02",
+      "mutation_id": "Q02-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设笔x元，则笔记本(x+12)元",
+        "equation": "x + 12 = 28"
+      },
+      "normalized_response": {
+        "variable_definition": "设笔x元，则笔记本(x+12)元",
+        "equation": "x+12=28"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "只用笔记本价格等于总价，漏掉笔的价格；方程 x + 12 = 28",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q02-E4-01",
+      "question_id": "Q02",
+      "mutation_id": "Q02-E4-01",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "easy",
+      "variable_definition_source": "mutation",
+      "learner_response": {
+        "variable_definition": "设笔x元，笔记本(x-12)元",
+        "equation": "x + (x - 12) = 28"
+      },
+      "normalized_response": {
+        "variable_definition": "设笔x元，笔记本(x-12)元",
+        "equation": "x+(x-12)=28"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": "E4-01",
+      "candidate_errors": [
+        "E4"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "“比……贵12元”方向写反；方程 x + (x - 12) = 28",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q02-E6",
+      "question_id": "Q02",
+      "mutation_id": "Q02-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设笔x元，则笔记本(x+12)元",
+        "steps": [
+          "x + (x + 12) = 28",
+          "2*x + 12 = 28",
+          "2*x = 14",
+          "x = 7"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设笔x元，则笔记本(x+12)元",
+        "steps": [
+          "x+(x+12)=28",
+          "2*x+12=28",
+          "2*x=14",
+          "x=7"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第3行 '2*x = 14'（上一行 '2*x + 12 = 28'）：28−12算成14",
+      "first_invalid_step": 3,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q02-E7",
+      "question_id": "Q02",
+      "mutation_id": "Q02-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设笔x元，则笔记本(x+12)元",
+        "steps": [
+          "2*x + 12 = 28",
+          "2*x = 40",
+          "x = 20"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设笔x元，则笔记本(x+12)元",
+        "steps": [
+          "2*x+12=28",
+          "2*x=40",
+          "x=20"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 '2*x = 40'（上一行 '2*x + 12 = 28'）：移项未变号",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q03-E4-06",
+      "question_id": "Q03",
+      "mutation_id": "Q03-E4-06",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "x - 0.8 = 160"
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "x-0.8=160"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": "E4-06",
+      "candidate_errors": [
+        "E4"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "把“打八折”理解成便宜0.8元；方程 x - 0.8 = 160",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q03-E6",
+      "question_id": "Q03",
+      "mutation_id": "Q03-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "0.8*x = 160",
+          "x = 160/0.8",
+          "x = 180"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "0.8*x=160",
+          "x=160/0.8",
+          "x=180"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第3行 'x = 180'（上一行 'x = 160/0.8'）：160÷0.8算成180",
+      "first_invalid_step": 3,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q03-E7",
+      "question_id": "Q03",
+      "mutation_id": "Q03-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "0.8*x = 160",
+          "x = 160 - 0.8",
+          "x = 159.2"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "0.8*x=160",
+          "x=160-0.8",
+          "x=159.2"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 'x = 160 - 0.8'（上一行 '0.8*x = 160'）：应两边除以0.8，却减去0.8",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q03-E5",
+      "question_id": "Q03",
+      "mutation_id": "Q03-E5",
+      "source": "mutation",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "difficulty": "easy",
+      "learner_response": {
+        "final_answer_text": "原价200千克"
+      },
+      "normalized_response": {
+        "final_answer_text": "原价200千克"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E5",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E5"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "最终答案“原价200千克”：单位错误",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q04-E2",
+      "question_id": "Q04",
+      "mutation_id": "Q04-E2",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "easy",
+      "variable_definition_source": "mutation",
+      "learner_response": {
+        "variable_definition": "设回家时每分钟骑x米",
+        "equation": "3000 + x = 5500"
+      },
+      "normalized_response": {
+        "variable_definition": "设回家时每分钟骑x米",
+        "equation": "3000+x=5500"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E2",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E2"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "x定义为速度，却当作回程路程使用；方程 3000 + x = 5500",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q04-E3",
+      "question_id": "Q04",
+      "mutation_id": "Q04-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设回家时每分钟骑x米",
+        "equation": "300*10 = 10*x"
+      },
+      "normalized_response": {
+        "variable_definition": "设回家时每分钟骑x米",
+        "equation": "300*10=10*x"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "误以为往返路程相同（题目明确说明回家时绕路）；方程 300*10 = 10*x",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q04-E6",
+      "question_id": "Q04",
+      "mutation_id": "Q04-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设回家时每分钟骑x米",
+        "steps": [
+          "3000 + 10*x = 5500",
+          "10*x = 2000",
+          "x = 200"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设回家时每分钟骑x米",
+        "steps": [
+          "3000+10*x=5500",
+          "10*x=2000",
+          "x=200"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 '10*x = 2000'（上一行 '3000 + 10*x = 5500'）：5500−3000算成2000",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q04-E7",
+      "question_id": "Q04",
+      "mutation_id": "Q04-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设回家时每分钟骑x米",
+        "steps": [
+          "3000 + 10*x = 5500",
+          "10*x = 2500",
+          "x = 2500*10"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设回家时每分钟骑x米",
+        "steps": [
+          "3000+10*x=5500",
+          "10*x=2500",
+          "x=2500*10"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第3行 'x = 2500*10'（上一行 '10*x = 2500'）：应两边除以10，却乘了10",
+      "first_invalid_step": 3,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q04-E1",
+      "question_id": "Q04",
+      "mutation_id": "Q04-E1",
+      "source": "mutation",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "difficulty": "easy",
+      "learner_response": {
+        "final_answer_text": "回程2500米"
+      },
+      "normalized_response": {
+        "final_answer_text": "回程2500米"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E1",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E1"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "最终答案“回程2500米”：求的是速度，却回答了回程路程",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q04-E5",
+      "question_id": "Q04",
+      "mutation_id": "Q04-E5",
+      "source": "mutation",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "difficulty": "easy",
+      "learner_response": {
+        "final_answer_text": "250米"
+      },
+      "normalized_response": {
+        "final_answer_text": "250米"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E5",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E5"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "最终答案“250米”：速度单位应为米/分钟",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q05-E3",
+      "question_id": "Q05",
+      "mutation_id": "Q05-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设宽为x厘米，则长为(x+4)厘米",
+        "equation": "x + (x + 4) = 28"
+      },
+      "normalized_response": {
+        "variable_definition": "设宽为x厘米，则长为(x+4)厘米",
+        "equation": "x+(x+4)=28"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "周长公式漏乘2；方程 x + (x + 4) = 28",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q05-E4-01",
+      "question_id": "Q05",
+      "mutation_id": "Q05-E4-01",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "easy",
+      "variable_definition_source": "mutation",
+      "learner_response": {
+        "variable_definition": "设宽为x厘米，长为(x-4)厘米",
+        "equation": "2*(x + (x - 4)) = 28"
+      },
+      "normalized_response": {
+        "variable_definition": "设宽为x厘米，长为(x-4)厘米",
+        "equation": "2*(x+(x-4))=28"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": "E4-01",
+      "candidate_errors": [
+        "E4"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "“长比宽多4”方向写反；方程 2*(x + (x - 4)) = 28",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q05-E6",
+      "question_id": "Q05",
+      "mutation_id": "Q05-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设宽为x厘米，则长为(x+4)厘米",
+        "steps": [
+          "2*(x + (x + 4)) = 28",
+          "x + (x + 4) = 12",
+          "2*x = 8",
+          "x = 4"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设宽为x厘米，则长为(x+4)厘米",
+        "steps": [
+          "2*(x+(x+4))=28",
+          "x+(x+4)=12",
+          "2*x=8",
+          "x=4"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 'x + (x + 4) = 12'（上一行 '2*(x + (x + 4)) = 28'）：28÷2算成12",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q05-E7",
+      "question_id": "Q05",
+      "mutation_id": "Q05-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "easy",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设宽为x厘米，则长为(x+4)厘米",
+        "steps": [
+          "2*(x + (x + 4)) = 28",
+          "4*x + 8 = 28",
+          "4*x = 36",
+          "x = 9"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设宽为x厘米，则长为(x+4)厘米",
+        "steps": [
+          "2*(x+(x+4))=28",
+          "4*x+8=28",
+          "4*x=36",
+          "x=9"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第3行 '4*x = 36'（上一行 '4*x + 8 = 28'）：把+8移到右边时没有变号（应为−8）",
+      "first_invalid_step": 3,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q06-E3",
+      "question_id": "Q06",
+      "mutation_id": "Q06-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设女生x人，则男生(x-6)人",
+        "equation": "x + (x - 6) = 48"
+      },
+      "normalized_response": {
+        "variable_definition": "设女生x人，则男生(x-6)人",
+        "equation": "x+(x-6)=48"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "把总人数误读为48；方程 x + (x - 6) = 48",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q06-E4-02",
+      "question_id": "Q06",
+      "mutation_id": "Q06-E4-02",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "mutation",
+      "learner_response": {
+        "variable_definition": "设女生x人，男生(x+6)人",
+        "equation": "x + (x + 6) = 42"
+      },
+      "normalized_response": {
+        "variable_definition": "设女生x人，男生(x+6)人",
+        "equation": "x+(x+6)=42"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": "E4-02",
+      "candidate_errors": [
+        "E4"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "“比……少6人”方向写反；方程 x + (x + 6) = 42",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q06-E6",
+      "question_id": "Q06",
+      "mutation_id": "Q06-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设女生x人，则男生(x-6)人",
+        "steps": [
+          "x + (x - 6) = 42",
+          "2*x - 6 = 42",
+          "2*x = 50",
+          "x = 25"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设女生x人，则男生(x-6)人",
+        "steps": [
+          "x+(x-6)=42",
+          "2*x-6=42",
+          "2*x=50",
+          "x=25"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第3行 '2*x = 50'（上一行 '2*x - 6 = 42'）：42+6算成50",
+      "first_invalid_step": 3,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q06-E7",
+      "question_id": "Q06",
+      "mutation_id": "Q06-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设女生x人，则男生(x-6)人",
+        "steps": [
+          "2*x - 6 = 42",
+          "2*x = 36",
+          "x = 18"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设女生x人，则男生(x-6)人",
+        "steps": [
+          "2*x-6=42",
+          "2*x=36",
+          "x=18"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 '2*x = 36'（上一行 '2*x - 6 = 42'）：移项未变号",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q07-E4-03",
+      "question_id": "Q07",
+      "mutation_id": "Q07-E4-03",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "0.2*x = 180"
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "0.2*x=180"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": "E4-03",
+      "candidate_errors": [
+        "E4"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "把“增加了20%”只写成增加量0.2x；方程 0.2*x = 180",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q07-E6",
+      "question_id": "Q07",
+      "mutation_id": "Q07-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "1.2*x = 180",
+          "x = 180/1.2",
+          "x = 120"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "1.2*x=180",
+          "x=180/1.2",
+          "x=120"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第3行 'x = 120'（上一行 'x = 180/1.2'）：180÷1.2算成120",
+      "first_invalid_step": 3,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q07-E7",
+      "question_id": "Q07",
+      "mutation_id": "Q07-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "1.2*x = 180",
+          "x = 180*1.2",
+          "x = 216"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "1.2*x=180",
+          "x=180*1.2",
+          "x=216"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 'x = 180*1.2'（上一行 '1.2*x = 180'）：两边应除以1.2，却乘了1.2",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q08-E4-06",
+      "question_id": "Q08",
+      "mutation_id": "Q08-E4-06",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "x - 0.8 - 10 = 190"
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "x-0.8-10=190"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": "E4-06",
+      "candidate_errors": [
+        "E4"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "把“打八折”理解成减0.8元；方程 x - 0.8 - 10 = 190",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q08-E3",
+      "question_id": "Q08",
+      "mutation_id": "Q08-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "0.8*(x - 10) = 190"
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "0.8*(x-10)=190"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "顺序弄反：先减10元再打折（题目说先打折）；方程 0.8*(x - 10) = 190",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q08-E6",
+      "question_id": "Q08",
+      "mutation_id": "Q08-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "0.8*x - 10 = 190",
+          "0.8*x = 210",
+          "x = 262.5"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "0.8*x-10=190",
+          "0.8*x=210",
+          "x=262.5"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 '0.8*x = 210'（上一行 '0.8*x - 10 = 190'）：190+10算成210",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q08-E7",
+      "question_id": "Q08",
+      "mutation_id": "Q08-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "0.8*x = 200",
+          "x = 200*0.8",
+          "x = 160"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "0.8*x=200",
+          "x=200*0.8",
+          "x=160"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 'x = 200*0.8'（上一行 '0.8*x = 200'）：应两边除以0.8，却乘了0.8",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q09-E3",
+      "question_id": "Q09",
+      "mutation_id": "Q09-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设回家用了x分钟",
+        "equation": "6000 + 400*x = 6000"
+      },
+      "normalized_response": {
+        "variable_definition": "设回家用了x分钟",
+        "equation": "6000+400*x=6000"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "把回程路程与往返总路程混淆；方程 6000 + 400*x = 6000",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q09-E6",
+      "question_id": "Q09",
+      "mutation_id": "Q09-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设回家用了x分钟",
+        "steps": [
+          "6000 + 400*x = 12000",
+          "400*x = 5000",
+          "x = 12.5"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设回家用了x分钟",
+        "steps": [
+          "6000+400*x=12000",
+          "400*x=5000",
+          "x=12.5"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 '400*x = 5000'（上一行 '6000 + 400*x = 12000'）：12000−6000算成5000",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q09-E7",
+      "question_id": "Q09",
+      "mutation_id": "Q09-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设回家用了x分钟",
+        "steps": [
+          "400*x = 6000",
+          "x = 6000*400"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设回家用了x分钟",
+        "steps": [
+          "400*x=6000",
+          "x=6000*400"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 'x = 6000*400'（上一行 '400*x = 6000'）：应两边除以400，却乘了400",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q09-E1",
+      "question_id": "Q09",
+      "mutation_id": "Q09-E1",
+      "source": "mutation",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "difficulty": "medium",
+      "learner_response": {
+        "final_answer_text": "6000米"
+      },
+      "normalized_response": {
+        "final_answer_text": "6000米"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E1",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E1"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "最终答案“6000米”：求的是时间，却回答了回程路程",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q09-E5",
+      "question_id": "Q09",
+      "mutation_id": "Q09-E5",
+      "source": "mutation",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "difficulty": "medium",
+      "learner_response": {
+        "final_answer_text": "15小时"
+      },
+      "normalized_response": {
+        "final_answer_text": "15小时"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E5",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E5"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "最终答案“15小时”：单位错误",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q10-E3",
+      "question_id": "Q10",
+      "mutation_id": "Q10-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设合作x天完成",
+        "equation": "x*(1/6 - 1/3) = 1"
+      },
+      "normalized_response": {
+        "variable_definition": "设合作x天完成",
+        "equation": "x*(1/6-1/3)=1"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "把两人效率相减；解出负数天数，属于约束检查用例；方程 x*(1/6 - 1/3) = 1",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q10-E3b",
+      "question_id": "Q10",
+      "mutation_id": "Q10-E3b",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设合作x天完成",
+        "equation": "x = 6 + 3"
+      },
+      "normalized_response": {
+        "variable_definition": "设合作x天完成",
+        "equation": "x=6+3"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "把两人单独完成所需天数相加；方程 x = 6 + 3",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q10-E2",
+      "question_id": "Q10",
+      "mutation_id": "Q10-E2",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "mutation",
+      "learner_response": {
+        "variable_definition": "设x为两人一天完成的工作量",
+        "equation": "x = 1/6 + 1/3"
+      },
+      "normalized_response": {
+        "variable_definition": "设x为两人一天完成的工作量",
+        "equation": "x=1/6+1/3"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E2",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E2"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "x被当作两人每天的工作量，与所求天数含义不符；方程 x = 1/6 + 1/3",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q10-E6",
+      "question_id": "Q10",
+      "mutation_id": "Q10-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设合作x天完成",
+        "steps": [
+          "x*(1/6 + 1/3) = 1",
+          "x*(1/3) = 1",
+          "x = 3"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设合作x天完成",
+        "steps": [
+          "x*(1/6+1/3)=1",
+          "x*(1/3)=1",
+          "x=3"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 'x*(1/3) = 1'（上一行 'x*(1/6 + 1/3) = 1'）：1/6+1/3算成1/3",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q10-E7",
+      "question_id": "Q10",
+      "mutation_id": "Q10-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设合作x天完成",
+        "steps": [
+          "x/2 = 1",
+          "x = 1/2"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设合作x天完成",
+        "steps": [
+          "x/2=1",
+          "x=1/2"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 'x = 1/2'（上一行 'x/2 = 1'）：两边应乘以2，却除以2",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q11-E3",
+      "question_id": "Q11",
+      "mutation_id": "Q11-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设一支笔x元，则一本练习册(x+2)元",
+        "equation": "(x + 2) + 3*x = 29"
+      },
+      "normalized_response": {
+        "variable_definition": "设一支笔x元，则一本练习册(x+2)元",
+        "equation": "(x+2)+3*x=29"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "漏掉练习册的数量2；方程 (x + 2) + 3*x = 29",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q11-E4-01",
+      "question_id": "Q11",
+      "mutation_id": "Q11-E4-01",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "mutation",
+      "learner_response": {
+        "variable_definition": "设一支笔x元，练习册(x-2)元",
+        "equation": "2*(x - 2) + 3*x = 29"
+      },
+      "normalized_response": {
+        "variable_definition": "设一支笔x元，练习册(x-2)元",
+        "equation": "2*(x-2)+3*x=29"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": "E4-01",
+      "candidate_errors": [
+        "E4"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "“比……贵2元”方向写反；方程 2*(x - 2) + 3*x = 29",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q11-E6",
+      "question_id": "Q11",
+      "mutation_id": "Q11-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设一支笔x元，则一本练习册(x+2)元",
+        "steps": [
+          "2*(x + 2) + 3*x = 29",
+          "5*x + 4 = 29",
+          "5*x = 27",
+          "x = 27/5"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设一支笔x元，则一本练习册(x+2)元",
+        "steps": [
+          "2*(x+2)+3*x=29",
+          "5*x+4=29",
+          "5*x=27",
+          "x=27/5"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第3行 '5*x = 27'（上一行 '5*x + 4 = 29'）：29−4算成27",
+      "first_invalid_step": 3,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q11-E7",
+      "question_id": "Q11",
+      "mutation_id": "Q11-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设一支笔x元，则一本练习册(x+2)元",
+        "steps": [
+          "5*x + 4 = 29",
+          "5*x = 33",
+          "x = 33/5"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设一支笔x元，则一本练习册(x+2)元",
+        "steps": [
+          "5*x+4=29",
+          "5*x=33",
+          "x=33/5"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 '5*x = 33'（上一行 '5*x + 4 = 29'）：移项未变号",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q12-E3",
+      "question_id": "Q12",
+      "mutation_id": "Q12-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设妈妈今年x岁，则小红今年x/4岁",
+        "equation": "x/4 = x/3"
+      },
+      "normalized_response": {
+        "variable_definition": "设妈妈今年x岁，则小红今年x/4岁",
+        "equation": "x/4=x/3"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "忘了两人都要加5岁；方程 x/4 = x/3",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q12-E2",
+      "question_id": "Q12",
+      "mutation_id": "Q12-E2",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "medium",
+      "variable_definition_source": "mutation",
+      "learner_response": {
+        "variable_definition": "设x为妈妈5年后的年龄",
+        "equation": "x/4 + 5 = x/3"
+      },
+      "normalized_response": {
+        "variable_definition": "设x为妈妈5年后的年龄",
+        "equation": "x/4+5=x/3"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E2",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E2"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "设x为妈妈5年后的年龄，却当作今年年龄使用；方程 x/4 + 5 = x/3",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q12-E6",
+      "question_id": "Q12",
+      "mutation_id": "Q12-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设妈妈今年x岁，则小红今年x/4岁",
+        "steps": [
+          "3*x + 60 = 4*x + 20",
+          "60 - 20 = x",
+          "x = 30"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设妈妈今年x岁，则小红今年x/4岁",
+        "steps": [
+          "3*x+60=4*x+20",
+          "60-20=x",
+          "x=30"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第3行 'x = 30'（上一行 '60 - 20 = x'）：60−20算成30",
+      "first_invalid_step": 3,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q12-E6b",
+      "question_id": "Q12",
+      "mutation_id": "Q12-E6b",
+      "source": "mutation",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "difficulty": "medium",
+      "learner_response": {
+        "final_answer_text": "小红12岁"
+      },
+      "normalized_response": {
+        "final_answer_text": "小红12岁"
+      },
+      "reference_status": "uncertain",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "B",
+      "diagnosis_status": "uncertain",
+      "recommended_hint_level": null,
+      "secondary_errors": [],
+      "evidence": "最终答案“小红12岁”：40÷4算成12（出现在由妈妈年龄求小红年龄时）",
+      "first_invalid_step": null,
+      "annotation_note": "只有最终答案，推理不可见；参考标注为 uncertain（Level B）",
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q12-E7",
+      "question_id": "Q12",
+      "mutation_id": "Q12-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "medium",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设妈妈今年x岁，则小红今年x/4岁",
+        "steps": [
+          "3*x + 60 = 4*x + 20",
+          "3*x - 4*x = 60 + 20",
+          "x = -80"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设妈妈今年x岁，则小红今年x/4岁",
+        "steps": [
+          "3*x+60=4*x+20",
+          "3*x-4*x=60+20",
+          "x=-80"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 '3*x - 4*x = 60 + 20'（上一行 '3*x + 60 = 4*x + 20'）：移项未变号",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q13-E3",
+      "question_id": "Q13",
+      "mutation_id": "Q13-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "hard",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设骑自行车x小时，则乘汽车(2-x)小时",
+        "equation": "12*x + 30*x = 36"
+      },
+      "normalized_response": {
+        "variable_definition": "设骑自行车x小时，则乘汽车(2-x)小时",
+        "equation": "12*x+30*x=36"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "误以为两段用时相同；方程 12*x + 30*x = 36",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q13-E2",
+      "question_id": "Q13",
+      "mutation_id": "Q13-E2",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "hard",
+      "variable_definition_source": "mutation",
+      "learner_response": {
+        "variable_definition": "设乘汽车x小时",
+        "equation": "12*x + 30*(2 - x) = 36"
+      },
+      "normalized_response": {
+        "variable_definition": "设乘汽车x小时",
+        "equation": "12*x+30*(2-x)=36"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E2",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E2"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "方程正确，但把x定义为乘汽车的时间，结果解释反了；变量定义：设乘汽车x小时",
+      "first_invalid_step": null,
+      "annotation_note": "方程与标准方程相同，错误只能从变量定义看出",
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q13-E6",
+      "question_id": "Q13",
+      "mutation_id": "Q13-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "hard",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设骑自行车x小时，则乘汽车(2-x)小时",
+        "steps": [
+          "12*x + 30*(2 - x) = 36",
+          "12*x + 60 - 30*x = 36",
+          "-18*x = -24",
+          "x = 3/2"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设骑自行车x小时，则乘汽车(2-x)小时",
+        "steps": [
+          "12*x+30*(2-x)=36",
+          "12*x+60-30*x=36",
+          "-18*x=-24",
+          "x=3/2"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第4行 'x = 3/2'（上一行 '-18*x = -24'）：24÷18算成3/2",
+      "first_invalid_step": 4,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q13-E7",
+      "question_id": "Q13",
+      "mutation_id": "Q13-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "hard",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设骑自行车x小时，则乘汽车(2-x)小时",
+        "steps": [
+          "12*x + 30*(2 - x) = 36",
+          "42*x - 60 = 36",
+          "x = 16/7"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设骑自行车x小时，则乘汽车(2-x)小时",
+        "steps": [
+          "12*x+30*(2-x)=36",
+          "42*x-60=36",
+          "x=16/7"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 '42*x - 60 = 36'（上一行 '12*x + 30*(2 - x) = 36'）：去括号时符号全部弄错",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q13-E5",
+      "question_id": "Q13",
+      "mutation_id": "Q13-E5",
+      "source": "mutation",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "difficulty": "hard",
+      "learner_response": {
+        "final_answer_text": "骑自行车4/3分钟，乘汽车2/3分钟"
+      },
+      "normalized_response": {
+        "final_answer_text": "骑自行车4/3分钟，乘汽车2/3分钟"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E5",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E5"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "最终答案“骑自行车4/3分钟，乘汽车2/3分钟”：x的单位是小时，没有换算成分钟",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q14-E4-03",
+      "question_id": "Q14",
+      "mutation_id": "Q14-E4-03",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "hard",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "0.2*x*0.9 = 216"
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "0.2*x*0.9=216"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": "E4-03",
+      "candidate_errors": [
+        "E4"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "把“增加了20%”写成0.2x；方程 0.2*x*0.9 = 216",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q14-E3",
+      "question_id": "Q14",
+      "mutation_id": "Q14-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "hard",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "1.2*x - 0.1*x = 216"
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "equation": "1.2*x-0.1*x=216"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第二次降价按原价计算，而不是按涨价后的价格；方程 1.2*x - 0.1*x = 216",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q14-E6",
+      "question_id": "Q14",
+      "mutation_id": "Q14-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "hard",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "1.08*x = 216",
+          "x = 216/1.08",
+          "x = 220"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "1.08*x=216",
+          "x=216/1.08",
+          "x=220"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第3行 'x = 220'（上一行 'x = 216/1.08'）：216÷1.08算成220",
+      "first_invalid_step": 3,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q14-E7",
+      "question_id": "Q14",
+      "mutation_id": "Q14-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "hard",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "1.08*x = 216",
+          "x = 216*1.08",
+          "x = 233.28"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设原价为x元",
+        "steps": [
+          "1.08*x=216",
+          "x=216*1.08",
+          "x=233.28"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 'x = 216*1.08'（上一行 '1.08*x = 216'）：两边应除以1.08，却乘了1.08",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q15-E3",
+      "question_id": "Q15",
+      "mutation_id": "Q15-E3",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "hard",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设乙班原来x台，则甲班原来(56-x)台",
+        "equation": "(56 - x) - 4 = x"
+      },
+      "normalized_response": {
+        "variable_definition": "设乙班原来x台，则甲班原来(56-x)台",
+        "equation": "(56-x)-4=x"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "只考虑甲班减少，忘了乙班增加4台；方程 (56 - x) - 4 = x",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q15-E3b",
+      "question_id": "Q15",
+      "mutation_id": "Q15-E3b",
+      "source": "mutation",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "difficulty": "hard",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设乙班原来x台，则甲班原来(56-x)台",
+        "equation": "(56 - x) + 4 = x - 4"
+      },
+      "normalized_response": {
+        "variable_definition": "设乙班原来x台，则甲班原来(56-x)台",
+        "equation": "(56-x)+4=x-4"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "转移方向弄反：写成乙班给甲班；方程 (56 - x) + 4 = x - 4",
+      "first_invalid_step": null,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q15-E6",
+      "question_id": "Q15",
+      "mutation_id": "Q15-E6",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "hard",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设乙班原来x台，则甲班原来(56-x)台",
+        "steps": [
+          "56 - x - 4 = x + 4",
+          "52 - x = x + 4",
+          "46 = 2*x",
+          "x = 23"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设乙班原来x台，则甲班原来(56-x)台",
+        "steps": [
+          "56-x-4=x+4",
+          "52-x=x+4",
+          "46=2*x",
+          "x=23"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第3行 '46 = 2*x'（上一行 '52 - x = x + 4'）：52−4算成46",
+      "first_invalid_step": 3,
+      "annotation_note": null,
+      "review_status": "pending"
+    },
+    {
+      "case_id": "D2a-Q15-E7",
+      "question_id": "Q15",
+      "mutation_id": "Q15-E7",
+      "source": "mutation",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "difficulty": "hard",
+      "variable_definition_source": "question_default",
+      "learner_response": {
+        "variable_definition": "设乙班原来x台，则甲班原来(56-x)台",
+        "steps": [
+          "52 - x = x + 4",
+          "52 + 4 = x + x",
+          "x = 28"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设乙班原来x台，则甲班原来(56-x)台",
+        "steps": [
+          "52-x=x+4",
+          "52+4=x+x",
+          "x=28"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "recommended_hint_level": 1,
+      "secondary_errors": [],
+      "evidence": "第2行 '52 + 4 = x + x'（上一行 '52 - x = x + 4'）：移项未变号",
+      "first_invalid_step": 2,
+      "annotation_note": null,
+      "review_status": "pending"
+    }
+  ]
+}

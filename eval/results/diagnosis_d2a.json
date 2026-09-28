@@ -1,0 +1,2090 @@
+{
+  "dataset": "D2a",
+  "metric": "EQ2 diagnosis",
+  "run_at": "2026-09-28T13:10:08",
+  "question_bank_version": "1.3",
+  "results": {
+    "full": {
+      "n_cases": 65,
+      "n_reference_incorrect": 64,
+      "n_reference_uncertain": 1,
+      "coverage": 1.0,
+      "conditional_accuracy": 1.0,
+      "wrong_specific_diagnoses": 0,
+      "uncertainty_appropriateness": 1.0,
+      "by_layer": {
+        "modelling": {
+          "n_incorrect": 28,
+          "coverage": 1.0,
+          "conditional_accuracy": 1.0
+        },
+        "execution": {
+          "n_incorrect": 30,
+          "coverage": 1.0,
+          "conditional_accuracy": 1.0
+        },
+        "answer": {
+          "n_incorrect": 6,
+          "coverage": 1.0,
+          "conditional_accuracy": 1.0
+        }
+      },
+      "confusion_matrix": {
+        "E3": {
+          "E3": 15
+        },
+        "E4": {
+          "E4": 9
+        },
+        "E6": {
+          "E6": 15
+        },
+        "E7": {
+          "E7": 15
+        },
+        "E5": {
+          "E5": 4
+        },
+        "E2": {
+          "E2": 4
+        },
+        "E1": {
+          "E1": 2
+        },
+        "uncertain": {
+          "uncertain": 1
+        }
+      },
+      "cases": [
+        {
+          "case_id": "D2a-Q01-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q01-E3 同解：只用小明的年龄等于年龄和，漏掉小华",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q01-E4-01",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q01-E4-01 同解：“比……大5岁”方向写反：设小华为x却写小明为x-5",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q01-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“2*x = 18”不再与上一行“2*x + 5 = 25”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q01-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“2*x = 30”不再与上一行“2*x + 5 = 25”同解（transposition_sign）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q02-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q02-E3 同解：只用笔记本价格等于总价，漏掉笔的价格",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q02-E4-01",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q02-E4-01 同解：“比……贵12元”方向写反",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q02-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“2*x = 14”不再与上一行“2*x + 12 = 28”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q02-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“2*x = 40”不再与上一行“2*x + 12 = 28”同解（transposition_sign）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q03-E4-06",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q03-E4-06 同解：把“打八折”理解成便宜0.8元",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q03-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“x = 180”不再与上一行“x = 160/0.8”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q03-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "subtract_instead_of_divide",
+          "evidence": "第2行“x = 160 - 0.8”不再与上一行“0.8*x = 160”同解（subtract_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q03-E5",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E5",
+          "status": "diagnosed",
+          "output": "E5",
+          "candidates": [
+            "E5"
+          ],
+          "evidence_level": "A",
+          "rule": "answer_pattern_visible",
+          "evidence": "最终答案与已知错误 Q03-E5 一致：单位错误",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q04-E2",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E2",
+          "status": "diagnosed",
+          "output": "E2",
+          "candidates": [
+            "E2"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q04-E2 同解：x定义为速度，却当作回程路程使用",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q04-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q04-E3 同解：误以为往返路程相同（题目明确说明回家时绕路）",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q04-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第2行“10*x = 2000”不再与上一行“3000 + 10*x = 5500”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q04-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "multiply_instead_of_divide",
+          "evidence": "第3行“x = 2500*10”不再与上一行“10*x = 2500”同解（multiply_instead_of_divide）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q04-E1",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E1",
+          "status": "diagnosed",
+          "output": "E1",
+          "candidates": [
+            "E1"
+          ],
+          "evidence_level": "A",
+          "rule": "answer_pattern_visible",
+          "evidence": "最终答案与已知错误 Q04-E1 一致：求的是速度，却回答了回程路程",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q04-E5",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E5",
+          "status": "diagnosed",
+          "output": "E5",
+          "candidates": [
+            "E5"
+          ],
+          "evidence_level": "A",
+          "rule": "answer_pattern_visible",
+          "evidence": "最终答案与已知错误 Q04-E5 一致：速度单位应为米/分钟",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q05-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q05-E3 同解：周长公式漏乘2",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q05-E4-01",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q05-E4-01 同解：“长比宽多4”方向写反",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q05-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第2行“x + (x + 4) = 12”不再与上一行“2*(x + (x + 4)) = 28”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q05-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第3行“4*x = 36”不再与上一行“4*x + 8 = 28”同解（transposition_sign）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q06-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q06-E3 同解：把总人数误读为48",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q06-E4-02",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q06-E4-02 同解：“比……少6人”方向写反",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q06-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“2*x = 50”不再与上一行“2*x - 6 = 42”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q06-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“2*x = 36”不再与上一行“2*x - 6 = 42”同解（transposition_sign）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q07-E4-03",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q07-E4-03 同解：把“增加了20%”只写成增加量0.2x",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q07-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“x = 120”不再与上一行“x = 180/1.2”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q07-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "multiply_instead_of_divide",
+          "evidence": "第2行“x = 180*1.2”不再与上一行“1.2*x = 180”同解（multiply_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q08-E4-06",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q08-E4-06 同解：把“打八折”理解成减0.8元",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q08-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q08-E3 同解：顺序弄反：先减10元再打折（题目说先打折）",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q08-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第2行“0.8*x = 210”不再与上一行“0.8*x - 10 = 190”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q08-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "multiply_instead_of_divide",
+          "evidence": "第2行“x = 200*0.8”不再与上一行“0.8*x = 200”同解（multiply_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q09-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q09-E3 同解：把回程路程与往返总路程混淆",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q09-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第2行“400*x = 5000”不再与上一行“6000 + 400*x = 12000”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q09-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "multiply_instead_of_divide",
+          "evidence": "第2行“x = 6000*400”不再与上一行“400*x = 6000”同解（multiply_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q09-E1",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E1",
+          "status": "diagnosed",
+          "output": "E1",
+          "candidates": [
+            "E1"
+          ],
+          "evidence_level": "A",
+          "rule": "answer_pattern_visible",
+          "evidence": "最终答案与已知错误 Q09-E1 一致：求的是时间，却回答了回程路程",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q09-E5",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E5",
+          "status": "diagnosed",
+          "output": "E5",
+          "candidates": [
+            "E5"
+          ],
+          "evidence_level": "A",
+          "rule": "answer_pattern_visible",
+          "evidence": "最终答案与已知错误 Q09-E5 一致：单位错误",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q10-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q10-E3 同解：把两人效率相减；解出负数天数，属于约束检查用例",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q10-E3b",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q10-E3b 同解：把两人单独完成所需天数相加",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q10-E2",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E2",
+          "status": "diagnosed",
+          "output": "E2",
+          "candidates": [
+            "E2"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q10-E2 同解：x被当作两人每天的工作量，与所求天数含义不符",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q10-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第2行“x*(1/3) = 1”不再与上一行“x*(1/6 + 1/3) = 1”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q10-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "subtract_instead_of_divide",
+          "evidence": "第2行“x = 1/2”不再与上一行“x/2 = 1”同解（subtract_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q11-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q11-E3 同解：漏掉练习册的数量2",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q11-E4-01",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q11-E4-01 同解：“比……贵2元”方向写反",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q11-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“5*x = 27”不再与上一行“5*x + 4 = 29”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q11-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“5*x = 33”不再与上一行“5*x + 4 = 29”同解（transposition_sign）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q12-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q12-E3 同解：忘了两人都要加5岁",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q12-E2",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E2",
+          "status": "diagnosed",
+          "output": "E2",
+          "candidates": [
+            "E2"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q12-E2 同解：设x为妈妈5年后的年龄，却当作今年年龄使用",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q12-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“x = 30”不再与上一行“60 - 20 = x”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q12-E6b",
+          "layer": "answer",
+          "reference_status": "uncertain",
+          "reference": "uncertain",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "B",
+          "rule": null,
+          "evidence": "答案与已知错误 Q12-E6b 的结果一致，但看不到过程，不能确诊",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q12-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“3*x - 4*x = 60 + 20”不再与上一行“3*x + 60 = 4*x + 20”同解（transposition_sign）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q13-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q13-E3 同解：误以为两段用时相同",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q13-E2",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E2",
+          "status": "diagnosed",
+          "output": "E2",
+          "candidates": [
+            "E2"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q13-E2 同解：方程正确，但把x定义为乘汽车的时间，结果解释反了",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q13-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第4行“x = 3/2”不再与上一行“-18*x = -24”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 4
+        },
+        {
+          "case_id": "D2a-Q13-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "distribute_sign_flipped",
+          "evidence": "第2行“42*x - 60 = 36”不再与上一行“12*x + 30*(2 - x) = 36”同解（distribute_sign_flipped）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q13-E5",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E5",
+          "status": "diagnosed",
+          "output": "E5",
+          "candidates": [
+            "E5"
+          ],
+          "evidence_level": "A",
+          "rule": "answer_pattern_visible",
+          "evidence": "最终答案与已知错误 Q13-E5 一致：x的单位是小时，没有换算成分钟",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q14-E4-03",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q14-E4-03 同解：把“增加了20%”写成0.2x",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q14-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q14-E3 同解：第二次降价按原价计算，而不是按涨价后的价格",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q14-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“x = 220”不再与上一行“x = 216/1.08”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q14-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "multiply_instead_of_divide",
+          "evidence": "第2行“x = 216*1.08”不再与上一行“1.08*x = 216”同解（multiply_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q15-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q15-E3 同解：只考虑甲班减少，忘了乙班增加4台",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q15-E3b",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "diagnosed",
+          "output": "E3",
+          "candidates": [
+            "E3"
+          ],
+          "evidence_level": "A",
+          "rule": "mutation_match",
+          "evidence": "方程与已知错误模式 Q15-E3b 同解：转移方向弄反：写成乙班给甲班",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q15-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“46 = 2*x”不再与上一行“52 - x = x + 4”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q15-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“52 + 4 = x + x”不再与上一行“52 - x = x + 4”同解（transposition_sign）",
+          "first_invalid_step": 2
+        }
+      ]
+    },
+    "leave_one_out": {
+      "n_cases": 65,
+      "n_reference_incorrect": 64,
+      "n_reference_uncertain": 1,
+      "coverage": 0.671875,
+      "conditional_accuracy": 1.0,
+      "wrong_specific_diagnoses": 0,
+      "uncertainty_appropriateness": 1.0,
+      "by_layer": {
+        "modelling": {
+          "n_incorrect": 28,
+          "coverage": 0.35714285714285715,
+          "conditional_accuracy": 1.0
+        },
+        "execution": {
+          "n_incorrect": 30,
+          "coverage": 1.0,
+          "conditional_accuracy": 1.0
+        },
+        "answer": {
+          "n_incorrect": 6,
+          "coverage": 0.5,
+          "conditional_accuracy": 1.0
+        }
+      },
+      "confusion_matrix": {
+        "E3": {
+          "uncertain": 15
+        },
+        "E4": {
+          "E4": 9
+        },
+        "E6": {
+          "E6": 15
+        },
+        "E7": {
+          "E7": 15
+        },
+        "E5": {
+          "E5": 3,
+          "uncertain": 1
+        },
+        "E2": {
+          "uncertain": 3,
+          "E2": 1
+        },
+        "E1": {
+          "uncertain": 1,
+          "insufficient_evidence": 1
+        },
+        "uncertain": {
+          "insufficient_evidence": 1
+        }
+      },
+      "cases": [
+        {
+          "case_id": "D2a-Q01-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E4",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q01-E4-01",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "e4_template",
+          "evidence": "方程符合 E4-01 的翻译错误模式（x + (x - 5) = 25）",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q01-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“2*x = 18”不再与上一行“2*x + 5 = 25”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q01-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“2*x = 30”不再与上一行“2*x + 5 = 25”同解（transposition_sign）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q02-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E4",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q02-E4-01",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "e4_template",
+          "evidence": "方程符合 E4-01 的翻译错误模式（x + (x - 12) = 28）",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q02-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“2*x = 14”不再与上一行“2*x + 12 = 28”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q02-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“2*x = 40”不再与上一行“2*x + 12 = 28”同解（transposition_sign）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q03-E4-06",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "e4_template",
+          "evidence": "方程符合 E4-06 的翻译错误模式（(x - 0.8) = 160）",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q03-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“x = 180”不再与上一行“x = 160/0.8”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q03-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "subtract_instead_of_divide",
+          "evidence": "第2行“x = 160 - 0.8”不再与上一行“0.8*x = 160”同解（subtract_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q03-E5",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E5",
+          "status": "diagnosed",
+          "output": "E5",
+          "candidates": [
+            "E5"
+          ],
+          "evidence_level": "A",
+          "rule": "numbers_right_unit_wrong",
+          "evidence": "数值正确，但单位或表述与题目要求不符",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q04-E2",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E2",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q04-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q04-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第2行“10*x = 2000”不再与上一行“3000 + 10*x = 5500”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q04-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "multiply_instead_of_divide",
+          "evidence": "第3行“x = 2500*10”不再与上一行“10*x = 2500”同解（multiply_instead_of_divide）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q04-E1",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E1",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E2"
+          ],
+          "evidence_level": "B",
+          "rule": null,
+          "evidence": "答案与已知错误结果一致（Q04-E2），需要看过程",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q04-E5",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E5",
+          "status": "diagnosed",
+          "output": "E5",
+          "candidates": [
+            "E5"
+          ],
+          "evidence_level": "A",
+          "rule": "numbers_right_unit_wrong",
+          "evidence": "数值正确，但单位或表述与题目要求不符",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q05-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E4",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q05-E4-01",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "e4_template",
+          "evidence": "方程符合 E4-01 的翻译错误模式（2*(x + (x - 4)) = 28）",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q05-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第2行“x + (x + 4) = 12”不再与上一行“2*(x + (x + 4)) = 28”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q05-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第3行“4*x = 36”不再与上一行“4*x + 8 = 28”同解（transposition_sign）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q06-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E4",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q06-E4-02",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "e4_template",
+          "evidence": "方程符合 E4-02 的翻译错误模式（x + (x + 6) = 42）",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q06-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“2*x = 50”不再与上一行“2*x - 6 = 42”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q06-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“2*x = 36”不再与上一行“2*x - 6 = 42”同解（transposition_sign）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q07-E4-03",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "e4_template",
+          "evidence": "方程符合 E4-03 的翻译错误模式（0.2*x = 180）",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q07-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“x = 120”不再与上一行“x = 180/1.2”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q07-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "multiply_instead_of_divide",
+          "evidence": "第2行“x = 180*1.2”不再与上一行“1.2*x = 180”同解（multiply_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q08-E4-06",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "e4_template",
+          "evidence": "方程符合 E4-06 的翻译错误模式（(x - 0.8) - 10 = 190）",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q08-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E4",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q08-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第2行“0.8*x = 210”不再与上一行“0.8*x - 10 = 190”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q08-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "multiply_instead_of_divide",
+          "evidence": "第2行“x = 200*0.8”不再与上一行“0.8*x = 200”同解（multiply_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q09-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q09-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第2行“400*x = 5000”不再与上一行“6000 + 400*x = 12000”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q09-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "multiply_instead_of_divide",
+          "evidence": "第2行“x = 6000*400”不再与上一行“400*x = 6000”同解（multiply_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q09-E1",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E1",
+          "status": "insufficient_evidence",
+          "output": "insufficient_evidence",
+          "candidates": [],
+          "evidence_level": "C",
+          "rule": null,
+          "evidence": "答案不正确，但只有最终答案，无法判断原因",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q09-E5",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E5",
+          "status": "diagnosed",
+          "output": "E5",
+          "candidates": [
+            "E5"
+          ],
+          "evidence_level": "A",
+          "rule": "numbers_right_unit_wrong",
+          "evidence": "数值正确，但单位或表述与题目要求不符",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q10-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q10-E3b",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q10-E2",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E2",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E2",
+            "E3"
+          ],
+          "evidence_level": "C",
+          "rule": null,
+          "evidence": "变量定义与题目中的量对不上，无法判断方程错在哪里",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q10-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第2行“x*(1/3) = 1”不再与上一行“x*(1/6 + 1/3) = 1”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q10-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "subtract_instead_of_divide",
+          "evidence": "第2行“x = 1/2”不再与上一行“x/2 = 1”同解（subtract_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q11-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E4",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q11-E4-01",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "e4_template",
+          "evidence": "方程符合 E4-01 的翻译错误模式（2*(x - 2) + 3*x = 29）",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q11-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“5*x = 27”不再与上一行“5*x + 4 = 29”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q11-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“5*x = 33”不再与上一行“5*x + 4 = 29”同解（transposition_sign）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q12-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q12-E2",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E2",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E2",
+            "E3"
+          ],
+          "evidence_level": "C",
+          "rule": null,
+          "evidence": "变量定义与题目中的量对不上，无法判断方程错在哪里",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q12-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“x = 30”不再与上一行“60 - 20 = x”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q12-E6b",
+          "layer": "answer",
+          "reference_status": "uncertain",
+          "reference": "uncertain",
+          "status": "insufficient_evidence",
+          "output": "insufficient_evidence",
+          "candidates": [],
+          "evidence_level": "C",
+          "rule": null,
+          "evidence": "答案不正确，但只有最终答案，无法判断原因",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q12-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“3*x - 4*x = 60 + 20”不再与上一行“3*x + 60 = 4*x + 20”同解（transposition_sign）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q13-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q13-E2",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E2",
+          "status": "diagnosed",
+          "output": "E2",
+          "candidates": [
+            "E2"
+          ],
+          "evidence_level": "A",
+          "rule": "equation_fits_other_definition",
+          "evidence": "方程对应“设骑自行车x小时，则乘汽车(2-x)小时”，与学生写的“设乘汽车x小时”不一致",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q13-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第4行“x = 3/2”不再与上一行“-18*x = -24”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 4
+        },
+        {
+          "case_id": "D2a-Q13-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "distribute_sign_flipped",
+          "evidence": "第2行“42*x - 60 = 36”不再与上一行“12*x + 30*(2 - x) = 36”同解（distribute_sign_flipped）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q13-E5",
+          "layer": "answer",
+          "reference_status": "incorrect",
+          "reference": "E5",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E2"
+          ],
+          "evidence_level": "B",
+          "rule": null,
+          "evidence": "答案与已知错误结果一致（Q13-E2），需要看过程",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q14-E4-03",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E4",
+          "status": "diagnosed",
+          "output": "E4",
+          "candidates": [
+            "E4"
+          ],
+          "evidence_level": "A",
+          "rule": "e4_template",
+          "evidence": "方程符合 E4-03 的翻译错误模式（x*0.2*0.9 = 216）",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q14-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E4",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q14-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“x = 220”不再与上一行“x = 216/1.08”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q14-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "multiply_instead_of_divide",
+          "evidence": "第2行“x = 216*1.08”不再与上一行“1.08*x = 216”同解（multiply_instead_of_divide）",
+          "first_invalid_step": 2
+        },
+        {
+          "case_id": "D2a-Q15-E3",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q15-E3b",
+          "layer": "modelling",
+          "reference_status": "incorrect",
+          "reference": "E3",
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E3",
+            "E2"
+          ],
+          "evidence_level": "C",
+          "rule": "unmatched_relationship",
+          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "first_invalid_step": null
+        },
+        {
+          "case_id": "D2a-Q15-E6",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E6",
+          "status": "diagnosed",
+          "output": "E6",
+          "candidates": [
+            "E6"
+          ],
+          "evidence_level": "A",
+          "rule": "one_number_off_from_valid_step",
+          "evidence": "第3行“46 = 2*x”不再与上一行“52 - x = x + 4”同解（one_number_off_from_valid_step）",
+          "first_invalid_step": 3
+        },
+        {
+          "case_id": "D2a-Q15-E7",
+          "layer": "execution",
+          "reference_status": "incorrect",
+          "reference": "E7",
+          "status": "diagnosed",
+          "output": "E7",
+          "candidates": [
+            "E7"
+          ],
+          "evidence_level": "A",
+          "rule": "transposition_sign",
+          "evidence": "第2行“52 + 4 = x + x”不再与上一行“52 - x = x + 4”同解（transposition_sign）",
+          "first_invalid_step": 2
+        }
+      ]
+    }
+  }
+}

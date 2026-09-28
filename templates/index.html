@@ -1,0 +1,2846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AI 陪我学｜AI Guided Math Learning Agent</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                "PingFang SC",
+                "Microsoft YaHei",
+                sans-serif;
+
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .container {
+            width: min(1100px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        /* =========================
+           Header
+        ========================= */
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .header-inner {
+            min-height: 68px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .logo span {
+            font-size: 13px;
+            font-weight: 400;
+            color: #6b7280;
+            margin-left: 8px;
+        }
+
+        /* =========================
+           Hero
+        ========================= */
+
+        .hero {
+            padding: 54px 0 34px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(30px, 5vw, 46px);
+            line-height: 1.2;
+            color: #111827;
+        }
+
+        .hero p {
+            margin: 16px auto 0;
+            max-width: 680px;
+            font-size: 17px;
+            line-height: 1.8;
+            color: #6b7280;
+        }
+
+        /* =========================
+           Main Card
+        ========================= */
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+
+            box-shadow:
+                0 10px 30px rgba(15, 23, 42, 0.06);
+
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .section-description {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* =========================
+           Upload
+        ========================= */
+
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+
+            padding: 34px 20px;
+            text-align: center;
+
+            background: #fafbfc;
+
+            transition: 0.2s ease;
+        }
+
+        .upload-area:hover {
+            border-color: #94a3b8;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .upload-title {
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .upload-description {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .file-input {
+            margin-top: 18px;
+        }
+
+        /* =========================
+           Preview
+        ========================= */
+
+        #preview-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #image-preview {
+            display: block;
+            max-width: 100%;
+            max-height: 500px;
+
+            margin: 0 auto;
+
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .remove-button {
+            display: block;
+            margin: 12px auto 0;
+
+            background: white;
+            border: 1px solid #d1d5db;
+
+            color: #4b5563;
+
+            border-radius: 8px;
+            padding: 8px 14px;
+        }
+
+        /* =========================
+           Question Text
+        ========================= */
+
+        .text-input-section {
+            margin-top: 24px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+
+            resize: vertical;
+
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+
+            padding: 14px;
+
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #64748b;
+        }
+
+        /* =========================
+           Recognition Section
+        ========================= */
+
+        #recognition-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .recognition-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .recognition-count {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .question-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .question-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+
+            padding: 16px;
+
+            background: #fff;
+
+            transition: 0.2s ease;
+        }
+
+        .question-card.selected {
+            border-color: #111827;
+
+            box-shadow:
+                0 0 0 2px rgba(17, 24, 39, 0.06);
+        }
+
+        .question-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .question-radio {
+            width: 18px;
+            height: 18px;
+        }
+
+        .question-number {
+            font-weight: 700;
+        }
+
+        .question-preview {
+            color: #4b5563;
+            line-height: 1.7;
+
+            white-space: pre-wrap;
+
+            max-height: 130px;
+            overflow: hidden;
+        }
+
+        .question-confidence {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        /* =========================
+           Confirmed Question
+        ========================= */
+
+        #confirmed-question-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .confirmed-question {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+
+            border-radius: 14px;
+
+            padding: 18px;
+        }
+
+        .confirmed-question label {
+            display: block;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            margin-bottom: 10px;
+        }
+
+        /* =========================
+           Mode Selection
+        ========================= */
+
+        .mode-section {
+            margin-top: 30px;
+        }
+
+        .mode-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .mode-card {
+            border: 1px solid #e5e7eb;
+
+            border-radius: 14px;
+            padding: 18px;
+
+            background: white;
+
+            transition: 0.2s ease;
+        }
+
+        .mode-card:hover {
+            border-color: #94a3b8;
+        }
+
+        .mode-card.selected {
+            border-color: #111827;
+
+            box-shadow:
+                0 0 0 2px rgba(17, 24, 39, 0.06);
+        }
+
+        .mode-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .mode-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .mode-description {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #6b7280;
+        }
+
+        /* =========================
+           Start Button
+        ========================= */
+
+        .start-section {
+            margin-top: 24px;
+        }
+
+        #start-button {
+            width: 100%;
+
+            border: none;
+            border-radius: 12px;
+
+            padding: 15px 20px;
+
+            background: #111827;
+            color: white;
+
+            font-weight: 700;
+            font-size: 16px;
+
+            transition: 0.2s ease;
+        }
+
+        #start-button:hover {
+            opacity: 0.9;
+        }
+
+        #start-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* =========================
+           Status
+        ========================= */
+
+        #status {
+            display: none;
+
+            margin-top: 16px;
+            padding: 12px 14px;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        #status.success {
+            display: block;
+
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        #status.error {
+            display: block;
+
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        #status.loading {
+            display: block;
+
+            background: #f8fafc;
+            color: #475569;
+        }
+
+        /* =========================
+           Learning Area
+        ========================= */
+
+        #learning-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .learning-card {
+            border-radius: 16px;
+            padding: 22px;
+
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .learning-mode-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .learning-message {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            color: #374151;
+        }
+
+        /* =========================
+           Quick Solve Result
+        ========================= */
+
+        .solution-concept {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+
+            padding: 14px 16px;
+            margin-bottom: 18px;
+        }
+
+        .solution-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .solution-concept-value {
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .solution-steps {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .solution-step {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+
+            padding: 16px;
+        }
+
+        .solution-step-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .solution-step-explanation {
+            color: #4b5563;
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+
+        .solution-calculation {
+            background: #f8fafc;
+            border-radius: 8px;
+
+            padding: 10px 12px;
+
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                monospace;
+
+            color: #111827;
+            white-space: pre-wrap;
+        }
+
+        .final-answer {
+            background: white;
+            border: 2px solid #111827;
+            border-radius: 12px;
+
+            padding: 16px;
+        }
+
+        .final-answer-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           Guided Mode
+        ========================= */
+
+        #guided-panel {
+            display: none;
+        }
+
+        .guided-question {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .guided-progress {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .guided-step {
+            text-align: center;
+            font-size: 12px;
+            padding: 8px 4px;
+            border-radius: 8px;
+            background: #eef2f7;
+            color: #6b7280;
+        }
+
+        .guided-step.active {
+            background: #111827;
+            color: white;
+            font-weight: 700;
+        }
+
+        .guided-step.done {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .guided-chat {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .bubble {
+            max-width: 88%;
+            padding: 10px 14px;
+            border-radius: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .bubble.tutor {
+            background: white;
+            border: 1px solid #e5e7eb;
+            justify-self: start;
+        }
+
+        .bubble.learner {
+            background: #111827;
+            color: white;
+            justify-self: end;
+        }
+
+        .bubble-meta {
+            display: block;
+            margin-top: 4px;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .guided-input {
+            display: grid;
+            gap: 10px;
+        }
+
+        .guided-input input[type="text"] {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            padding: 11px 12px;
+            outline: none;
+        }
+
+        .guided-input textarea {
+            min-height: 100px;
+        }
+
+        .guided-input label {
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .guided-options {
+            display: grid;
+            gap: 8px;
+        }
+
+        .guided-option,
+        .guided-send,
+        .guided-pick {
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 10px;
+            padding: 11px 14px;
+            text-align: left;
+        }
+
+        .guided-option:hover,
+        .guided-pick:hover {
+            border-color: #111827;
+        }
+
+        .guided-send {
+            background: #111827;
+            color: white;
+            border-color: #111827;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .guided-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .guided-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .guided-note {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .guided-pick-meta {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 4px;
+        }
+
+        .guided-ask {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px dashed #d1d5db;
+        }
+
+        .guided-ask input {
+            flex: 1;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            padding: 10px 12px;
+            outline: none;
+        }
+
+        .guided-ask button {
+            border: 1px solid #111827;
+            background: white;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 700;
+        }
+
+        .bubble.learner.question {
+            background: #334155;
+        }
+
+        .guided-summary {
+            background: white;
+            border: 2px solid #111827;
+            border-radius: 12px;
+            padding: 16px;
+            line-height: 1.8;
+        }
+
+        /* =========================
+           Feature Cards
+        ========================= */
+
+        .features {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 16px;
+
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: white;
+
+            border-radius: 16px;
+            padding: 22px;
+
+            border: 1px solid #eef0f3;
+        }
+
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .feature-description {
+            color: #6b7280;
+
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           Responsive
+        ========================= */
+
+        @media (max-width: 720px) {
+
+            .container {
+                width: min(100% - 20px, 1100px);
+            }
+
+            .hero {
+                padding-top: 36px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .main-card {
+                padding: 18px;
+                border-radius: 16px;
+            }
+
+            .mode-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .header-inner {
+                padding: 0 4px;
+            }
+
+            .logo span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="container header-inner">
+
+        <div class="logo">
+            AI 陪我学
+            <span>AI Guided Math Learning Agent</span>
+        </div>
+
+    </div>
+</header>
+
+
+<main>
+
+    <!-- =========================
+         Hero
+    ========================= -->
+
+    <section class="hero">
+
+        <div class="container">
+
+            <h1>
+                不只是告诉你答案，<br>
+                而是陪你把题做会。
+            </h1>
+
+            <p>
+                上传数学题，让 AI 先理解问题，再根据你的回答和理解程度，
+                提供适合当前学习状态的帮助。
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         Main Product Card
+    ========================= -->
+
+    <section class="container">
+
+        <div class="main-card">
+
+            <div class="section-title">
+                开始学习
+            </div>
+
+            <div class="section-description">
+                上传题目图片，或直接输入题目。
+            </div>
+
+
+            <!-- Upload -->
+
+            <div class="upload-area">
+
+                <div class="upload-icon">
+                    📷
+                </div>
+
+                <div class="upload-title">
+                    上传数学题
+                </div>
+
+                <div class="upload-description">
+                    支持拍照、相册图片或电脑文件
+                </div>
+
+                <input
+                    id="question-image"
+                    class="file-input"
+                    type="file"
+                    accept="image/*"
+                >
+
+            </div>
+
+
+            <!-- Preview -->
+
+            <div id="preview-container">
+
+                <img
+                    id="image-preview"
+                    alt="题目图片预览"
+                >
+
+                <button
+                    id="remove-image"
+                    class="remove-button"
+                    type="button"
+                >
+                    删除图片
+                </button>
+
+            </div>
+
+
+            <!-- Text Input -->
+
+            <div class="text-input-section">
+
+                <div class="section-description">
+                    也可以直接输入题目（可选）
+                </div>
+
+                <textarea
+                    id="question-text"
+                    placeholder="例如：一本书，第一天看了全书的1/3，第二天看了40页，还剩60页没看。这本书一共多少页？"
+                ></textarea>
+
+            </div>
+
+
+            <!-- Recognition -->
+
+            <div id="recognition-section">
+
+                <div class="recognition-header">
+
+                    <div class="section-title">
+                        识别结果
+                    </div>
+
+                    <div
+                        id="recognition-count"
+                        class="recognition-count"
+                    ></div>
+
+                </div>
+
+                <div
+                    id="question-list"
+                    class="question-list"
+                ></div>
+
+            </div>
+
+
+            <!-- Confirmed Question -->
+
+            <div id="confirmed-question-section">
+
+                <div class="section-title">
+                    确认题目
+                </div>
+
+                <div class="section-description">
+                    AI 识别可能存在误差，请先检查并修改题目。
+                </div>
+
+                <div class="confirmed-question">
+
+                    <label for="confirmed-question-text">
+                        题目内容
+                    </label>
+
+                    <textarea
+                        id="confirmed-question-text"
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <!-- Mode -->
+
+            <div class="mode-section">
+
+                <div class="section-title">
+                    选择学习方式
+                </div>
+
+                <div class="section-description">
+                    你可以直接查看解题思路，也可以让 AI 通过提问和提示陪你完成。
+                </div>
+
+
+                <div class="mode-grid">
+
+                    <div
+                        class="mode-card selected"
+                        data-mode="quick"
+                    >
+
+                        <div class="mode-icon">
+                            ⚡
+                        </div>
+
+                        <div class="mode-title">
+                            快速解题
+                        </div>
+
+                        <div class="mode-description">
+                            快速获得答案和关键步骤。
+                            适合检查答案或快速复习。
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="mode-card"
+                        data-mode="guided"
+                    >
+
+                        <div class="mode-icon">
+                            🧑‍🏫
+                        </div>
+
+                        <div class="mode-title">
+                            引导学习
+                        </div>
+
+                        <div class="mode-description">
+                            AI 根据你的回答判断理解状态，
+                            通过提问、提示和反馈帮助你自己完成题目。
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Start -->
+
+            <div class="start-section">
+
+                <button
+                    id="start-button"
+                    type="button"
+                >
+                    识别题目
+                </button>
+
+            </div>
+
+
+            <!-- Status -->
+
+            <div id="status"></div>
+
+
+            <!-- Learning Result -->
+
+            <div id="learning-section">
+
+                <div class="learning-card">
+
+                    <div
+                        id="learning-mode-title"
+                        class="learning-mode-title"
+                    ></div>
+
+                    <div id="quick-solution-content"></div>
+
+                    <div
+                        id="learning-message"
+                        class="learning-message"
+                    ></div>
+
+                    <!-- Guided Mode -->
+
+                    <div id="guided-panel">
+
+                        <div id="guided-question" class="guided-question"></div>
+
+                        <div id="guided-progress" class="guided-progress"></div>
+
+                        <div id="guided-chat" class="guided-chat"></div>
+
+                        <div id="guided-input" class="guided-input"></div>
+
+                        <div id="guided-ask" class="guided-ask">
+                            <input id="guided-ask-text" type="text" placeholder="有不懂的地方？随时问我，比如：设哪个量为 x 比较好？">
+                            <button id="guided-ask-button" type="button">问老师</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         Features
+    ========================= -->
+
+    <section class="container">
+
+        <div class="features">
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    🧠
+                </div>
+
+                <div class="feature-title">
+                    理解学习状态
+                </div>
+
+                <div class="feature-description">
+                    不只判断答案是否正确，
+                    而是关注学生是否真正理解当前步骤。
+                </div>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    💡
+                </div>
+
+                <div class="feature-title">
+                    渐进式提示
+                </div>
+
+                <div class="feature-description">
+                    从轻提示到具体提示，
+                    尽量避免一开始直接给出完整答案。
+                </div>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    🔄
+                </div>
+
+                <div class="feature-title">
+                    迁移练习
+                </div>
+
+                <div class="feature-description">
+                    完成题目后通过新的数字或情境检查
+                    是否真正掌握了相关概念。
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+    // ==================================================
+    // 1. 获取页面元素
+    // ==================================================
+
+    const imageInput =
+        document.getElementById("question-image");
+
+    const previewContainer =
+        document.getElementById("preview-container");
+
+    const imagePreview =
+        document.getElementById("image-preview");
+
+    const removeImageButton =
+        document.getElementById("remove-image");
+
+    const questionText =
+        document.getElementById("question-text");
+
+    const recognitionSection =
+        document.getElementById("recognition-section");
+
+    const recognitionCount =
+        document.getElementById("recognition-count");
+
+    const questionList =
+        document.getElementById("question-list");
+
+    const confirmedQuestionSection =
+        document.getElementById(
+            "confirmed-question-section"
+        );
+
+    const confirmedQuestionText =
+        document.getElementById(
+            "confirmed-question-text"
+        );
+
+    const modeCards =
+        document.querySelectorAll(".mode-card");
+
+    const startButton =
+        document.getElementById("start-button");
+
+    const statusBox =
+        document.getElementById("status");
+
+    const learningSection =
+        document.getElementById("learning-section");
+
+    const learningModeTitle =
+        document.getElementById(
+            "learning-mode-title"
+        );
+
+    const learningMessage =
+        document.getElementById(
+            "learning-message"
+        );
+
+    const quickSolutionContent =
+        document.getElementById(
+            "quick-solution-content"
+        );
+
+
+    // ==================================================
+    // 2. 当前状态
+    // ==================================================
+
+    let selectedMode = "quick";
+
+    let recognizedQuestions = [];
+
+    let selectedQuestion = null;
+
+
+    // ==================================================
+    // 3. 显示状态信息
+    // ==================================================
+
+    function showStatus(
+        message,
+        type = "loading"
+    ) {
+
+        statusBox.textContent = message;
+
+        statusBox.className = type;
+
+    }
+
+
+    // ==================================================
+    // 4. 上传图片后预览
+    // ==================================================
+
+    imageInput.addEventListener(
+        "change",
+        function () {
+
+            const file = this.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            if (!file.type.startsWith("image/")) {
+
+                showStatus(
+                    "请选择图片文件。",
+                    "error"
+                );
+
+                this.value = "";
+
+                return;
+            }
+
+            const imageUrl =
+                URL.createObjectURL(file);
+
+            imagePreview.src = imageUrl;
+
+            previewContainer.style.display =
+                "block";
+
+            resetRecognition();
+
+            showStatus(
+                "图片已选择，可以开始识别。",
+                "success"
+            );
+
+        }
+    );
+
+
+    // 修改输入的题目后，需要重新确认
+    questionText.addEventListener("input", function () {
+
+        if (recognizedQuestions.length === 0) {
+
+            selectedQuestion = null;
+
+            confirmedQuestionSection.style.display = "none";
+
+        }
+
+    });
+
+
+    // ==================================================
+    // 5. 删除图片
+    // ==================================================
+
+    removeImageButton.addEventListener(
+        "click",
+        function () {
+
+            imageInput.value = "";
+
+            imagePreview.src = "";
+
+            previewContainer.style.display =
+                "none";
+
+            resetRecognition();
+
+            showStatus(
+                "图片已删除。",
+                "success"
+            );
+
+        }
+    );
+
+
+    // ==================================================
+    // 6. 模式选择
+    // ==================================================
+
+    modeCards.forEach(
+        function (card) {
+
+            card.addEventListener(
+                "click",
+                function () {
+
+                    modeCards.forEach(
+                        function (item) {
+
+                            item.classList.remove(
+                                "selected"
+                            );
+
+                        }
+                    );
+
+                    this.classList.add(
+                        "selected"
+                    );
+
+                    selectedMode =
+                        this.dataset.mode;
+
+
+                    if (selectedMode === "quick") {
+
+                        startButton.textContent =
+                            "快速解题";
+
+                    } else {
+
+                        startButton.textContent =
+                            "开始引导学习";
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    // ==================================================
+    // 7. 重置识别状态
+    // ==================================================
+
+    function resetRecognition() {
+
+        recognizedQuestions = [];
+
+        selectedQuestion = null;
+
+        recognitionSection.style.display =
+            "none";
+
+        confirmedQuestionSection.style.display =
+            "none";
+
+        learningSection.style.display =
+            "none";
+
+        questionList.innerHTML = "";
+
+        confirmedQuestionText.value = "";
+
+        quickSolutionContent.innerHTML = "";
+
+        learningMessage.textContent = "";
+
+        guidedPanel.style.display = "none";
+
+        guidedSessionId = null;
+
+    }
+
+
+    // ==================================================
+    // 8. 显示识别到的题目
+    // ==================================================
+
+    function renderQuestions(questions) {
+
+        recognizedQuestions = questions;
+
+        questionList.innerHTML = "";
+
+        recognitionCount.textContent =
+            `识别到 ${questions.length} 道题`;
+
+
+        questions.forEach(
+            function (question, index) {
+
+                const card =
+                    document.createElement("div");
+
+                card.className =
+                    "question-card";
+
+
+                const header =
+                    document.createElement("div");
+
+                header.className =
+                    "question-card-header";
+
+
+                const radio =
+                    document.createElement("input");
+
+                radio.type = "radio";
+
+                radio.name = "question-selection";
+
+                radio.className =
+                    "question-radio";
+
+                radio.value =
+                    question.id;
+
+
+                const number =
+                    document.createElement("div");
+
+                number.className =
+                    "question-number";
+
+                number.textContent =
+                    `第 ${index + 1} 题`;
+
+
+                header.appendChild(radio);
+
+                header.appendChild(number);
+
+
+                const preview =
+                    document.createElement("div");
+
+                preview.className =
+                    "question-preview";
+
+                preview.textContent =
+                    question.text;
+
+
+                const confidence =
+                    document.createElement("div");
+
+                confidence.className =
+                    "question-confidence";
+
+
+                const confidenceValue =
+                    Math.round(
+                        question.confidence * 100
+                    );
+
+
+                confidence.textContent =
+                    `AI 识别置信度：${confidenceValue}%`;
+
+
+                card.appendChild(header);
+
+                card.appendChild(preview);
+
+                card.appendChild(confidence);
+
+
+                questionList.appendChild(card);
+
+
+                // 点击题目卡片
+
+                card.addEventListener(
+                    "click",
+                    function () {
+
+                        radio.checked = true;
+
+
+                        document
+                            .querySelectorAll(
+                                ".question-card"
+                            )
+                            .forEach(
+                                function (item) {
+
+                                    item.classList.remove(
+                                        "selected"
+                                    );
+
+                                }
+                            );
+
+
+                        card.classList.add(
+                            "selected"
+                        );
+
+
+                        selectedQuestion =
+                            question;
+
+
+                        confirmedQuestionText.value =
+                            question.text;
+
+
+                        confirmedQuestionSection
+                            .style.display =
+                            "block";
+
+
+                        learningSection.style.display =
+                            "none";
+
+
+                        showStatus(
+                            "请选择学习方式，然后开始。",
+                            "success"
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        recognitionSection.style.display =
+            "block";
+
+
+        // 单题时自动选择
+
+        if (questions.length === 1) {
+
+            const firstCard =
+                questionList.querySelector(
+                    ".question-card"
+                );
+
+            if (firstCard) {
+
+                firstCard.click();
+
+            }
+
+        }
+
+    }
+
+
+    // ==================================================
+    // 9. 点击开始
+    // ==================================================
+
+    startButton.addEventListener(
+        "click",
+        async function () {
+
+            // ------------------------------------------
+            // 情况 A：没有输入任何题目
+            // ------------------------------------------
+
+            if (
+                recognizedQuestions.length === 0
+                &&
+                imageInput.files.length === 0
+                &&
+                questionText.value.trim() === ""
+            ) {
+
+                // 引导学习可以直接从题库选题
+                if (selectedMode === "guided") {
+
+                    startGuidedMode();
+
+                    return;
+
+                }
+
+                showStatus(
+                    "请先上传题目图片或输入题目。",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            // ------------------------------------------
+            // 情况 B：有图片，但还没有识别
+            // ------------------------------------------
+
+            if (
+                imageInput.files.length > 0
+                &&
+                recognizedQuestions.length === 0
+            ) {
+
+                await recognizeImage();
+
+                return;
+
+            }
+
+
+            // ------------------------------------------
+            // 情况 C：只有文字输入
+            // ------------------------------------------
+
+            if (
+                recognizedQuestions.length === 0
+                &&
+                questionText.value.trim() !== ""
+                &&
+                !selectedQuestion
+            ) {
+
+                selectedQuestion = {
+
+                    id: 1,
+
+                    text:
+                        questionText.value.trim(),
+
+                    subject: "数学",
+
+                    confidence: 1
+
+                };
+
+
+                confirmedQuestionText.value =
+                    selectedQuestion.text;
+
+
+                confirmedQuestionSection
+                    .style.display =
+                    "block";
+
+
+                showStatus(
+                    "题目已准备好，请选择学习方式。",
+                    "success"
+                );
+
+
+                return;
+
+            }
+
+
+            // ------------------------------------------
+            // 情况 D：没有选择题目
+            // ------------------------------------------
+
+            if (!selectedQuestion) {
+
+                showStatus(
+                    "请先选择一道题。",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            // ------------------------------------------
+            // 使用用户确认后的题目
+            // ------------------------------------------
+
+            selectedQuestion.text =
+                confirmedQuestionText.value.trim();
+
+
+            if (
+                selectedQuestion.text === ""
+            ) {
+
+                showStatus(
+                    "题目不能为空。",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            // ------------------------------------------
+            // 根据学习模式处理
+            // ------------------------------------------
+
+            if (selectedMode === "quick") {
+
+                await solveQuestion();
+
+            } else {
+
+                startGuidedMode();
+
+            }
+
+        }
+    );
+
+
+    // ==================================================
+    // 10. 图片识别
+    // ==================================================
+
+    async function recognizeImage() {
+
+        const file =
+            imageInput.files[0];
+
+
+        if (!file) {
+
+            showStatus(
+                "没有找到图片。",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        startButton.disabled = true;
+
+        startButton.textContent =
+            "AI 正在识别题目…";
+
+
+        showStatus(
+            "正在上传图片并让 AI 识别，请稍候…",
+            "loading"
+        );
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "image",
+            file
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/recognize",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok
+                ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    "题目识别失败"
+                );
+
+            }
+
+
+            if (
+                !Array.isArray(
+                    data.questions
+                )
+            ) {
+
+                throw new Error(
+                    "AI 返回的数据格式不正确"
+                );
+
+            }
+
+
+            renderQuestions(
+                data.questions
+            );
+
+
+            showStatus(
+                `识别成功，共识别到 ${data.questions.length} 道题。请选择要学习的题目。`,
+                "success"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Recognition error:",
+                error
+            );
+
+
+            showStatus(
+                `识别失败：${error.message}`,
+                "error"
+            );
+
+
+        } finally {
+
+            startButton.disabled =
+                false;
+
+
+            if (selectedMode === "quick") {
+
+                startButton.textContent =
+                    "快速解题";
+
+            } else {
+
+                startButton.textContent =
+                    "开始引导学习";
+
+            }
+
+        }
+
+    }
+
+
+    // ==================================================
+    // 11. Quick Solve
+    // ==================================================
+
+    async function solveQuestion() {
+
+        const question =
+            confirmedQuestionText.value.trim();
+
+
+        if (!question) {
+
+            showStatus(
+                "题目不能为空。",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        startButton.disabled = true;
+
+        startButton.textContent =
+            "AI 正在解题…";
+
+
+        learningSection.style.display =
+            "block";
+
+
+        learningModeTitle.textContent =
+            "⚡ 快速解题";
+
+
+        quickSolutionContent.innerHTML =
+            "";
+
+
+        learningMessage.textContent =
+            "";
+
+
+        guidedPanel.style.display =
+            "none";
+
+
+        showStatus(
+            "AI 正在分析题目并生成解题步骤，请稍候…",
+            "loading"
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/solve",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            question: question
+                        })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok
+                ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    "AI 解题失败"
+                );
+
+            }
+
+
+            const solution =
+                data.solution;
+
+
+            renderSolution(
+                solution
+            );
+
+
+            showStatus(
+                "解题完成。",
+                "success"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Solve error:",
+                error
+            );
+
+
+            learningSection.style.display =
+                "block";
+
+
+            learningModeTitle.textContent =
+                "⚡ 快速解题";
+
+
+            quickSolutionContent.innerHTML =
+                "";
+
+
+            learningMessage.textContent =
+                `解题失败：${error.message}`;
+
+
+            showStatus(
+                `解题失败：${error.message}`,
+                "error"
+            );
+
+
+        } finally {
+
+            startButton.disabled =
+                false;
+
+
+            startButton.textContent =
+                "重新解题";
+
+        }
+
+    }
+
+
+    // ==================================================
+    // 12. 显示 Quick Solve 结果
+    // ==================================================
+
+    function renderSolution(solution) {
+
+        quickSolutionContent.innerHTML =
+            "";
+
+
+        if (!solution) {
+
+            learningMessage.textContent =
+                "没有获得有效的解题结果。";
+
+            return;
+
+        }
+
+
+        // ------------------------------------------
+        // 知识点
+        // ------------------------------------------
+
+        if (solution.concept) {
+
+            const conceptBox =
+                document.createElement("div");
+
+            conceptBox.className =
+                "solution-concept";
+
+
+            const label =
+                document.createElement("div");
+
+            label.className =
+                "solution-label";
+
+            label.textContent =
+                "主要知识点";
+
+
+            const value =
+                document.createElement("div");
+
+            value.className =
+                "solution-concept-value";
+
+            value.textContent =
+                solution.concept;
+
+
+            conceptBox.appendChild(label);
+
+            conceptBox.appendChild(value);
+
+
+            quickSolutionContent.appendChild(
+                conceptBox
+            );
+
+        }
+
+
+        // ------------------------------------------
+        // 解题步骤
+        // ------------------------------------------
+
+        const steps =
+            Array.isArray(solution.steps)
+                ? solution.steps
+                : [];
+
+
+        if (steps.length > 0) {
+
+            const stepsContainer =
+                document.createElement("div");
+
+            stepsContainer.className =
+                "solution-steps";
+
+
+            steps.forEach(
+                function (item, index) {
+
+                    const stepCard =
+                        document.createElement("div");
+
+                    stepCard.className =
+                        "solution-step";
+
+
+                    const stepTitle =
+                        document.createElement("div");
+
+                    stepTitle.className =
+                        "solution-step-title";
+
+                    stepTitle.textContent =
+                        `步骤 ${item.step || index + 1}`;
+
+
+                    const explanation =
+                        document.createElement("div");
+
+                    explanation.className =
+                        "solution-step-explanation";
+
+                    explanation.textContent =
+                        item.explanation || "";
+
+
+                    stepCard.appendChild(
+                        stepTitle
+                    );
+
+
+                    if (item.explanation) {
+
+                        stepCard.appendChild(
+                            explanation
+                        );
+
+                    }
+
+
+                    if (item.calculation) {
+
+                        const calculation =
+                            document.createElement("div");
+
+                        calculation.className =
+                            "solution-calculation";
+
+                        calculation.textContent =
+                            item.calculation;
+
+
+                        stepCard.appendChild(
+                            calculation
+                        );
+
+                    }
+
+
+                    stepsContainer.appendChild(
+                        stepCard
+                    );
+
+                }
+            );
+
+
+            quickSolutionContent.appendChild(
+                stepsContainer
+            );
+
+        }
+
+
+        // ------------------------------------------
+        // 最终答案
+        // ------------------------------------------
+
+        if (solution.final_answer) {
+
+            const finalBox =
+                document.createElement("div");
+
+            finalBox.className =
+                "final-answer";
+
+
+            const label =
+                document.createElement("div");
+
+            label.className =
+                "solution-label";
+
+            label.textContent =
+                "最终答案";
+
+
+            const value =
+                document.createElement("div");
+
+            value.className =
+                "final-answer-value";
+
+            value.textContent =
+                solution.final_answer;
+
+
+            finalBox.appendChild(label);
+
+            finalBox.appendChild(value);
+
+
+            quickSolutionContent.appendChild(
+                finalBox
+            );
+
+        }
+
+    }
+
+
+    // ==================================================
+    // 13. Guided Mode（S1 → S4，后端状态机控制）
+    // ==================================================
+
+    const guidedPanel =
+        document.getElementById("guided-panel");
+
+    const guidedQuestion =
+        document.getElementById("guided-question");
+
+    const guidedProgress =
+        document.getElementById("guided-progress");
+
+    const guidedChat =
+        document.getElementById("guided-chat");
+
+    const guidedInput =
+        document.getElementById("guided-input");
+
+    let guidedSessionId = null;
+
+    const GUIDED_STATES = [
+        ["S1", "理解题意"],
+        ["S2", "列方程"],
+        ["S3", "解方程"],
+        ["S4", "答案与检验"]
+    ];
+
+    // -------- 通用小工具 --------
+
+    function el(tag, className, text) {
+
+        const node = document.createElement(tag);
+
+        if (className) node.className = className;
+
+        if (text !== undefined) node.textContent = text;
+
+        return node;
+
+    }
+
+
+    async function postJSON(url, body) {
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.message || "请求失败");
+        }
+
+        return data;
+
+    }
+
+
+    function addBubble(role, text, meta) {
+
+        const bubble = el("div", `bubble ${role}`, text);
+
+        if (meta) {
+            bubble.appendChild(el("span", "bubble-meta", meta));
+        }
+
+        guidedChat.appendChild(bubble);
+
+        bubble.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+    }
+
+
+    function describeLearnerInput(input) {
+
+        switch (input.type) {
+            case "s1_choice": return `选择：${input.chosen_text || input.chosen_id}`;
+            case "s1_text": return input.text;
+            case "modelling": return `${input.variable_definition}\n${input.equation}`;
+            case "steps": return input.steps;
+            case "final_answer": return input.final_answer_text + (input.verified ? "（已检查）" : "");
+            case "reflection": return input.text || "（跳过）";
+            case "question": return `❓ ${input.text}`;
+            default: return "";
+        }
+
+    }
+
+
+    function tutorMeta(message) {
+
+        if (message.kind === "answer_question") return "回答你的问题";
+
+        if (message.kind !== "hint") return "";
+
+        const parts = [`提示 ${message.hint_level} 级`];
+
+        if (message.category) parts.push(message.category);
+
+        return parts.join(" · ");
+
+    }
+
+
+    function renderProgress(state) {
+
+        guidedProgress.innerHTML = "";
+
+        const order = GUIDED_STATES.map(s => s[0]);
+
+        const current = state === "DONE" ? order.length : order.indexOf(state);
+
+        GUIDED_STATES.forEach(function ([id, label], index) {
+
+            let cls = "guided-step";
+
+            if (index < current) cls += " done";
+
+            if (index === current) cls += " active";
+
+            guidedProgress.appendChild(el("div", cls, `${id} ${label}`));
+
+        });
+
+    }
+
+
+    // -------- 根据后端要求的输入类型显示输入区 --------
+
+    function renderInput(data) {
+
+        guidedInput.innerHTML = "";
+
+        const expected = data.expected_input;
+
+        if (data.done || !expected) {
+
+            renderSummary(data.summary);
+
+            return;
+
+        }
+
+        if (expected === "s1_choice") {
+
+            const options = el("div", "guided-options");
+
+            data.s1_item.options.forEach(function (option) {
+
+                const button = el("button", "guided-option", `${option.id}. ${option.text}`);
+
+                button.type = "button";
+
+                button.addEventListener("click", function () {
+                    sendGuided({ type: "s1_choice", chosen_id: option.id, chosen_text: option.text });
+                });
+
+                options.appendChild(button);
+
+            });
+
+            guidedInput.appendChild(options);
+
+            return;
+
+        }
+
+        if (expected === "modelling") {
+
+            const vd = el("input");
+            vd.type = "text";
+            vd.placeholder = "设 x 表示……（例如：设小华今年 x 岁，则小明 (x+5) 岁）";
+
+            const eq = el("input");
+            eq.type = "text";
+            eq.placeholder = "方程（例如：x + (x + 5) = 25）";
+
+            const send = el("button", "guided-send", "提交方程");
+            send.type = "button";
+
+            send.addEventListener("click", function () {
+                if (!eq.value.trim()) return;
+                sendGuided({ type: "modelling", variable_definition: vd.value.trim(), equation: eq.value.trim() });
+            });
+
+            guidedInput.append(el("label", "", "设未知数"), vd, el("label", "", "列方程"), eq, send);
+
+            vd.focus();
+
+            return;
+
+        }
+
+        if (expected === "steps") {
+
+            const steps = el("textarea");
+            steps.placeholder = "每一行写一个等式，例如：\n2x + 5 = 25\n2x = 20\nx = 10";
+
+            const send = el("button", "guided-send", "提交解题过程");
+            send.type = "button";
+
+            send.addEventListener("click", function () {
+                if (!steps.value.trim()) return;
+                sendGuided({ type: "steps", steps: steps.value });
+            });
+
+            guidedInput.append(steps, send);
+
+            steps.focus();
+
+            return;
+
+        }
+
+        if (expected === "final_answer") {
+
+            const answer = el("input");
+            answer.type = "text";
+            answer.placeholder = "最终答案（带单位），例如：小华10岁，小明15岁";
+
+            const checkRow = el("label", "guided-check");
+            const check = el("input");
+            check.type = "checkbox";
+            checkRow.append(check, el("span", "", "我已经把答案代回原题检查过"));
+
+            const send = el("button", "guided-send", "提交答案");
+            send.type = "button";
+
+            send.addEventListener("click", function () {
+                if (!answer.value.trim()) return;
+                // 学生自己勾选 = 主动检验（没有收到系统提示就检验）
+                sendGuided({
+                    type: "final_answer",
+                    final_answer_text: answer.value.trim(),
+                    verified: check.checked,
+                    active_verification: check.checked
+                });
+            });
+
+            guidedInput.append(answer, checkRow, send);
+
+            answer.focus();
+
+            return;
+
+        }
+
+        if (expected === "reflection") {
+
+            const text = el("textarea");
+            text.placeholder = "用一两句话说说你的想法";
+
+            const send = el("button", "guided-send", "发送");
+            send.type = "button";
+
+            send.addEventListener("click", function () {
+                sendGuided({ type: "reflection", text: text.value.trim() });
+            });
+
+            guidedInput.append(text, send);
+
+            text.focus();
+
+        }
+
+    }
+
+
+    function renderSummary(summary) {
+
+        if (!summary) return;
+
+        const box = el("div", "guided-summary");
+
+        box.appendChild(el("div", "section-title", "🎉 这道题完成了"));
+
+        const lines = GUIDED_STATES.map(function ([id, label]) {
+
+            const s = summary.states[id];
+
+            let status = s.revealed ? "看了参考步骤"
+                : s.errors.length ? "在提示下改正"
+                : s.attempts > 1 ? "修改后完成"
+                : "独立完成";
+
+            if (s.errors.length) status += `（出现过：${s.errors.join("、")}）`;
+
+            return `${id} ${label}：${status}`;
+
+        });
+
+        lines.push(`追问次数：${summary.metacognitive_follow_ups}　主动提问：${summary.learner_questions || 0}　主动检验：${summary.active_verification ? "是" : "否"}`);
+
+        box.appendChild(el("div", "learning-message", lines.join("\n")));
+
+        guidedInput.appendChild(box);
+
+    }
+
+
+    function applyResponse(data) {
+
+        (data.messages || []).forEach(function (message) {
+
+            if (message.role === "learner") {
+                addBubble(message.input.type === "question" ? "learner question" : "learner",
+                          describeLearnerInput(message.input));
+            } else {
+                addBubble("tutor", message.text, tutorMeta(message));
+            }
+
+        });
+
+        renderProgress(data.state);
+
+        renderInput(data);
+
+    }
+
+
+    const guidedAskText =
+        document.getElementById("guided-ask-text");
+
+    const guidedAskButton =
+        document.getElementById("guided-ask-button");
+
+    async function askTeacher() {
+
+        const text = guidedAskText.value.trim();
+
+        if (!text || !guidedSessionId) return;
+
+        guidedAskButton.disabled = true;
+
+        try {
+
+            const data = await postJSON("/api/guided/submit", {
+                session_id: guidedSessionId,
+                input: { type: "question", text: text }
+            });
+
+            guidedAskText.value = "";
+
+            // 提问不改变当前步骤：只追加对话，不重画输入区
+            (data.messages || []).forEach(function (message) {
+                if (message.role === "learner") {
+                    addBubble("learner question", describeLearnerInput(message.input));
+                } else {
+                    addBubble("tutor", message.text, tutorMeta(message));
+                }
+            });
+
+        } catch (error) {
+
+            showStatus(`出错了：${error.message}`, "error");
+
+        } finally {
+
+            guidedAskButton.disabled = false;
+
+        }
+
+    }
+
+    guidedAskButton.addEventListener("click", askTeacher);
+
+    guidedAskText.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") askTeacher();
+    });
+
+
+    async function sendGuided(input) {
+
+        guidedInput.querySelectorAll("button, input, textarea")
+            .forEach(node => node.disabled = true);
+
+        try {
+
+            const data = await postJSON("/api/guided/submit", {
+                session_id: guidedSessionId,
+                input: input
+            });
+
+            applyResponse(data);
+
+            showStatus(data.done ? "这道题完成了。" : `当前：${data.state_label}`, "success");
+
+        } catch (error) {
+
+            showStatus(`出错了：${error.message}`, "error");
+
+            guidedInput.querySelectorAll("button, input, textarea")
+                .forEach(node => node.disabled = false);
+
+        }
+
+    }
+
+
+    async function beginGuidedSession(questionId) {
+
+        showStatus("正在准备引导学习…", "loading");
+
+        try {
+
+            const data = await postJSON("/api/guided/start", { question_id: questionId });
+
+            guidedSessionId = data.session_id;
+
+            guidedQuestion.textContent = data.question.text;
+
+            guidedChat.innerHTML = "";
+
+            applyResponse(data);
+
+            showStatus(
+                data.llm ? "引导学习已开始。" : "引导学习已开始（未连接 AI，使用固定提示）。",
+                "success"
+            );
+
+        } catch (error) {
+
+            showStatus(`无法开始：${error.message}`, "error");
+
+        }
+
+    }
+
+
+    async function showQuestionPicker(note) {
+
+        guidedQuestion.textContent = "";
+
+        guidedProgress.innerHTML = "";
+
+        guidedChat.innerHTML = "";
+
+        guidedInput.innerHTML = "";
+
+        const noteBox = el("div", "guided-note", note);
+        noteBox.style.whiteSpace = "pre-wrap";
+        guidedInput.appendChild(noteBox);
+
+        try {
+
+            const response = await fetch("/api/guided/questions");
+
+            const data = await response.json();
+
+            const list = el("div", "guided-options");
+
+            data.questions.forEach(function (q) {
+
+                const card = el("button", "guided-pick");
+                card.type = "button";
+
+                const labels = { easy: "简单", medium: "中等", hard: "较难" };
+
+                card.append(
+                    el("div", "guided-pick-meta", `${q.question_id} · ${labels[q.difficulty] || q.difficulty} · ${q.topic}`),
+                    el("div", "", q.text)
+                );
+
+                card.addEventListener("click", () => beginGuidedSession(q.question_id));
+
+                list.appendChild(card);
+
+            });
+
+            guidedInput.appendChild(list);
+
+        } catch (error) {
+
+            showStatus(`题库加载失败：${error.message}`, "error");
+
+        }
+
+    }
+
+
+    async function startGuidedMode() {
+
+        learningSection.style.display = "block";
+
+        learningModeTitle.textContent = "🧑‍🏫 引导学习";
+
+        quickSolutionContent.innerHTML = "";
+
+        learningMessage.textContent = "";
+
+        guidedPanel.style.display = "block";
+
+        const text = (confirmedQuestionText.value || questionText.value || "").trim();
+
+        if (text) {
+
+            guidedQuestion.textContent = text;
+            guidedProgress.innerHTML = "";
+            guidedChat.innerHTML = "";
+            guidedInput.innerHTML = "";
+
+            showStatus("AI 正在分析这道题的数量关系，并自己核对一遍（大约 5–15 秒）…", "loading");
+
+            startButton.disabled = true;
+
+            try {
+
+                const prep = await postJSON("/api/guided/prepare", { text: text });
+
+                if (prep.usable) {
+
+                    await beginGuidedSession(prep.question_id);
+
+                    return;
+
+                }
+
+                showQuestionPicker(
+                    (prep.message || "这道题暂时不能引导。") + "\n\n你也可以从下面的题库中选一道开始：");
+
+                showStatus(prep.message || "这道题暂时不能引导。", "error");
+
+            } catch (error) {
+
+                showQuestionPicker("分析题目时出错了，你可以从下面的题库中选一道开始：");
+
+                showStatus(`分析失败：${error.message}`, "error");
+
+            } finally {
+
+                startButton.disabled = false;
+
+            }
+
+        } else {
+
+            showQuestionPicker("请选择一道题开始引导学习（也可以在上面输入任意一道一元一次方程应用题）：");
+
+            showStatus("请选择题目。", "success");
+
+        }
+
+    }
+
+</script>
+
+</body>
+</html>

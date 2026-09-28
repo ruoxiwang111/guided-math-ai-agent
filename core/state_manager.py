@@ -1,0 +1,462 @@
+"""
+core/state_manager.py — backend-controlled Guided Mode state machine (S1 → S2 → S3 → S4).
+
+Implements V1_design.md §11.2, §12, §20–24, §32.1 and error_taxonomy.md §9 (steps 6–7),
+§13, §18. Fully deterministic: it decides WHAT the tutor does next; the LLM layer
+(core/llm_client.py) only turns a TutorAction into wording, within the constraints
+given in TutorAction.prompt_spec. The LLM never changes the state (§33).
+
+Usage
+    session = TutorSession(question, session_id="anonymous_001")
+    action = session.start()                                   # ask S1
+    action = session.submit({"type": "s1_choice", "correct": True})
+    action = session.submit({"type": "modelling", "variable_definition": "设小华x岁", "equation": "x+(x+5)=25"})
+    action = session.submit({"type": "steps", "steps": ["2x+5=25", "2x=20", "x=10"]})
+    action = session.submit({"type": "final_answer", "final_answer_text": "小华10岁，小明15岁",
+                             "verified": True, "active_verification": True})
+    session.events        # learning event log (V1_design §23)
+    session.summary()     # per-state evidence for the learning report / mastery (§24, §30)
+
+Policies
+  hint level      = number of failed attempts in the current state (1…4); resets when the
+                    state advances (§20: stop escalating once understanding is shown)
+  after level 4   one more failure → the correct step is shown ("reveal"), the state is
+                    recorded as not independently solved, and the session moves on
+  evidence requests (show working / what is x / clarify notation / discriminating question)
+                    do NOT count toward the metacognitive budget (taxonomy §9 step 7, §18);
+                    capped per state so the learner is never asked for the same thing forever
+  metacognitive follow-ups (reflection after a corrected error, verification prompt in S4)
+                    count toward the per-problem budget (default 2, V1_design §21); one slot
+                    is reserved for the S4 verification prompt, so reflections can use at most
+                    budget − 1
+"""
+from __future__ import annotations
+
+import json
+import re
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
+
+from core import diagnosis as dx
+from core import math_checker as mc
+
+S1, S2, S3, S4, DONE = "S1", "S2", "S3", "S4", "DONE"
+NEXT_STATE = {S1: S2, S2: S3, S3: S4, S4: DONE}
+INPUT_FOR_STATE = {S1: "s1_choice", S2: "modelling", S3: "steps", S4: "final_answer"}
+
+# action types
+ASK = "ask"                                  # open the task of a state
+HINT = "hint"                                # category-specific hint at a backend-set level
+EVIDENCE_REQUEST = "evidence_request"        # not counted in the budget
+METACOGNITIVE = "metacognitive_question"     # counted in the budget
+REVEAL = "reveal_step"                       # show the correct step after level 4 failed
+ANSWER_QUESTION = "answer_question"          # reply to a learner's own question (no state change)
+COMPLETE = "complete"
+UNEXPECTED_INPUT = "unexpected_input"
+
+MAX_HINT_LEVEL = 4
+DEFAULT_METACOGNITIVE_BUDGET = 2
+MAX_EVIDENCE_REQUESTS_PER_STATE = 2
+
+QUESTION_RE = re.compile(r"[？?]|怎么|为什么|什么意思|啥意思|不懂|不会|不明白|如何|能不能|可以.*吗|是什么|哪里")
+
+
+def looks_like_question(text: str) -> bool:
+    return bool(text and QUESTION_RE.search(text))
+
+TASK_OF_STATE = {
+    S1: "identify_target",          # 这道题最后要求我们求什么？
+    S2: "define_x_and_equation",    # 我让 x 表示……，列出方程
+    S3: "solve_line_by_line",       # 一行一行写出解方程的过程
+    S4: "state_and_check_answer",   # 写出最终答案，并检查是否符合题意
+}
+
+
+@dataclass
+class TutorAction:
+    type: str
+    state: str
+    task: str | None = None                  # what the learner should do next
+    category: str | None = None              # E1–E7 for hints
+    error_subtype: str | None = None
+    hint_level: int | None = None
+    request: str | None = None               # which evidence is requested
+    counts_toward_budget: bool = False
+    diagnosis: dict | None = None
+    prompt_spec: dict = field(default_factory=dict)   # constraints for the LLM wording
+    note: str | None = None
+    next_action: "TutorAction | None" = None          # e.g. after a reveal, the next state's task
+
+
+@dataclass
+class StateRecord:
+    attempts: int = 0
+    failed_attempts: int = 0
+    max_hint_level: int = 0
+    evidence_requests: int = 0
+    revealed: bool = False
+    errors: list = field(default_factory=list)
+    passed: bool = False
+
+    @property
+    def independent(self) -> bool:
+        """Solved with little or no prompting (V1_design §24): no hint above level 1, not revealed."""
+        return self.passed and not self.revealed and self.max_hint_level <= 1
+
+
+class TutorSession:
+    def __init__(self, question: dict, session_id: str = "anonymous",
+                 metacognitive_budget: int = DEFAULT_METACOGNITIVE_BUDGET, start_state: str = S1):
+        self.q = question
+        self.session_id = session_id
+        self.budget = metacognitive_budget
+        self.state = start_state
+        self.records = {s: StateRecord() for s in (S1, S2, S3, S4)}
+        self.metacognitive_count = 0
+        self.evidence_request_count = 0
+        self.events: list[dict] = []
+        self.pending: TutorAction | None = None      # action to resume after a reflection reply
+        self.awaiting_reflection = False
+        self.reflection_kind: str | None = None
+        self._last_response: dict | None = None
+        self.learner_questions = 0
+        # the learner's accepted model (standard or an accepted alternative definition)
+        self.model = {"variable_definition": question["variable_definition"],
+                      "equation": question["equation"], "answer": question["answer"],
+                      "is_standard": True}
+        self.final_x = None
+
+    # ------------------------------------------------------------------ helpers
+    def _log(self, event: str, **kw):
+        rec = {
+            "timestamp": datetime.now().isoformat(timespec="seconds"),
+            "session_id": self.session_id,
+            "question_id": self.q["question_id"],
+            "state": self.state,
+            "event": event,
+            "follow_up_count": self.metacognitive_count,
+            "evidence_request_count": self.evidence_request_count,
+        }
+        rec.update(kw)
+        self.events.append(rec)
+
+    def _forbidden(self, level: int) -> list[str]:
+        """What a hint at this level must not contain (evaluation_plan §3.9.1)."""
+        if level >= 4:
+            return []
+        forbidden = ["final_answer"]
+        if level <= 2:
+            forbidden.append("complete_equation")
+        if level == 1:
+            forbidden.append("key_intermediate_value")
+        return forbidden
+
+    def _spec(self, level: int | None = None, **extra) -> dict:
+        spec = {
+            "question_id": self.q["question_id"],
+            "question": self.q["question"],
+            "learner_variable_definition": self.model["variable_definition"],
+            "reference_answer": str(self.model["answer"]),
+            "reference_equation": self.model["equation"],
+        }
+        if level is not None:
+            spec["hint_level"] = level
+            spec["must_not_contain"] = self._forbidden(level)
+        spec.update(extra)
+        return spec
+
+    def _question_view(self):
+        """Question as seen from the learner's accepted model (for S3 checking)."""
+        return dict(self.q, equation=self.model["equation"], answer=self.model["answer"])
+
+    def _ask(self) -> TutorAction:
+        if self.state == DONE:
+            self._log("session_complete", summary=self.summary())
+            return TutorAction(COMPLETE, DONE, note="guided session finished")
+        self._log("ask", task=TASK_OF_STATE[self.state])
+        return TutorAction(ASK, self.state, task=TASK_OF_STATE[self.state], prompt_spec=self._spec())
+
+    def _advance(self, reflection: bool = False) -> TutorAction:
+        rec = self.records[self.state]
+        rec.passed = True
+        self._log("state_passed", independent=rec.independent, max_hint_level=rec.max_hint_level,
+                  revealed=rec.revealed)
+        prev = self.state
+        self.state = NEXT_STATE[self.state]
+        self._log("state_transition", from_state=prev, to_state=self.state)
+        nxt = self._ask()
+        # a reflection question after an error was corrected, keeping one slot for S4 verification
+        if reflection and rec.failed_attempts > 0 and not rec.revealed and self._budget_left(reserve=1):
+            return self._metacognitive(prev, "explain_why_correct", resume=nxt)
+        return nxt
+
+    def _budget_left(self, reserve: int = 0) -> bool:
+        return self.metacognitive_count < self.budget - reserve
+
+    def _metacognitive(self, about_state: str, kind: str, resume: TutorAction | None) -> TutorAction:
+        self.metacognitive_count += 1
+        self.pending = resume
+        self.awaiting_reflection = True
+        self.reflection_kind = kind
+        self._log("metacognitive_follow_up", kind=kind, about_state=about_state)
+        # the answer of later steps must still not be given away, unless the problem is solved
+        spec = self._spec(level=None if self.state == DONE else 2, kind=kind, about_state=about_state,
+                          current_state=about_state, recent_work=self._recent_work(),
+                          verification_conditions=[c["description"] for c in self.q.get("verification_conditions", [])])
+        if self.state == DONE:
+            spec["must_not_contain"] = []
+        return TutorAction(METACOGNITIVE, self.state, task=kind, counts_toward_budget=True, prompt_spec=spec)
+
+    def _evidence_request(self, d: dx.Diagnosis) -> TutorAction | None:
+        rec = self.records[self.state]
+        if rec.evidence_requests >= MAX_EVIDENCE_REQUESTS_PER_STATE:
+            return None
+        rec.evidence_requests += 1
+        self.evidence_request_count += 1
+        request = d.follow_up or dx.ASK_WORKING
+        self._log("evidence_request", request=request, diagnosis_status=d.status,
+                  candidates=d.candidates, evidence_level=d.evidence_level)
+        return TutorAction(EVIDENCE_REQUEST, self.state, task=INPUT_FOR_STATE[self.state],
+                           request=request, diagnosis=asdict(d),
+                           prompt_spec=self._spec(level=1, request=request, candidates=d.candidates,
+                                                  current_state=self.state, evidence=d.evidence,
+                                                  **self._learner_context(d, None)))
+
+    def _hint_or_reveal(self, d: dx.Diagnosis | None, category: str | None) -> TutorAction:
+        rec = self.records[self.state]
+        rec.failed_attempts += 1
+        if rec.failed_attempts > MAX_HINT_LEVEL:
+            rec.revealed = True
+            self._log("reveal_step", diagnosed_error=category)
+            state = self.state
+            spec = self._spec(level=4, reveal=True)
+            if state == S2:
+                # continue from the reference model
+                self.model = {"variable_definition": self.q["variable_definition"],
+                              "equation": self.q["equation"], "answer": self.q["answer"],
+                              "is_standard": True}
+            reveal = TutorAction(REVEAL, state, category=category, hint_level=4, prompt_spec=spec,
+                                 note="level 4 did not resolve the error; the correct step is shown")
+            reveal.next_action = self._advance()
+            return reveal
+        level = min(MAX_HINT_LEVEL, rec.failed_attempts)
+        rec.max_hint_level = max(rec.max_hint_level, level)
+        self._log("hint", diagnosed_error=category, hint_level=level,
+                  diagnosis_status=d.status if d else "diagnosed",
+                  evidence_level=d.evidence_level if d else None)
+        return TutorAction(HINT, self.state, task=INPUT_FOR_STATE[self.state], category=category,
+                           error_subtype=d.error_subtype if d else None, hint_level=level,
+                           diagnosis=asdict(d) if d else None,
+                           prompt_spec=self._spec(level=level, category=category,
+                                                  error_subtype=d.error_subtype if d else None,
+                                                  evidence=d.evidence if d else None,
+                                                  first_invalid_step=d.first_invalid_step if d else None,
+                                                  current_state=self.state,
+                                                  **self._learner_context(d, category)))
+
+    def _learner_context(self, d: dx.Diagnosis | None, category: str | None) -> dict:
+        """
+        What the learner actually wrote, plus deterministic facts about what is RIGHT in it,
+        so the wording can quote the learner and acknowledge correct parts first.
+        """
+        r = self._last_response or {}
+        ctx = {"learner_input": {k: v for k, v in r.items() if k != "type"}, "acknowledge": []}
+        if self.state == S2:
+            vd, eq = r.get("variable_definition"), r.get("equation")
+            ctx.update(learner_definition=vd, learner_equation=eq)
+            ref = dx._match_definition(vd, dx._references(self.q)) if vd else None
+            if ref is not None and category not in ("E2",):
+                ctx["acknowledge"].append(f"你设 x 表示{dx._quantity(vd)}，这个设法没问题")
+        elif self.state == S3 and d is not None and d.first_invalid_step:
+            steps = r.get("steps")
+            lines = [ln.strip() for ln in (steps.splitlines() if isinstance(steps, str) else steps or []) if ln.strip()]
+            k = d.first_invalid_step
+            if 1 <= k <= len(lines):
+                ctx.update(line_no=k, learner_line=lines[k - 1], prev_line=lines[k - 2] if k >= 2 else None)
+            if k >= 3:
+                ctx["acknowledge"].append(f"前{k - 1}行都是对的")
+            elif k == 2:
+                ctx["acknowledge"].append("第1行没问题")
+        elif self.state == S4 and d is not None and d.details.get("right"):
+            ctx["acknowledge"].append(f"{'、'.join(d.details['right'])}的数值对了")
+        return ctx
+
+    def _handle_diagnosis(self, d: dx.Diagnosis) -> TutorAction:
+        rec = self.records[self.state]
+        self._log("diagnosis", diagnosed_error=d.primary_error, error_subtype=d.error_subtype,
+                  diagnosis_status=d.status, evidence_level=d.evidence_level,
+                  first_invalid_step=d.first_invalid_step, rule=d.rule)
+        if d.status == dx.DIAGNOSED:
+            rec.errors.append(d.error_subtype or d.primary_error)
+            return self._hint_or_reveal(d, d.primary_error)
+        # uncertain / insufficient: collect evidence first (§9 step 6), never claim an error
+        req = self._evidence_request(d)
+        if req is not None:
+            return req
+        # evidence requests exhausted: give a category-neutral hint so the learner can progress
+        return self._hint_or_reveal(d, None)
+
+    def _allowed_level(self):
+        """Hint level a free answer may go up to; None = no restriction (the answer is already known)."""
+        if self.state == DONE or self.records[self.state].passed:
+            return None
+        return max(1, self.records[self.state].max_hint_level)
+
+    def _recent_work(self) -> list[dict]:
+        return [e.get("response") for e in self.events if e["event"] == "learner_response"][-3:]
+
+    def ask_question(self, text: str) -> TutorAction:
+        """
+        Learner's own question at any point. Answered within the current hint-level limits;
+        it never changes the state, the hint level or the metacognitive budget, and is logged
+        as help-seeking behaviour.
+        """
+        self.learner_questions += 1
+        self._log("learner_question", text=text)
+        level = self._allowed_level()
+        spec = self._spec(level=level if level is not None else 4,
+                          learner_question=text,
+                          current_state=self.state,
+                          current_task=TASK_OF_STATE.get(self.state),
+                          reflection_kind=self.reflection_kind if self.awaiting_reflection else None,
+                          recent_work=self._recent_work(),
+                          verification_conditions=[c["description"] for c in self.q.get("verification_conditions", [])],
+                          relationship=self.q.get("relationship"))
+        return TutorAction(ANSWER_QUESTION, self.state, task=TASK_OF_STATE.get(self.state), prompt_spec=spec)
+
+    # ------------------------------------------------------------------ public API
+    def start(self) -> TutorAction:
+        self._log("session_start", mode="guided")
+        return self._ask()
+
+    def submit(self, response: dict) -> TutorAction:
+        kind = response.get("type")
+
+        if kind == "question":
+            return self.ask_question(response.get("text", ""))
+
+        # reply to a metacognitive question: recorded, not judged here (LLM may classify later)
+        if kind == "reflection":
+            if not self.awaiting_reflection:
+                self._log("unexpected_input", got=kind, expected=INPUT_FOR_STATE.get(self.state))
+                return TutorAction(UNEXPECTED_INPUT, self.state, task=INPUT_FOR_STATE.get(self.state),
+                                   note="no metacognitive question is open")
+            if looks_like_question(response.get("text", "")):
+                # the learner asks instead of answering: answer, keep the reflection open
+                return self.ask_question(response.get("text", ""))
+            self.awaiting_reflection = False
+            self._log("reflection_reply", text=response.get("text", ""))
+            resume, self.pending = self.pending, None
+            return resume or self._ask()
+        if self.awaiting_reflection:
+            # learner skipped the reflection question: allowed, recorded
+            self.awaiting_reflection = False
+            self.pending = None
+            self._log("reflection_skipped")
+
+        if self.state == DONE:
+            return TutorAction(COMPLETE, DONE, note="session already complete")
+        expected = INPUT_FOR_STATE[self.state]
+        if kind != expected:
+            self._log("unexpected_input", got=kind, expected=expected)
+            return TutorAction(UNEXPECTED_INPUT, self.state, task=expected,
+                               note=f"expected '{expected}' in {self.state}, got '{kind}'")
+
+        self.records[self.state].attempts += 1
+        self._last_response = response
+        self._log("learner_response", student_input_type=kind,
+                  response={k: v for k, v in response.items() if k != "type"})
+        return getattr(self, f"_submit_{self.state.lower()}")(response)
+
+    # -- S1: target identification (choice judged by code; free text by LLM → caller passes `correct`)
+    def _submit_s1(self, r):
+        if r.get("correct"):
+            return self._advance()
+        chosen = r.get("chosen_text")
+        why = {"known_quantity": "选了题目已经给出的已知量",
+               "intermediate_quantity": "选了解题过程中的中间量"}.get(r.get("chosen_source"), "")
+        evidence = f"学生选择的“{chosen}”不是题目所求" + (f"（{why}）" if why else "") if chosen \
+            else "学生选择/说明的目标量与题目所求不一致"
+        d = dx.Diagnosis(status=dx.DIAGNOSED, state=S1, primary_error="E1", candidates=["E1"],
+                         evidence_level="A", evidence=evidence)
+        return self._handle_diagnosis(d)
+
+    # -- S2: variable definition + equation
+    def _submit_s2(self, r):
+        d = dx.diagnose_modelling(self.q, r.get("equation", ""), r.get("variable_definition"))
+        if d.status == dx.NO_ERROR:
+            vd = r.get("variable_definition") or self.q["variable_definition"]
+            ref = dx._match_definition(vd, dx._references(self.q)) or dx._references(self.q)[0]
+            self.model = {"variable_definition": vd, "equation": ref["equation"],
+                          "answer": ref["answer"], "is_standard": ref["label"] == "standard",
+                          "learner_equation": r.get("equation")}
+            self._log("diagnosis", diagnosis_status=d.status, evidence_level=d.evidence_level,
+                      accepted_model=ref["label"])
+            return self._advance(reflection=True)
+        return self._handle_diagnosis(d)
+
+    # -- S3: line-by-line working, checked against the learner's accepted model
+    def _submit_s3(self, r):
+        steps = r.get("steps") or []
+        view = self._question_view()
+        d = dx.diagnose_steps(view, steps, self.model["variable_definition"])
+        if d.status == dx.NO_ERROR:
+            check = mc.check_steps(steps, reference_equation=view["equation"])
+            if check.final_matches_reference:
+                self.final_x = check.final_value
+                self._log("diagnosis", diagnosis_status=d.status, evidence_level=d.evidence_level,
+                          final_value=str(check.final_value))
+                return self._advance(reflection=True)
+            d = dx.Diagnosis(status=dx.INSUFFICIENT, state=S3, evidence_level="D",
+                             evidence="每一步都正确，但还没有解出 x = …", follow_up="continue_solving")
+        return self._handle_diagnosis(d)
+
+    # -- S4: final answer (+ verification behaviour)
+    def _submit_s4(self, r):
+        active = bool(r.get("active_verification"))
+        verified = bool(r.get("verified")) or active
+        self._log("verification", verified=verified, active_verification=active)
+
+        d = dx.diagnose_final_answer(self.q, r.get("final_answer_text", ""))
+        if d.status != dx.NO_ERROR:
+            return self._handle_diagnosis(d)
+
+        # contextual constraints (only meaningful for the standard meaning of x)
+        if self.model["is_standard"] and self.final_x is not None:
+            failed = [c.description for c in mc.check_conditions(self.q["verification_conditions"], self.final_x)
+                      if c.holds is False]
+            if failed:
+                return self._handle_diagnosis(dx.Diagnosis(
+                    status=dx.DIAGNOSED, state=S4, primary_error="E5", candidates=["E5"],
+                    evidence_level="A", evidence=f"答案不满足题目条件：{'；'.join(failed)}"))
+
+        self._log("diagnosis", diagnosis_status=d.status, evidence_level=d.evidence_level)
+        if not verified and self._budget_left():
+            # correct answer but no verification: one verification prompt (counts toward budget)
+            self.records[S4].passed = True
+            prev = self.state
+            self.state = DONE
+            self._log("state_transition", from_state=prev, to_state=DONE)
+            return self._metacognitive(S4, "prompt_verification", resume=self._ask())
+        return self._advance()
+
+    # ------------------------------------------------------------------ reporting
+    def summary(self) -> dict:
+        return {
+            "question_id": self.q["question_id"],
+            "completed": self.state == DONE,
+            "metacognitive_follow_ups": self.metacognitive_count,
+            "evidence_requests": self.evidence_request_count,
+            "accepted_model": "standard" if self.model["is_standard"] else "alternative",
+            "states": {
+                s: {"passed": r.passed, "independent": r.independent, "attempts": r.attempts,
+                    "max_hint_level": r.max_hint_level, "revealed": r.revealed, "errors": r.errors}
+                for s, r in self.records.items()
+            },
+            "active_verification": any(e.get("active_verification") for e in self.events
+                                       if e["event"] == "verification"),
+            "learner_questions": self.learner_questions,
+        }
+
+    def events_jsonl(self) -> str:
+        return "\n".join(json.dumps(e, ensure_ascii=False, default=str) for e in self.events)
