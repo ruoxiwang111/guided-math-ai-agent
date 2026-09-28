@@ -172,6 +172,58 @@ def _takeaway(category, subtype, rule, relationship):
     }.get(category)
 
 
+def _value_of(expr: str, x):
+    from sympy import nsimplify
+    from core import math_checker as mc
+    from core.normalizer import normalize_line
+    nl = normalize_line(str(expr))
+    if not nl.ok or nl.kind != "expression":
+        return None
+    v = nsimplify(mc._expr(nl.normalized).subs(mc.X, nsimplify(x, rational=True)), rational=True)
+    return str(v) if v.q == 1 else f"{v.p}/{v.q}"
+
+
+OP_WORD = {"==": "等于", ">": "大于", "<": "小于", ">=": "不小于", "<=": "不大于"}
+
+
+def verification_walkthrough(q, x) -> list[str]:
+    """
+    Each condition with x substituted, in words:
+      '5年后小明是小红的2倍：3x+5 = 20，2(x+5) = 20，两边相等 ✓'
+      '宽为正：x = 5，大于 0 ✓'
+    """
+    from sympy import S
+    if x is None:
+        return []
+    out = []
+    for c in q.get("verification_conditions", []):
+        desc, op = c["description"], c.get("op", "==")
+        try:
+            lv = _value_of(c["lhs"], x)
+            rv = _value_of(c.get("rhs", "0"), x) if op != "integer" else None
+        except Exception:  # noqa: BLE001
+            lv = rv = None
+        if lv is None or (op != "integer" and rv is None):
+            out.append(desc)
+            continue
+        left = f"{_pretty(c['lhs'])} = {lv}"
+        if op == "integer":
+            ok = S(lv).is_integer
+            out.append(f"{desc}：{left}，是整数 {'✓' if ok else '✗'}")
+            continue
+        ok = {"==": S(lv) == S(rv), ">": S(lv) > S(rv), "<": S(lv) < S(rv),
+              ">=": S(lv) >= S(rv), "<=": S(lv) <= S(rv)}[op]
+        rhs_expr = _pretty(c.get("rhs", ""))
+        mark = "✓" if ok else "✗"
+        if rhs_expr.replace(" ", "") == str(rv):              # right side is just a number
+            out.append(f"{desc}：{left}，{OP_WORD[op]} {rv} {mark}")
+        elif op == "==":
+            out.append(f"{desc}：{left}，{rhs_expr} = {rv}，两边相等 {mark}")
+        else:
+            out.append(f"{desc}：{left}，{rhs_expr} = {rv}，{lv} {op} {rv} {mark}")
+    return out
+
+
 def _stage_status(rec) -> str:
     if rec.revealed:
         return "主动查看了参考" if getattr(rec, "reveal_requested", False) else "看了参考步骤"

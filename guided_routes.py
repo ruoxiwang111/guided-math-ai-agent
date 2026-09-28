@@ -25,6 +25,7 @@ Input shapes (same as core.state_manager.TutorSession.submit):
     S4  {"type": "final_answer", "final_answer_text": "...", "verified": bool, "active_verification": bool}
     reflection reply  {"type": "reflection", "text": "..."}
     learner question  {"type": "question", "text": "..."}         (any time; no state change)
+    words answer      {"type": "explanation", "text": "..."}      (after a discriminating question)
     see this step     {"type": "reveal_request"}                  (allowed when can_reveal is true)
     after finishing   {"type": "self_summary", "text": "..."}     (optional one-sentence review)
 
@@ -113,6 +114,7 @@ def _payload(sid: str, entry: dict, messages: list[dict]) -> dict:
         "follow_ups_used": s.metacognitive_count,
         "follow_up_budget": s.budget,
         "can_reveal": s.can_reveal(),
+        "awaiting_explanation": s.awaiting_explanation,
     }
     if expected == "s1_choice":
         item = entry["s1_item"]
@@ -221,10 +223,12 @@ def prepare():
         return jsonify({"success": True, "usable": False, "source": "extracted", "consistency": ex.consistency,
                         "message": "按你的说明重新读题后，我自己核对没有通过。为了不误导你，这道题先用“快速解题”，"
                                    "或者从题库选一道。"})
+    reason = (ex.scope_reason or "").strip().rstrip("。.")
     if ex.scope == OUT_OF_SCOPE:
-        msg = f"这道题不是一元一次方程应用题（{ex.scope_reason}），引导学习暂时不支持，可以先用“快速解题”。"
+        msg = (f"这道题不是一元一次方程应用题：{reason}。" if reason else "这道题不是一元一次方程应用题。") + \
+              "引导学习暂时不支持，可以先用“快速解题”。"
     elif ex.scope != "in_scope":
-        msg = f"这道题的题意我还不能确定（{ex.scope_reason or ex.error or '信息不完整'}），请检查题目文字后再试。"
+        msg = f"这道题的题意我还不能确定：{reason or ex.error or '信息不完整'}。请检查题目文字后再试。"
     else:
         msg = "我分析这道题时自己核对没有通过，为了不误导你，这道题先用“快速解题”，或者从题库选一道。"
     return jsonify({"success": True, "usable": False, "source": "extracted", "scope": ex.scope,

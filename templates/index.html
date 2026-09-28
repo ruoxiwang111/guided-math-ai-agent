@@ -767,6 +767,25 @@
             margin-top: 14px;
         }
 
+        .guided-question:empty {
+            display: none;
+        }
+
+        .guided-explain {
+            background: #f9fafb;
+            border: 1px dashed #d1d5db;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+        }
+
+        .guided-explain textarea {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 48px;
+            margin: 6px 0;
+        }
+
         .guided-option.unsure {
             color: #6b7280;
             border-style: dashed;
@@ -2475,6 +2494,7 @@
             case "reflection": return input.text || "（跳过）";
             case "question": return `❓ ${input.text}`;
             case "reveal_request": return "我想看这一步的参考";
+            case "explanation": return `💬 ${input.text}`;
             case "self_summary": return `✍️ ${input.text}`;
             default: return "";
         }
@@ -2485,6 +2505,8 @@
     function tutorMeta(message) {
 
         if (message.kind === "answer_question") return "回答你的问题";
+
+        if (message.kind === "explanation_follow_up") return "回应你的说明";
 
         if (message.kind !== "hint") return "";
 
@@ -2550,6 +2572,22 @@
         const expected = data.expected_input;
 
         const draft = draftFor(data);
+
+        // 老师问了“式子每部分对应什么”：可以直接用文字回答，也可以直接改式子
+        if (data.awaiting_explanation && (expected === "modelling" || expected === "steps")) {
+            const box = el("div", "guided-explain");
+            box.appendChild(el("div", "guided-note", "用文字回答老师的问题（也可以直接在下面修改再提交）"));
+            const t = el("textarea");
+            t.placeholder = "例如：等号左边表示……，右边表示……";
+            const b = el("button", "guided-option", "发送回答");
+            b.type = "button";
+            b.addEventListener("click", function () {
+                if (!t.value.trim()) return;
+                sendGuided({ type: "explanation", text: t.value.trim() });
+            });
+            box.append(t, b);
+            guidedInput.appendChild(box);
+        }
 
         const reveal = revealButton(data);
 
@@ -2895,7 +2933,7 @@
 
         const stateBefore = guidedCurrentState;
 
-        if (input.type !== "reveal_request" && input.type !== "reflection") {
+        if (!["reveal_request", "reflection", "explanation", "question"].includes(input.type)) {
             lastDraft = { state: stateBefore, input: input };
         }
 

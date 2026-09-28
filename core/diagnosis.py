@@ -50,7 +50,7 @@ from sympy import Add, Mul, Number, Poly, S, nsimplify
 from sympy.parsing.sympy_parser import parse_expr
 
 from core import math_checker as mc
-from core.normalizer import OK, normalize_line
+from core.normalizer import OK, normalize_line, split_steps
 
 # statuses (error_taxonomy.md §9 step 5)
 DIAGNOSED = "diagnosed"
@@ -621,47 +621,67 @@ def classify_transition(prev_norm: str, curr_norm: str):
     return None, "no_rule_matched"
 
 
-def diagnose_steps(question, steps, variable_definition=None) -> Diagnosis:
+def diagnose_steps(question, steps, variable_definition=None, start_equation=None) -> Diagnosis:
+    """
+    start_equation: the equation the learner already set up in S2 (their own wording). When the
+    working does not begin with it, the first line is checked as a STEP from it — e.g. going from
+    3x+5=2(x+5) straight to 3x+5=2x+5 is a bracket-expansion error on line 1, not a new equation.
+    Line numbers always refer to the lines the learner submitted.
+    """
     state = "S3"
     r = mc.check_steps(steps, reference_equation=question["equation"])
+    offset, start_line = 0, None
+    if start_equation and r.status == mc.INVALID_FOUND and r.reason == mc.START_DIFFERS:
+        lines = split_steps(steps) if isinstance(steps, str) else list(steps)
+        r = mc.check_steps([start_equation] + lines, reference_equation=question["equation"])
+        offset, start_line = 1, start_equation
 
     if r.status == mc.UNCERTAIN:
         line = r.lines[r.blocked_at - 1]
         d = _unreadable(normalize_line(line.original), state)
-        d.evidence = f"第{r.blocked_at}行：{d.evidence}"
+        d.evidence = f"第{r.blocked_at - offset}行：{d.evidence}"
         return d
     if r.status == mc.NO_EQUATION:
         return Diagnosis(status=INSUFFICIENT, state=state, evidence_level="D",
                          evidence="没有可检查的方程", follow_up=ASK_WORKING)
     if r.status == mc.ALL_VALID:
         note = [] if r.final_matches_reference else ["每一步都等价，但还没有写出 x = … 的结果"]
+        if offset:
+            note.append("学生没有重抄方程，第一行直接从列好的方程往下算")
         return Diagnosis(status=NO_ERROR, state=state, evidence_level="A",
                          evidence="每一步变形都保持解不变", notes=note)
 
     k = r.first_invalid_step
     line = r.lines[k - 1]
+    shown = k - offset                                  # the learner's own line number
 
     if r.reason == mc.START_DIFFERS:
         d = diagnose_modelling(question, line.original, variable_definition)
-        d.first_invalid_step = k
+        d.first_invalid_step = shown
         d.notes.append("第一行方程与题目的标准方程不等价，按建模（S2）诊断")
         return d
 
     if r.reason == mc.CHAIN_SEGMENT_MISMATCH:
-        return _diagnosed(state, "E6", f"第{k}行连等式中间一段算错：{line.note}",
-                          first_invalid_step=k, rule="chain_segment_mismatch")
+        return _diagnosed(state, "E6", f"第{shown}行连等式中间一段算错：{line.note}",
+                          first_invalid_step=shown, rule="chain_segment_mismatch")
 
-    prev = next(lc for lc in reversed(r.lines[:k - 1]) if lc.solutions is not None)
+    prev_index, prev = next((i, lc) for i, lc in reversed(list(enumerate(r.lines[:k - 1])))
+                            if lc.solutions is not None)
+    from_start = offset == 1 and prev_index == 0
+    details = {"prev_line": prev.original, "from_start_equation": from_start}
     category, rule = classify_transition(prev.normalized, line.normalized)
     notes = []
     if r.consistent_after_error is False:
         notes.append("出错之后还有不一致的步骤，可能有第二处错误（未单独诊断）")
-    evidence = f"第{k}行“{line.original}”不再与上一行“{prev.original}”同解"
+    src = f"学生列好的方程“{start_line}”" if from_start else f"上一行“{prev.original}”"
+    evidence = f"第{shown}行“{line.original}”不再与{src}同解"
     if category is None:
         return Diagnosis(status=UNCERTAIN, state=state, candidates=["E6", "E7"], evidence_level="C",
-                         evidence=evidence + "；无法判断是计算错误还是变形错误",
-                         first_invalid_step=k, rule=rule, follow_up=ASK_DISCRIMINATING, notes=notes)
-    return _diagnosed(state, category, evidence + f"（{rule}）", first_invalid_step=k, rule=rule, notes=notes)
+                         evidence=evidence + "；无法判断是计算错误还是变形错误", details=details,
+                         first_invalid_step=shown, rule=rule, follow_up=ASK_DISCRIMINATING, notes=notes)
+    d = _diagnosed(state, category, evidence + f"（{rule}）", first_invalid_step=shown, rule=rule, notes=notes)
+    d.details = details
+    return d
 
 
 # ---------------------------------------------------------------------------
@@ -739,6 +759,13 @@ def _answer_parts(text, units=()):
     return out
 
 
+LABEL_FILLER = re.compile(r"今年|现在|原来|的|年龄|岁数|是|有|共|分别|数量|人数|价格|单价|长度|一共|各")
+
+
+def _label_key(label: str) -> str:
+    return LABEL_FILLER.sub("", label or "")
+
+
 def _compare_parts(question, text):
     """
     Compare a final answer part by part against the reference final_answer_text,
@@ -759,7 +786,13 @@ def _compare_parts(question, text):
         if exact:
             return exact[0]
         loose = [p for p in learner if p[0] and label in p[0] and p[0] not in ref_labels]
-        return loose[0] if loose else None
+        if loose:
+            return loose[0]
+        # "小红今年" ↔ "小红今年的年龄": compare the labels without filler words
+        key = _label_key(label)
+        fuzzy = [p for p in learner if p[0] and _label_key(p[0])
+                 and (key in _label_key(p[0]) or _label_key(p[0]) in key)]
+        return fuzzy[0] if len(fuzzy) == 1 else None
 
     result = {"right": [], "wrong": [], "unit_missing": [], "unit_wrong": [], "missing": []}
     matched = 0
@@ -827,6 +860,16 @@ def diagnose_final_answer(question, final_answer_text, exclude_mutation=None) ->
         if units(final_answer_text) == units(question["final_answer_text"]):
             return Diagnosis(status=NO_ERROR, state=state, evidence_level="A", evidence="数值和单位都正确")
         return _diagnosed(state, "E5", "数值正确，但单位或表述与题目要求不符", rule="numbers_right_unit_wrong")
+
+    # every number written is a correct part, but some asked parts are missing ("小红今年5岁")
+    ref_parts = _answer_parts(question["final_answer_text"], _question_units(question))
+    if learner_nums and len(ref_parts) > 1 and set(learner_nums) < {p[1] for p in ref_parts}:
+        missing = [p[0] or "另一个量" for p in ref_parts if p[1] not in learner_nums]
+        right = [p[0] for p in ref_parts if p[1] in learner_nums and p[0]]
+        return Diagnosis(status=INSUFFICIENT, state=state, evidence_level="A", rule="answer_incomplete",
+                         follow_up=ASK_COMPLETE_ANSWER, evidence=f"写对的部分正确，但还缺少{'、'.join(missing)}",
+                         details={"right": right, "wrong": [], "unit_missing": [], "unit_wrong": [],
+                                  "missing": missing})
 
     candidates = []
     for m in question["mutations"]:

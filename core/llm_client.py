@@ -34,8 +34,8 @@ from pathlib import Path
 from core import math_checker as mc
 from core.normalizer import normalize_line
 from core.state_manager import (
-    ANSWER_QUESTION, ASK, COMPLETE, EVIDENCE_REQUEST, HINT, METACOGNITIVE, REVEAL, SELF_SUMMARY_ACK,
-    UNEXPECTED_INPUT,
+    ANSWER_QUESTION, ASK, COMPLETE, EVIDENCE_REQUEST, EXPLANATION_FOLLOW_UP, HINT, METACOGNITIVE,
+    REFLECTION_FEEDBACK, REVEAL, SELF_SUMMARY_ACK, UNEXPECTED_INPUT,
 )
 
 # ---------------------------------------------------------------------------
@@ -70,6 +70,29 @@ HINTS = {
            3: "先把题目里的数量和关系用文字列出来，再对照你写的内容逐项检查。"},
 }
 
+# E7 hints by the transformation rule the checker matched (Levels 2–3; Level 1 stays generic
+# so the learner looks for the change first)
+E7_RULE_HINTS = {
+    "distribute_first_term_only": {2: "去括号时，括号前的数要乘括号里的每一项，不能只乘第一项。",
+                                   3: "把括号前的数分别乘括号里的每一项，再把这一行重新写一遍。"},
+    "distribute_second_sign": {2: "括号前是负号时，去括号后括号里的每一项都要变号。",
+                               3: "把括号里的每一项都变号后写出来，再对照你写的这一行。"},
+    "distribute_sign_flipped": {2: "括号前是负号时，去括号后括号里的每一项都要变号。",
+                                3: "把括号里的每一项都变号后写出来，再对照你写的这一行。"},
+    "transposition_sign": {2: "把一项从等号一边移到另一边，要改变它的符号。",
+                           3: "找出你移动过的那一项，看它移过去之后符号有没有改变。"},
+    "operation_on_one_side": {2: "等式两边要做同样的运算，只改一边，等式就不成立了。",
+                              3: "写出你对左边做了什么运算，再对右边做同样的运算。"},
+    "add_instead_of_divide": {2: "ax = b 时，x 等于 b 除以 a，要两边同时除以 x 的系数。",
+                              3: "两边同时除以 x 前面的系数，再算一次。"},
+    "subtract_instead_of_divide": {2: "ax = b 时，x 等于 b 除以 a，要两边同时除以 x 的系数。",
+                                   3: "两边同时除以 x 前面的系数，再算一次。"},
+    "multiply_instead_of_divide": {2: "ax = b 时，x 等于 b 除以 a，要两边同时除以 x 的系数。",
+                                   3: "两边同时除以 x 前面的系数，再算一次。"},
+    "inverted_division": {2: "ax = b 时，x = b ÷ a，被除数和除数不要颠倒。",
+                          3: "用等号右边的数除以 x 的系数，再算一次。"},
+}
+
 # E4 subtype phrases for Level 2 (taxonomy §4.2)
 E4_PHRASES = {
     "E4-01": "“甲比乙多……”", "E4-02": "“甲比乙少……”", "E4-03": "“比原来增加了……%”",
@@ -88,7 +111,8 @@ EVIDENCE_TEXT = {
     "request_working": "能把你的解题步骤写出来吗？这样我能更准确地看出问题在哪里。",
     "clarify_variable_definition": "你设的 x 具体表示题目中的哪个量？请写成“设 x 表示……”。",
     "clarify_notation": None,          # use the normaliser's clarification message
-    "ask_discriminating_question": "你方程中的每一部分分别对应题目里的哪个量？可以用文字说一说吗？",
+    "ask_discriminating_question": "你方程中的每一部分分别对应题目里的哪个量？可以在下面用文字说一说，"
+                                   "也可以想清楚后直接修改方程再提交。",
     "continue_solving": "到这一步都是对的，继续往下算，直到写出 x = …。",
     "use_one_variable": "这一步请只用一个未知数 x：先写“设 x 表示……，则另一个量为……”，再列一个只含 x 的方程。",
     "rewrite_expression": "这个式子我没能读懂，检查一下符号、括号和等号，再写一遍。",
@@ -124,7 +148,8 @@ def _answer_part_text(rule, details):
     if rule == "answer_unit_missing":
         return f"数都对了！{'、'.join(details.get('unit_missing', []))}后面还少了单位，补上再提交。"
     if rule == "answer_incomplete":
-        return f"题目还要求写出{'、'.join(details.get('missing', []))}，把它也补上。"
+        head = f"{'、'.join(right)}写对了！" if right else ""
+        return f"{head}再看一眼题目最后问的是什么：还要写出{'、'.join(details.get('missing', []))}，把它也补上。"
     return None
 
 METACOGNITIVE_TEXT = {
@@ -158,6 +183,7 @@ def _learner_equations(spec: dict) -> list[str]:
         lines.append(li["equation"])
     steps = li.get("steps")
     lines += steps.splitlines() if isinstance(steps, str) else list(steps or [])
+    lines += [ln for h in spec.get("learner_history") or [] for ln in str(h).splitlines()]
     out = []
     for ln in lines:
         nl = normalize_line(ln)
@@ -179,7 +205,8 @@ def check_leakage(text: str, spec: dict) -> list[str]:
     if "final_answer" in forbidden:
         answer = mc.nsimplify(mc.S(spec["reference_answer"]), rational=True)
         # numbers the learner already wrote themselves are not leaked by quoting them back
-        learner_text = json.dumps(spec.get("learner_input") or {}, ensure_ascii=False)
+        learner_text = json.dumps([spec.get("learner_input") or {}, spec.get("learner_history") or []],
+                                  ensure_ascii=False)
         given = _numbers(spec.get("question", "")) | _numbers(learner_text)
         if answer in _numbers(text) and answer not in given:
             violations.append("final_answer")
@@ -296,11 +323,13 @@ CHAT_SYSTEM_PROMPT = """你是一名耐心的初中数学老师，学生正在�
 - 不要出现数学错误，不要引入题目中没有的条件。
 只输出 JSON：{"message": "..."}"""
 
-DISCRIMINATE_SYSTEM_PROMPT = """你是一名初中数学老师。学生列的方程和题意不一致，但系统还不能确定他错在哪里。
-请针对他写的这个方程问一个简短的问题（1–2 句），帮他自己对照题目检查：例如请他说出方程里某一部分对应题目里的哪个量，
-或者题目里某个条件在方程里体现在哪儿。要求：
-- 引用学生写的方程或其中一部分；先肯定可以肯定的部分（如果给了）。
+DISCRIMINATE_SYSTEM_PROMPT = """你是一名初中数学老师。学生写的式子和题意（或上一步）不一致，但系统还不能确定他错在哪里。
+请针对他写的内容问一个简短的问题（1–2 句），帮他自己对照题目检查：例如请他说出方程里某一部分对应题目里的哪个量，
+或者题目里某个条件在方程里体现在哪儿；如果是解方程的某一行，就问他从上一行到这一行做了什么运算。要求：
+- 引用学生写的式子或其中一部分；先肯定可以肯定的部分（如果给了）。
+- 学生写了方程就不要说他“还没有写出方程”。
 - 不要说他犯了哪一类错误，不要直接指出正确的方程，不要给答案。
+- 最后加一句：可以在下面用文字回答，也可以想清楚后直接修改再提交。
 - 不得包含 must_not_contain 中列出的内容。
 只输出 JSON：{"message": "..."}"""
 
@@ -310,6 +339,8 @@ def _discriminate_user_prompt(spec: dict, template: str) -> str:
         "题目": spec.get("question"),
         "学生的变量定义": spec.get("learner_definition") or spec.get("learner_variable_definition"),
         "学生的方程": spec.get("learner_equation"),
+        "出问题的那一行": spec.get("learner_line"),
+        "它的上一行（或学生列好的方程）": spec.get("prev_line"),
         "先肯定的部分": spec.get("acknowledge"),
         "must_not_contain": spec.get("must_not_contain", []),
         "参考问法": template,
@@ -318,6 +349,7 @@ def _discriminate_user_prompt(spec: dict, template: str) -> str:
 
 META_SYSTEM_PROMPT = """你是一名初中数学老师。学生刚刚把做错的一步改对了（或刚做完整道题），你要问他一个简短的反思问题。
 要求：1–2 句简体中文，自然、具体：先点出他改了什么（引用他前后写的内容），再请他用自己的话说说为什么这样才对；
+问题必须围绕“学生刚改正的错误”本身（例如去括号、移项），不要扯到题目里别的条件。
 如果是提示检验（prompt_verification），就请他把答案代回题目检查，可以点出一个具体要检查的条件。
 不得包含 must_not_contain 中列出的内容。只输出 JSON：{"message": "..."}"""
 
@@ -328,10 +360,74 @@ def _meta_user_prompt(spec: dict, template: str) -> str:
         "反思类型": spec.get("kind"),
         "刚完成的阶段": STATE_NAMES.get(spec.get("about_state"), spec.get("about_state")),
         "学生最近几次的作答（从早到晚）": spec.get("recent_work"),
+        "学生刚改正的错误": spec.get("corrected_error"),
         "可用来检验的条件": spec.get("verification_conditions"),
         "must_not_contain": spec.get("must_not_contain", []),
         "参考问法": template,
     }, ensure_ascii=False, indent=2)
+
+
+REFLECT_FEEDBACK_SYSTEM_PROMPT = """你是一名初中数学老师。你刚问了学生一个反思问题，学生回答了（或者说“不知道/为什么”）。
+用 1–3 句简体中文回应，然后这个话题就结束了：
+- 学生说不知道、问为什么：直接讲清楚原因，结合他自己写过的式子举例，不要再反问。
+- 学生答对了：肯定他，并用更准确的话把“要点”复述一遍。
+- 答对一部分或答偏了：肯定对的部分，再把“要点”补充完整。
+- 如果是检验类问题，可以用“代回检查的过程”把每个条件说一遍。
+以“要点”为准，不要引入新的条件或别的错误；不得包含 must_not_contain 中列出的内容。
+只输出 JSON：{"message": "..."}"""
+
+EXPLAIN_FOLLOW_UP_SYSTEM_PROMPT = """你是一名初中数学老师。你刚请学生说说他写的式子每部分对应题目里的哪个量，学生用文字回答了。
+用 1–3 句简体中文回应：
+- 先肯定他说对的对应关系；
+- 找出他的说法和题目（或他写的式子）不一致的地方，用一个问题把他引到那里（例如“5年后小红是多少岁，用 x 怎么表示？”）；
+- 最后请他据此修改式子再提交。
+不要直接给出正确的方程或答案；严格遵守提示等级；不得包含 must_not_contain 中列出的内容。
+只输出 JSON：{"message": "..."}"""
+
+
+def _reflect_user_prompt(spec: dict, template: str) -> str:
+    return json.dumps({
+        "题目": spec.get("question"),
+        "反思问题的类型": spec.get("reflection_kind"),
+        "学生的回答": spec.get("learner_reply"),
+        "学生刚改正的错误": spec.get("corrected_error"),
+        "要点": spec.get("reason"),
+        "代回检查的过程": spec.get("verification_walkthrough"),
+        "学生最近几次的作答（从早到晚）": spec.get("recent_work"),
+        "must_not_contain": spec.get("must_not_contain", []),
+        "参考说法": template,
+    }, ensure_ascii=False, indent=2)
+
+
+def _explain_user_prompt(spec: dict, template: str) -> str:
+    return json.dumps({
+        "题目": spec.get("question"),
+        "当前阶段": STATE_NAMES.get(spec.get("current_state"), spec.get("current_state")),
+        "学生写的": spec.get("learner_input"),
+        "学生对自己式子的解释": spec.get("learner_explanation"),
+        "题目中的数量关系（只供你判断，不要原样说出）": spec.get("relationship"),
+        "提示等级": spec.get("hint_level"),
+        "must_not_contain": spec.get("must_not_contain", []),
+        "参考说法": template,
+    }, ensure_ascii=False, indent=2)
+
+
+def _reflection_feedback_template(spec: dict) -> str:
+    walk = spec.get("verification_walkthrough") or []
+    if spec.get("reflection_kind") == "prompt_verification" and walk:
+        body = "把答案代回题目逐条检查：" + "；".join(walk) + "。每一条都成立，答案就可靠。"
+    elif spec.get("reason"):
+        body = f"要点是：{spec['reason']}"
+    else:
+        body = "关键是每一步都要和题目的条件对得上。"
+    if spec.get("kind") == "explain":
+        return "没关系，我来说一下。" + body
+    return "谢谢你的回答。" + body
+
+
+def _explanation_template(spec: dict) -> str:
+    return ("谢谢你的说明。再对照题目逐句看一遍：你说的每一部分，题目里是怎么描述的？"
+            "特别留意题目里描述数量关系的字眼（如“比……多”“一共”“是……的几倍”），在你的式子里有没有体现出来。想清楚后修改再提交。")
 
 
 STATE_NAMES = {"S1": "理解题意", "S2": "设未知数并列方程", "S3": "解方程", "S4": "写答案并检验", "DONE": "已完成"}
@@ -346,6 +442,9 @@ def _chat_user_prompt(spec: dict) -> str:
         "学生最近的作答": spec.get("recent_work"),
         "学生的变量定义": spec.get("learner_variable_definition"),
         "学生的问题": spec.get("learner_question"),
+        "老师刚才说的话（学生的问题可能是针对它的）": spec.get("last_tutor_text"),
+        "学生刚改正的错误": spec.get("corrected_error"),
+        "要点": spec.get("reason"),
         "must_not_contain": spec.get("must_not_contain", []),
         "题目中的数量关系": spec.get("relationship"),
         "可用来检验的条件": spec.get("verification_conditions"),
@@ -367,6 +466,8 @@ def _answer_fallback(spec: dict) -> str:
         known = "" if spec.get("must_not_contain") else f"把你的答案（{spec.get('final_answer_text')}）"
         return (f"“代回原题检查”就是{known or '把你求出的结果'}放回题目里，逐条看题目的条件是否都成立。"
                 f"这道题可以检查：{items}。都成立，答案就可靠了。")
+    if spec.get("reason"):                         # a question about the reflection that is open
+        return f"好问题。要点是：{spec['reason']}"
     task = ASK_TEXT.get(spec.get("current_task"), "")
     return f"好问题！结合题目想一想：{task} 先按你的理解写出来提交，我会根据你写的内容给你具体提示。".strip()
 
@@ -405,12 +506,18 @@ def _template_hint(category, level, spec) -> str:
     text = HINTS.get(category_text, HINTS[None])[level]
     if spec.get("rule") == "s1_unsure" and level == 1:
         text = "没关系，我们一起看。" + text
+    if category == "E7" and level >= 2 and spec.get("rule") in E7_RULE_HINTS:
+        text = E7_RULE_HINTS[spec["rule"]][level]
     if category == "E4" and level == 2 and spec.get("error_subtype") in E4_PHRASES:
         text = f"题目中的{E4_PHRASES[spec['error_subtype']]}描述的是变化量，还是变化后的总量？请先用自己的话解释。"
     k = spec.get("first_invalid_step")
     if category in ("E6", "E7") and k:
         line = spec.get("learner_line")
-        text = (f"看第{k}行“{line}”：" if line else f"看第{k}行：") + text
+        if spec.get("from_start_equation") and spec.get("prev_line"):
+            text = (f"看第{k}行“{line}”：它是从你列的方程“{spec['prev_line']}”变来的。"
+                    + text.replace("从上一行到这一行", "从你列的方程到这一行"))
+        else:
+            text = (f"看第{k}行“{line}”：" if line else f"看第{k}行：") + text
     return _ack_prefix(spec) + text
 
 
@@ -517,9 +624,17 @@ class TutorVoice:
         spec.setdefault("final_answer_text", self.q.get("final_answer_text"))
         if self.target:
             spec.setdefault("target", self.target)
+        if getattr(self, "last_text", None):
+            spec.setdefault("last_tutor_text", self.last_text)
         return spec
 
     def render(self, action) -> Message:
+        m = self._render(action)
+        if action.type != ANSWER_QUESTION:
+            self.last_text = m.text
+        return m
+
+    def _render(self, action) -> Message:
         t = action.type
         spec = self._spec(action)
         if t == ASK:
@@ -533,12 +648,20 @@ class TutorVoice:
             if text is None:                       # notation clarification from the normaliser
                 d = action.diagnosis or {}
                 text = d.get("evidence", "").split("：", 1)[-1] or "这个写法有歧义，请用括号写清楚。"
+            if action.request == "ask_discriminating_question" and action.state == "S3" and spec.get("line_no"):
+                k, line, prev = spec["line_no"], spec.get("learner_line"), spec.get("prev_line")
+                src = f"你列的方程“{prev}”" if spec.get("from_start_equation") and prev else "上一行"
+                text = (f"第{k}行“{line}”和{src}不再相等了。你从{src}到这一行做了什么运算？"
+                        "可以在下面用文字说一说，也可以直接修改再提交。")
             if action.request == "ask_discriminating_question":
                 # no error category can be claimed: ask about THIS equation, never name an error
                 return self._llm_or(text, DISCRIMINATE_SYSTEM_PROMPT, _discriminate_user_prompt(spec, text), spec, t)
             return Message(text, "template", t)
         if t == METACOGNITIVE:
             template = METACOGNITIVE_TEXT.get(action.task, "你是怎么确定这一步是对的？")
+            if action.task == "explain_why_correct" and spec.get("corrected_error"):
+                template = (f"现在对了！刚才的问题出在“{spec['corrected_error']}”。"
+                            "用一句话说说：为什么要这样改？")
             return self._llm_or(template, META_SYSTEM_PROMPT, _meta_user_prompt(spec, template), spec, t)
         if t == REVEAL:
             text = _reveal_text(spec, action.state)
@@ -547,6 +670,12 @@ class TutorVoice:
             return Message(text, "template", t, hint_level=4, category=action.category)
         if t == COMPLETE:
             return Message(DONE_TEXT, "template", t)
+        if t == REFLECTION_FEEDBACK:
+            template = _reflection_feedback_template(spec)
+            return self._llm_or(template, REFLECT_FEEDBACK_SYSTEM_PROMPT, _reflect_user_prompt(spec, template), spec, t)
+        if t == EXPLANATION_FOLLOW_UP:
+            template = _explanation_template(spec)
+            return self._llm_or(template, EXPLAIN_FOLLOW_UP_SYSTEM_PROMPT, _explain_user_prompt(spec, template), spec, t)
         if t == SELF_SUMMARY_ACK:
             return Message("记下了！能用自己的话说出这道题的关键，比做对一道题更重要。", "template", t)
         if t == UNEXPECTED_INPUT:

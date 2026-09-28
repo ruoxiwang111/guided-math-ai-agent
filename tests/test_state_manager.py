@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 from core.state_manager import (
-    ASK, COMPLETE, DONE, EVIDENCE_REQUEST, HINT, METACOGNITIVE, REVEAL, S1, S2, S3, S4,
+    ASK, COMPLETE, DONE, EVIDENCE_REQUEST, HINT, METACOGNITIVE, REFLECTION_FEEDBACK, REVEAL, S1, S2, S3, S4,
     UNEXPECTED_INPUT, TutorSession,
 )
 
@@ -119,8 +119,9 @@ def test_reflection_after_corrected_error_counts_toward_budget():
     s.submit(S2_E4)
     a = s.submit(S2_OK)
     assert a.type == METACOGNITIVE and a.counts_toward_budget and s.metacognitive_count == 1
-    nxt = s.submit({"type": "reflection", "text": "小明比小华大，所以是 x+5"})
-    assert (nxt.type, nxt.state) == (ASK, S3)
+    fb = s.submit({"type": "reflection", "text": "小明比小华大，所以是 x+5"})
+    assert fb.type == REFLECTION_FEEDBACK and fb.task == "feedback"   # the reply gets a response first
+    assert (fb.next_action.type, fb.next_action.state) == (ASK, S3)
 
 
 def test_budget_keeps_a_slot_for_verification():
@@ -270,7 +271,8 @@ def test_question_during_reflection_keeps_it_open():
     a = s.submit({"type": "reflection", "text": "怎么带回原题检查"})
     assert a.type == ANSWER_QUESTION and s.awaiting_reflection
     assert a.prompt_spec["must_not_contain"] == []                # answer already correct
-    assert s.submit({"type": "reflection", "text": "28=28，都对"}).type == COMPLETE
+    fb = s.submit({"type": "reflection", "text": "28=28，都对"})
+    assert fb.type == REFLECTION_FEEDBACK and fb.next_action.type == COMPLETE
 
 
 def test_one_wrong_part_is_named_not_request_for_working():

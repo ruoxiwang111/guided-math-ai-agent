@@ -42,6 +42,7 @@ from datetime import datetime
 
 from core import diagnosis as dx
 from core import math_checker as mc
+from core import review as rv
 
 S1, S2, S3, S4, DONE = "S1", "S2", "S3", "S4", "DONE"
 NEXT_STATE = {S1: S2, S2: S3, S3: S4, S4: DONE}
@@ -54,6 +55,8 @@ EVIDENCE_REQUEST = "evidence_request"        # not counted in the budget
 METACOGNITIVE = "metacognitive_question"     # counted in the budget
 REVEAL = "reveal_step"                       # show the correct step after level 4 failed
 ANSWER_QUESTION = "answer_question"          # reply to a learner's own question (no state change)
+REFLECTION_FEEDBACK = "reflection_feedback"  # closes a reflection: feedback on the reply, or the reason if "不知道"
+EXPLANATION_FOLLOW_UP = "explanation_follow_up"  # reply to the learner's words after a discriminating question
 COMPLETE = "complete"
 SELF_SUMMARY_ACK = "self_summary_ack"        # the learner's own one-sentence summary was recorded
 UNEXPECTED_INPUT = "unexpected_input"
@@ -68,6 +71,17 @@ QUESTION_RE = re.compile(r"[？?]|怎么|为什么|什么意思|啥意思|不懂
 
 def looks_like_question(text: str) -> bool:
     return bool(text and QUESTION_RE.search(text))
+
+
+DONT_KNOW_RE = re.compile(r"不知道|不清楚|不会|不懂|不明白|没想法|想不出|不确定|不记得|忘了|没思路")
+
+
+def asks_for_the_reason(text: str) -> bool:
+    """'不知道' / '为什么' / '不懂' / '？' as a reply to a reflection question = "tell me the reason"."""
+    t = re.sub(r"[\s，,。.!！~…]", "", text or "")
+    if not t or DONT_KNOW_RE.search(t):
+        return True
+    return looks_like_question(t) and len(t) <= 6
 
 TASK_OF_STATE = {
     S1: "identify_target",          # 这道题最后要求我们求什么？
@@ -127,6 +141,8 @@ class TutorSession:
         self._last_response: dict | None = None
         self.learner_questions = 0
         self.self_summary: str | None = None
+        self.reflection_about: str | None = None       # the state a reflection question is about
+        self.awaiting_explanation = False              # a discriminating question may be answered in words
         self.understanding: dict | None = None       # "我读到的已知条件" check before S1 (extracted problems)
         # the learner's accepted model (standard or an accepted alternative definition)
         self.model = {"variable_definition": question["variable_definition"],
@@ -149,7 +165,11 @@ class TutorSession:
         self.events.append(rec)
 
     def _forbidden(self, level: int) -> list[str]:
-        """What a hint at this level must not contain (evaluation_plan §3.9.1)."""
+        """
+        What a hint at this level must not contain (evaluation_plan §3.9.1) — but only what the
+        learner has not produced yet: after S2 is passed the equation is theirs, after S3 the value
+        of x is theirs, so quoting them back is not leakage.
+        """
         if level >= 4:
             return []
         forbidden = ["final_answer"]
@@ -157,7 +177,44 @@ class TutorSession:
             forbidden.append("complete_equation")
         if level == 1:
             forbidden.append("key_intermediate_value")
+        if self.records[S2].passed and "complete_equation" in forbidden:
+            forbidden.remove("complete_equation")
+        if self.records[S3].passed:
+            forbidden = [f for f in forbidden if f not in ("final_answer", "key_intermediate_value")]
         return forbidden
+
+    def _learner_history(self) -> list[str]:
+        """Everything the learner has written in this session (exempt from the leakage check)."""
+        out = []
+        for e in self.events:
+            if e.get("event") == "learner_response":
+                r = e.get("response") or {}
+                for k in ("variable_definition", "equation", "final_answer_text"):
+                    if r.get(k):
+                        out.append(str(r[k]))
+                steps = r.get("steps")
+                out += steps.splitlines() if isinstance(steps, str) else [str(x) for x in steps or []]
+            elif e.get("event") in ("learner_explanation", "reflection_reply", "learner_question"):
+                out.append(e.get("text", ""))
+        return [x for x in out if x]
+
+    def _corrected_error(self, state: str):
+        """(category, subtype, rule) of the last diagnosed error in a state, or None."""
+        for e in reversed(self.events):
+            if e.get("event") == "diagnosis" and e.get("state") == state \
+                    and e.get("diagnosis_status") == "diagnosed" and e.get("diagnosed_error"):
+                return e["diagnosed_error"], e.get("error_subtype"), e.get("rule")
+        return None
+
+    def _reason_for(self, state: str) -> dict:
+        """What the learner just corrected, in words (deterministic, from core/review)."""
+        err = self._corrected_error(state)
+        if not err:
+            return {}
+        c, sub, rule = err
+        family = rv.topic_family(self.q.get("topic"))
+        return {"corrected_error": rv._weak_point(c, sub, rule, family),
+                "reason": rv._takeaway(c, sub, rule, self.q.get("relationship"))}
 
     def _spec(self, level: int | None = None, **extra) -> dict:
         spec = {
@@ -166,6 +223,7 @@ class TutorSession:
             "learner_variable_definition": self.model["variable_definition"],
             "reference_answer": str(self.model["answer"]),
             "reference_equation": self.model["equation"],
+            "learner_history": self._learner_history(),
         }
         if level is not None:
             spec["hint_level"] = level
@@ -198,6 +256,12 @@ class TutorSession:
             return self._metacognitive(prev, "explain_why_correct", resume=nxt)
         return nxt
 
+    def _reflection_context(self, about_state: str, kind: str) -> dict:
+        if kind == "prompt_verification":
+            x = self.final_x if self.final_x is not None else self.model.get("answer")
+            return {"verification_walkthrough": rv.verification_walkthrough(self.q, x)}
+        return self._reason_for(about_state)
+
     def _budget_left(self, reserve: int = 0) -> bool:
         return self.metacognitive_count < self.budget - reserve
 
@@ -206,11 +270,13 @@ class TutorSession:
         self.pending = resume
         self.awaiting_reflection = True
         self.reflection_kind = kind
+        self.reflection_about = about_state
         self._log("metacognitive_follow_up", kind=kind, about_state=about_state)
         # the answer of later steps must still not be given away, unless the problem is solved
         spec = self._spec(level=None if self.state == DONE else 2, kind=kind, about_state=about_state,
                           current_state=about_state, recent_work=self._recent_work(),
-                          verification_conditions=[c["description"] for c in self.q.get("verification_conditions", [])])
+                          verification_conditions=[c["description"] for c in self.q.get("verification_conditions", [])],
+                          **self._reflection_context(about_state, kind))
         if self.state == DONE:
             spec["must_not_contain"] = []
         return TutorAction(METACOGNITIVE, self.state, task=kind, counts_toward_budget=True, prompt_spec=spec)
@@ -222,6 +288,7 @@ class TutorSession:
         rec.evidence_requests += 1
         self.evidence_request_count += 1
         request = d.follow_up or dx.ASK_WORKING
+        self.awaiting_explanation = request == dx.ASK_DISCRIMINATING
         self._log("evidence_request", request=request, diagnosis_status=d.status,
                   candidates=d.candidates, evidence_level=d.evidence_level)
         return TutorAction(EVIDENCE_REQUEST, self.state, task=INPUT_FOR_STATE[self.state],
@@ -303,7 +370,9 @@ class TutorSession:
             lines = [ln.strip() for ln in (steps.splitlines() if isinstance(steps, str) else steps or []) if ln.strip()]
             k = d.first_invalid_step
             if 1 <= k <= len(lines):
-                ctx.update(line_no=k, learner_line=lines[k - 1], prev_line=lines[k - 2] if k >= 2 else None)
+                prev = d.details.get("prev_line") or (lines[k - 2] if k >= 2 else None)
+                ctx.update(line_no=k, learner_line=lines[k - 1], prev_line=prev,
+                           from_start_equation=bool(d.details.get("from_start_equation")))
             if k >= 3:
                 ctx["acknowledge"].append(f"前{k - 1}行都是对的")
             elif k == 2:
@@ -350,10 +419,50 @@ class TutorSession:
                           current_state=self.state,
                           current_task=TASK_OF_STATE.get(self.state),
                           reflection_kind=self.reflection_kind if self.awaiting_reflection else None,
+                          **(self._reflection_context(self.reflection_about, self.reflection_kind)
+                             if self.awaiting_reflection else {}),
                           recent_work=self._recent_work(),
                           verification_conditions=[c["description"] for c in self.q.get("verification_conditions", [])],
                           relationship=self.q.get("relationship"))
         return TutorAction(ANSWER_QUESTION, self.state, task=TASK_OF_STATE.get(self.state), prompt_spec=spec)
+
+    def _reflection_feedback(self, text: str, explain: bool) -> TutorAction:
+        """Close a reflection: short feedback on the reply, or the reason itself for "不知道"."""
+        about, kind = self.reflection_about, self.reflection_kind
+        self.awaiting_reflection = False
+        self._log("reflection_reply", text=text, asked_for_reason=explain)
+        resume, self.pending = self.pending, None
+        spec = self._spec(level=None if self.state == DONE else 2, kind="explain" if explain else "feedback",
+                          learner_reply=text, reflection_kind=kind, about_state=about,
+                          recent_work=self._recent_work(), **self._reflection_context(about, kind))
+        if self.state == DONE:
+            spec["must_not_contain"] = []
+        action = TutorAction(REFLECTION_FEEDBACK, self.state, task="explain" if explain else "feedback",
+                             prompt_spec=spec)
+        action.next_action = resume or self._ask()
+        return action
+
+    def explain(self, text: str) -> TutorAction:
+        """
+        The learner answers a discriminating question in words ("3x+5 是5年后小明的年龄…").
+        No state change and no hint-level change: the reply looks at what they said and sends
+        them back to revise their work.
+        """
+        text = (text or "").strip()
+        if self.state not in (S2, S3) or not text:
+            return TutorAction(UNEXPECTED_INPUT, self.state, task=INPUT_FOR_STATE.get(self.state),
+                               note="an explanation answers a question about the current equation or step")
+        self.awaiting_explanation = False
+        self._log("learner_explanation", text=text)
+        rec = self.records[self.state]
+        level = max(1, rec.max_hint_level)
+        r = self._last_response or {}
+        spec = self._spec(level=level, learner_explanation=text, current_state=self.state,
+                          learner_input={k: v for k, v in r.items() if k != "type"},
+                          learner_equation=r.get("equation"), learner_definition=r.get("variable_definition"),
+                          relationship=self.q.get("relationship"))
+        return TutorAction(EXPLANATION_FOLLOW_UP, self.state, task=INPUT_FOR_STATE[self.state],
+                           hint_level=level, prompt_spec=spec)
 
     def record_understanding(self, confirmed: bool, corrections: int = 0, notes=None):
         """The learner's check of how the system read the problem (before S1). Logged, not judged."""
@@ -392,18 +501,22 @@ class TutorSession:
                 self._log("unexpected_input", got=kind, expected=INPUT_FOR_STATE.get(self.state))
                 return TutorAction(UNEXPECTED_INPUT, self.state, task=INPUT_FOR_STATE.get(self.state),
                                    note="no metacognitive question is open")
-            if looks_like_question(response.get("text", "")):
-                # the learner asks instead of answering: answer, keep the reflection open
-                return self.ask_question(response.get("text", ""))
-            self.awaiting_reflection = False
-            self._log("reflection_reply", text=response.get("text", ""))
-            resume, self.pending = self.pending, None
-            return resume or self._ask()
+            text = response.get("text", "")
+            if asks_for_the_reason(text):
+                # "不知道" / "为什么": give the reason now instead of moving on without it
+                return self._reflection_feedback(text, explain=True)
+            if looks_like_question(text):
+                # a specific question: answer it, keep the reflection open
+                return self.ask_question(text)
+            return self._reflection_feedback(text, explain=False)
+        if kind == "explanation":
+            return self.explain(response.get("text", ""))
         if self.awaiting_reflection:
             # learner skipped the reflection question: allowed, recorded
             self.awaiting_reflection = False
             self.pending = None
             self._log("reflection_skipped")
+        self.awaiting_explanation = False
 
         if self.state == DONE:
             return TutorAction(COMPLETE, DONE, note="session already complete")
@@ -457,9 +570,13 @@ class TutorSession:
     def _submit_s3(self, r):
         steps = r.get("steps") or []
         view = self._question_view()
-        d = dx.diagnose_steps(view, steps, self.model["variable_definition"])
+        start = self.model.get("learner_equation") or self.model["equation"]
+        d = dx.diagnose_steps(view, steps, self.model["variable_definition"], start_equation=start)
         if d.status == dx.NO_ERROR:
             check = mc.check_steps(steps, reference_equation=view["equation"])
+            if check.status != mc.ALL_VALID:        # the working did not repeat the equation itself
+                lines = steps.splitlines() if isinstance(steps, str) else list(steps)
+                check = mc.check_steps([start] + lines, reference_equation=view["equation"])
             if check.final_matches_reference:
                 self.final_x = check.final_value
                 self._log("diagnosis", diagnosis_status=d.status, evidence_level=d.evidence_level,
