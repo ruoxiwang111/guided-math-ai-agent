@@ -161,6 +161,8 @@ def validate_structure(raw: dict, text: str = "") -> tuple[dict | None, list[Che
     # verification conditions must hold at the solution
     conds = []
     for c in raw.get("verification_conditions") or []:
+        if not isinstance(c, dict):
+            continue
         if {"description", "lhs", "op"} <= set(c) and c["op"] in ("==", ">", "<", ">=", "<=", "integer"):
             conds.append({k: c[k] for k in ("description", "lhs", "op", "rhs") if k in c})
     results = mc.check_conditions(conds, x_val) if conds else []
@@ -234,12 +236,22 @@ def _independent_agrees(record: dict, independent: dict | None) -> tuple[bool | 
 # public entry point
 # ---------------------------------------------------------------------------
 
-def extract_structure(text: str, backend) -> Extraction:
+def extract_structure(text: str, backend, learner_note: str | None = None) -> Extraction:
+    """
+    learner_note: the learner's correction after seeing "我读到的已知条件" (e.g. "乙每小时走6千米").
+    It is passed to the extraction only. The independent solve still sees the problem text alone,
+    so a wrong correction produces a structure the independent solution disagrees with, and the
+    problem is not guided — the learner cannot talk the system into a wrong reading.
+    """
     text = (text or "").strip()
     if backend is None:
         return Extraction(text, scope=UNCERTAIN, error="no LLM backend: only question-bank items can be guided")
+    payload = {"题目": text}
+    if learner_note:
+        payload["学生对题意的说明"] = (f"学生认为你上次读错了题：{learner_note}。请对照原题重新读一遍；"
+                                 "学生的说法不一定对，一切以原题文字为准。")
     try:
-        raw = json.loads(backend.complete(EXTRACT_SYSTEM, json.dumps({"题目": text}, ensure_ascii=False)))
+        raw = json.loads(backend.complete(EXTRACT_SYSTEM, json.dumps(payload, ensure_ascii=False)))
     except Exception as exc:  # noqa: BLE001
         return Extraction(text, scope=UNCERTAIN, error=f"extraction failed: {exc}")
 
@@ -264,6 +276,6 @@ def extract_structure(text: str, backend) -> Extraction:
     ex.consistency = CONSISTENT if agrees else (INCONSISTENT if agrees is False else UNCERTAIN)
     describe = getattr(backend, "describe", lambda: {})()
     record["extraction"] = {"consistency": ex.consistency, "prompt_version": PROMPT_VERSION, "model": describe,
-                            "checks": [c.__dict__ for c in ex.checks]}
+                            "checks": [c.__dict__ for c in ex.checks], "learner_note": learner_note}
     ex.question = record
     return ex

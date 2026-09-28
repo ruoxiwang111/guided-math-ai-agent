@@ -15,6 +15,7 @@ Public API
     load_targets(path)                          -> dict
     build_s1_item(question, targets, n_options=4) -> dict
     to_submission(item, chosen_id)              -> dict   # input for TutorSession.submit
+                                                          # chosen_id "U" = 我不确定 (asks for help)
 """
 from __future__ import annotations
 
@@ -23,6 +24,9 @@ import random
 from pathlib import Path
 
 PROMPT = "这道题最后要求我们求什么？"
+# kept apart from `options` (always shown last, never shuffled): choosing it is not an answer,
+# it asks for help — the state manager gives a hint and records no error
+UNSURE = {"id": "U", "text": "我不确定", "source": "unsure"}
 DEFAULT_TARGETS = Path(__file__).resolve().parents[1] / "data" / "s1_targets.json"
 
 
@@ -59,11 +63,15 @@ def build_s1_item(question: dict, targets: dict, n_options: int = 4) -> dict:
     for i, o in enumerate(options):
         o["id"] = "ABCDEFG"[i]
     correct = next(o["id"] for o in options if o["source"] == "target")
-    return {"question_id": qid, "prompt": PROMPT, "options": options, "correct_id": correct}
+    return {"question_id": qid, "prompt": PROMPT, "options": options, "correct_id": correct,
+            "unsure_option": dict(UNSURE)}
 
 
 def to_submission(item: dict, chosen_id: str) -> dict:
     """Turn a learner's click into the S1 input expected by TutorSession.submit()."""
+    if chosen_id == UNSURE["id"]:
+        return {"type": "s1_choice", "correct": False, "unsure": True, "chosen_id": chosen_id,
+                "chosen_text": UNSURE["text"], "chosen_source": "unsure"}
     chosen = next((o for o in item["options"] if o["id"] == chosen_id), None)
     if chosen is None:
         raise ValueError(f"option {chosen_id!r} not in {[o['id'] for o in item['options']]}")

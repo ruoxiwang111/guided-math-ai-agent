@@ -22,6 +22,9 @@ Policies
                     state advances (§20: stop escalating once understanding is shown)
   after level 4   one more failure → the correct step is shown ("reveal"), the state is
                     recorded as not independently solved, and the session moves on
+  reveal request  after REVEAL_AFTER_ATTEMPTS tries at a step (S2–S4) the learner may ask to
+                    see that step ({"type": "reveal_request"}); recorded as revealed, and as
+                    requested by the learner (help-seeking, not a failure of the hints)
   evidence requests (show working / what is x / clarify notation / discriminating question)
                     do NOT count toward the metacognitive budget (taxonomy §9 step 7, §18);
                     capped per state so the learner is never asked for the same thing forever
@@ -52,11 +55,13 @@ METACOGNITIVE = "metacognitive_question"     # counted in the budget
 REVEAL = "reveal_step"                       # show the correct step after level 4 failed
 ANSWER_QUESTION = "answer_question"          # reply to a learner's own question (no state change)
 COMPLETE = "complete"
+SELF_SUMMARY_ACK = "self_summary_ack"        # the learner's own one-sentence summary was recorded
 UNEXPECTED_INPUT = "unexpected_input"
 
 MAX_HINT_LEVEL = 4
 DEFAULT_METACOGNITIVE_BUDGET = 2
 MAX_EVIDENCE_REQUESTS_PER_STATE = 2
+REVEAL_AFTER_ATTEMPTS = 2                    # "看这一步的参考" becomes available after 2 tries
 
 QUESTION_RE = re.compile(r"[？?]|怎么|为什么|什么意思|啥意思|不懂|不会|不明白|如何|能不能|可以.*吗|是什么|哪里")
 
@@ -95,6 +100,7 @@ class StateRecord:
     max_hint_level: int = 0
     evidence_requests: int = 0
     revealed: bool = False
+    reveal_requested: bool = False           # shown because the learner asked (vs. after level 4)
     errors: list = field(default_factory=list)
     passed: bool = False
 
@@ -120,6 +126,8 @@ class TutorSession:
         self.reflection_kind: str | None = None
         self._last_response: dict | None = None
         self.learner_questions = 0
+        self.self_summary: str | None = None
+        self.understanding: dict | None = None       # "我读到的已知条件" check before S1 (extracted problems)
         # the learner's accepted model (standard or an accepted alternative definition)
         self.model = {"variable_definition": question["variable_definition"],
                       "equation": question["equation"], "answer": question["answer"],
@@ -222,23 +230,45 @@ class TutorSession:
                                                   current_state=self.state, evidence=d.evidence,
                                                   **self._learner_context(d, None)))
 
+    def _reveal(self, category: str | None, requested: bool = False) -> TutorAction:
+        """Show the correct step of the current state, record it, and move on."""
+        rec = self.records[self.state]
+        rec.revealed = True
+        rec.reveal_requested = requested
+        self._log("reveal_step", diagnosed_error=category, requested_by_learner=requested,
+                  attempts=rec.attempts)
+        state = self.state
+        if state == S2:
+            # continue from the reference model
+            self.model = {"variable_definition": self.q["variable_definition"],
+                          "equation": self.q["equation"], "answer": self.q["answer"],
+                          "is_standard": True}
+        if state == S3:
+            self.final_x = self.model["answer"]
+        spec = self._spec(level=4, reveal=True, requested=requested)
+        note = ("the learner asked to see this step" if requested
+                else "level 4 did not resolve the error; the correct step is shown")
+        reveal = TutorAction(REVEAL, state, category=category, hint_level=4, prompt_spec=spec, note=note)
+        reveal.next_action = self._advance()
+        return reveal
+
+    def can_reveal(self) -> bool:
+        """The learner may ask to see the current step after trying it at least REVEAL_AFTER_ATTEMPTS times."""
+        return (self.state in (S2, S3, S4) and not self.awaiting_reflection
+                and self.records[self.state].attempts >= REVEAL_AFTER_ATTEMPTS)
+
+    def request_reveal(self) -> TutorAction:
+        if not self.can_reveal():
+            self._log("reveal_refused", attempts=self.records[self.state].attempts if self.state in self.records else None)
+            return TutorAction(UNEXPECTED_INPUT, self.state, task=INPUT_FOR_STATE.get(self.state),
+                               note=f"reveal is available after {REVEAL_AFTER_ATTEMPTS} attempts at this step")
+        return self._reveal(None, requested=True)
+
     def _hint_or_reveal(self, d: dx.Diagnosis | None, category: str | None) -> TutorAction:
         rec = self.records[self.state]
         rec.failed_attempts += 1
         if rec.failed_attempts > MAX_HINT_LEVEL:
-            rec.revealed = True
-            self._log("reveal_step", diagnosed_error=category)
-            state = self.state
-            spec = self._spec(level=4, reveal=True)
-            if state == S2:
-                # continue from the reference model
-                self.model = {"variable_definition": self.q["variable_definition"],
-                              "equation": self.q["equation"], "answer": self.q["answer"],
-                              "is_standard": True}
-            reveal = TutorAction(REVEAL, state, category=category, hint_level=4, prompt_spec=spec,
-                                 note="level 4 did not resolve the error; the correct step is shown")
-            reveal.next_action = self._advance()
-            return reveal
+            return self._reveal(category)
         level = min(MAX_HINT_LEVEL, rec.failed_attempts)
         rec.max_hint_level = max(rec.max_hint_level, level)
         self._log("hint", diagnosed_error=category, hint_level=level,
@@ -248,6 +278,7 @@ class TutorSession:
                            error_subtype=d.error_subtype if d else None, hint_level=level,
                            diagnosis=asdict(d) if d else None,
                            prompt_spec=self._spec(level=level, category=category,
+                                                  rule=d.rule if d else None,
                                                   error_subtype=d.error_subtype if d else None,
                                                   evidence=d.evidence if d else None,
                                                   first_invalid_step=d.first_invalid_step if d else None,
@@ -264,9 +295,9 @@ class TutorSession:
         if self.state == S2:
             vd, eq = r.get("variable_definition"), r.get("equation")
             ctx.update(learner_definition=vd, learner_equation=eq)
-            ref = dx._match_definition(vd, dx._references(self.q)) if vd else None
+            ref = dx.resolve_definition(vd, dx._references(self.q))[0] if vd else None
             if ref is not None and category not in ("E2",):
-                ctx["acknowledge"].append(f"你设 x 表示{dx._quantity(vd)}，这个设法没问题")
+                ctx["acknowledge"].append(f"你写的“{vd.strip()}”这个设法没问题")
         elif self.state == S3 and d is not None and d.first_invalid_step:
             steps = r.get("steps")
             lines = [ln.strip() for ln in (steps.splitlines() if isinstance(steps, str) else steps or []) if ln.strip()]
@@ -324,6 +355,22 @@ class TutorSession:
                           relationship=self.q.get("relationship"))
         return TutorAction(ANSWER_QUESTION, self.state, task=TASK_OF_STATE.get(self.state), prompt_spec=spec)
 
+    def record_understanding(self, confirmed: bool, corrections: int = 0, notes=None):
+        """The learner's check of how the system read the problem (before S1). Logged, not judged."""
+        self.understanding = {"confirmed": bool(confirmed), "corrections": int(corrections),
+                              "notes": list(notes or [])}
+        self._log("understanding_check", **self.understanding)
+
+    def record_self_summary(self, text: str) -> TutorAction:
+        """Optional one-sentence summary after the problem is done (review / 复盘). Recorded, not judged."""
+        text = (text or "").strip()
+        if self.state != DONE or not text:
+            return TutorAction(UNEXPECTED_INPUT, self.state, task=INPUT_FOR_STATE.get(self.state),
+                               note="a self summary is written after the problem is finished")
+        self.self_summary = text
+        self._log("self_summary", text=text)
+        return TutorAction(SELF_SUMMARY_ACK, DONE, note="self summary recorded")
+
     # ------------------------------------------------------------------ public API
     def start(self) -> TutorAction:
         self._log("session_start", mode="guided")
@@ -334,6 +381,10 @@ class TutorSession:
 
         if kind == "question":
             return self.ask_question(response.get("text", ""))
+        if kind == "reveal_request":
+            return self.request_reveal()
+        if kind == "self_summary":
+            return self.record_self_summary(response.get("text", ""))
 
         # reply to a metacognitive question: recorded, not judged here (LLM may classify later)
         if kind == "reflection":
@@ -372,6 +423,12 @@ class TutorSession:
     def _submit_s1(self, r):
         if r.get("correct"):
             return self._advance()
+        if r.get("unsure"):
+            # "我不确定" is a request for help, not a wrong answer: hint, no error recorded
+            self._log("s1_unsure")
+            d = dx.Diagnosis(status=dx.INSUFFICIENT, state=S1, evidence_level="D", rule="s1_unsure",
+                             evidence="学生选择了“我不确定”，还没有判断题目要求什么")
+            return self._hint_or_reveal(d, None)
         chosen = r.get("chosen_text")
         why = {"known_quantity": "选了题目已经给出的已知量",
                "intermediate_quantity": "选了解题过程中的中间量"}.get(r.get("chosen_source"), "")
@@ -386,7 +443,8 @@ class TutorSession:
         d = dx.diagnose_modelling(self.q, r.get("equation", ""), r.get("variable_definition"))
         if d.status == dx.NO_ERROR:
             vd = r.get("variable_definition") or self.q["variable_definition"]
-            ref = dx._match_definition(vd, dx._references(self.q)) or dx._references(self.q)[0]
+            refs = dx._references(self.q)
+            ref = next((x for x in refs if x["label"] == d.details.get("ref")), None) or refs[0]
             self.model = {"variable_definition": vd, "equation": ref["equation"],
                           "answer": ref["answer"], "is_standard": ref["label"] == "standard",
                           "learner_equation": r.get("equation")}
@@ -450,12 +508,15 @@ class TutorSession:
             "accepted_model": "standard" if self.model["is_standard"] else "alternative",
             "states": {
                 s: {"passed": r.passed, "independent": r.independent, "attempts": r.attempts,
-                    "max_hint_level": r.max_hint_level, "revealed": r.revealed, "errors": r.errors}
+                    "max_hint_level": r.max_hint_level, "revealed": r.revealed,
+                    "reveal_requested": r.reveal_requested, "errors": r.errors}
                 for s, r in self.records.items()
             },
             "active_verification": any(e.get("active_verification") for e in self.events
                                        if e["event"] == "verification"),
             "learner_questions": self.learner_questions,
+            "self_summary": self.self_summary,
+            "understanding": self.understanding,
         }
 
     def events_jsonl(self) -> str:

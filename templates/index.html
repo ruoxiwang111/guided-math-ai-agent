@@ -692,6 +692,22 @@
             cursor: not-allowed;
         }
 
+        .guided-reveal {
+            align-self: flex-end;
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 13px;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 2px 0;
+        }
+
+        .guided-reveal:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .guided-check {
             display: flex;
             align-items: center;
@@ -745,6 +761,83 @@
             border-radius: 12px;
             padding: 16px;
             line-height: 1.8;
+        }
+
+        .review-section {
+            margin-top: 14px;
+        }
+
+        .guided-option.unsure {
+            color: #6b7280;
+            border-style: dashed;
+        }
+
+        .understanding-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .understanding-actions button {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .review-weak-note {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .review-section h4 {
+            margin: 0 0 6px;
+            font-size: 15px;
+        }
+
+        .review-section ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .review-path {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            gap: 4px 12px;
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .review-path .k {
+            color: #6b7280;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .review-journey .stage-status {
+            font-weight: 700;
+        }
+
+        .review-journey .stage-errors {
+            color: #b45309;
+            font-size: 13px;
+        }
+
+        .review-self textarea {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 56px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            padding: 8px 10px;
+            font: inherit;
+        }
+
+        .review-self .saved {
+            background: #ecfdf5;
+            border-radius: 10px;
+            padding: 8px 10px;
         }
 
         /* =========================
@@ -2313,6 +2406,8 @@
 
     let guidedSessionId = null;
 
+    let guidedCurrentState = null;
+
     const GUIDED_STATES = [
         ["S1", "理解题意"],
         ["S2", "列方程"],
@@ -2374,11 +2469,13 @@
         switch (input.type) {
             case "s1_choice": return `选择：${input.chosen_text || input.chosen_id}`;
             case "s1_text": return input.text;
-            case "modelling": return `${input.variable_definition}\n${input.equation}`;
+            case "modelling": return [input.variable_definition, input.equation].filter(Boolean).join("\n");
             case "steps": return input.steps;
             case "final_answer": return input.final_answer_text + (input.verified ? "（已检查）" : "");
             case "reflection": return input.text || "（跳过）";
             case "question": return `❓ ${input.text}`;
+            case "reveal_request": return "我想看这一步的参考";
+            case "self_summary": return `✍️ ${input.text}`;
             default: return "";
         }
 
@@ -2425,15 +2522,40 @@
 
     // -------- 根据后端要求的输入类型显示输入区 --------
 
+    // 上一次提交的内容：没通过时保留在输入框里，学生只改需要改的部分
+    let lastDraft = null;
+
+    function draftFor(data) {
+        const d = lastDraft;
+        return d && d.state === data.state && d.input.type === data.expected_input ? d.input : null;
+    }
+
+    // 同一步尝试 2 次后，学生可以自己选择看这一步的参考（记为“看了参考步骤”）
+    function revealButton(data) {
+        if (!data.can_reveal) return null;
+        const b = el("button", "guided-reveal", "想不出来？看这一步的参考");
+        b.type = "button";
+        b.addEventListener("click", function () {
+            if (confirm("看参考后，这一步会记为“看了参考步骤”。确定要看吗？")) {
+                sendGuided({ type: "reveal_request" });
+            }
+        });
+        return b;
+    }
+
     function renderInput(data) {
 
         guidedInput.innerHTML = "";
 
         const expected = data.expected_input;
 
+        const draft = draftFor(data);
+
+        const reveal = revealButton(data);
+
         if (data.done || !expected) {
 
-            renderSummary(data.summary);
+            renderSummary(data.summary, data.review);
 
             return;
 
@@ -2457,6 +2579,16 @@
 
             });
 
+            if (data.s1_item.unsure) {
+                const u = data.s1_item.unsure;
+                const unsure = el("button", "guided-option unsure", u.text);
+                unsure.type = "button";
+                unsure.addEventListener("click", function () {
+                    sendGuided({ type: "s1_choice", chosen_id: u.id, chosen_text: u.text });
+                });
+                options.appendChild(unsure);
+            }
+
             guidedInput.appendChild(options);
 
             return;
@@ -2476,14 +2608,22 @@
             const send = el("button", "guided-send", "提交方程");
             send.type = "button";
 
+            if (draft) {
+                vd.value = draft.variable_definition || "";
+                eq.value = draft.equation || "";
+            }
+
             send.addEventListener("click", function () {
-                if (!eq.value.trim()) return;
+                // 可以先只写“设……”：系统会先看设法，再引导列方程
+                if (!eq.value.trim() && !vd.value.trim()) return;
                 sendGuided({ type: "modelling", variable_definition: vd.value.trim(), equation: eq.value.trim() });
             });
 
             guidedInput.append(el("label", "", "设未知数"), vd, el("label", "", "列方程"), eq, send);
 
-            vd.focus();
+            if (reveal) guidedInput.appendChild(reveal);
+
+            (vd.value.trim() ? eq : vd).focus();
 
             return;
 
@@ -2497,12 +2637,16 @@
             const send = el("button", "guided-send", "提交解题过程");
             send.type = "button";
 
+            if (draft) steps.value = draft.steps || "";
+
             send.addEventListener("click", function () {
                 if (!steps.value.trim()) return;
                 sendGuided({ type: "steps", steps: steps.value });
             });
 
             guidedInput.append(steps, send);
+
+            if (reveal) guidedInput.appendChild(reveal);
 
             steps.focus();
 
@@ -2521,6 +2665,11 @@
             check.type = "checkbox";
             checkRow.append(check, el("span", "", "我已经把答案代回原题检查过"));
 
+            if (draft) {
+                answer.value = draft.final_answer_text || "";
+                check.checked = !!draft.verified;
+            }
+
             const send = el("button", "guided-send", "提交答案");
             send.type = "button";
 
@@ -2536,6 +2685,8 @@
             });
 
             guidedInput.append(answer, checkRow, send);
+
+            if (reveal) guidedInput.appendChild(reveal);
 
             answer.focus();
 
@@ -2564,32 +2715,100 @@
     }
 
 
-    function renderSummary(summary) {
+    // -------- 做完之后的总结复盘（内容全部来自后端记录，不由 AI 生成） --------
+
+    function reviewSection(title, node) {
+        const sec = el("div", "review-section");
+        sec.appendChild(el("h4", "", title));
+        sec.appendChild(node);
+        return sec;
+    }
+
+    function bulletList(items) {
+        const ul = el("ul");
+        items.forEach(t => ul.appendChild(el("li", "", t)));
+        return ul;
+    }
+
+    function renderSummary(summary, review) {
 
         if (!summary) return;
 
         const box = el("div", "guided-summary");
 
-        box.appendChild(el("div", "section-title", "🎉 这道题完成了"));
+        box.appendChild(el("div", "section-title", "🎉 这道题完成了 · 复盘一下"));
 
-        const lines = GUIDED_STATES.map(function ([id, label]) {
+        if (!review) {
+            guidedInput.appendChild(box);
+            return;
+        }
 
-            const s = summary.states[id];
-
-            let status = s.revealed ? "看了参考步骤"
-                : s.errors.length ? "在提示下改正"
-                : s.attempts > 1 ? "修改后完成"
-                : "独立完成";
-
-            if (s.errors.length) status += `（出现过：${s.errors.join("、")}）`;
-
-            return `${id} ${label}：${status}`;
-
+        // 1. 完整思路：用学生自己的设法和方程串起来
+        const path = el("div", "review-path");
+        review.solution_path.forEach(function (p) {
+            path.append(el("span", "k", p.label), el("span", "", p.text));
         });
+        box.appendChild(reviewSection("📝 解题思路回顾", path));
 
-        lines.push(`追问次数：${summary.metacognitive_follow_ups}　主动提问：${summary.learner_questions || 0}　主动检验：${summary.active_verification ? "是" : "否"}`);
+        // 2. 亮点
+        if (review.highlights.length) {
+            box.appendChild(reviewSection("👍 做得好的地方", bulletList(review.highlights)));
+        }
 
-        box.appendChild(el("div", "learning-message", lines.join("\n")));
+        // 3. 每一步的过程
+        const journey = el("div", "review-journey");
+        review.journey.forEach(function (j) {
+            const row = el("div");
+            row.append(el("span", "", `${j.label}：`), el("span", "stage-status", j.status));
+            if (j.errors.length) row.appendChild(el("div", "stage-errors", `出现过：${j.errors.join("；")}`));
+            journey.appendChild(row);
+        });
+        box.appendChild(reviewSection("🧭 这次的过程", journey));
+
+        // 3b. 知识点：本题涉及的 + 这次暴露的薄弱点（只凭一题不下“不熟练”的结论）
+        const kp = el("div");
+        kp.appendChild(el("div", "", `本题涉及：${review.knowledge_points.join("；")}`));
+        if (review.weak_points.length) {
+            kp.appendChild(el("div", "stage-errors", `这次暴露的薄弱点：${review.weak_points.join("；")}`));
+            kp.appendChild(el("div", "review-weak-note", review.weak_points_note));
+        }
+        box.appendChild(reviewSection("📚 知识点", kp));
+
+        // 4. 要记住的点
+        if (review.takeaways.length) {
+            box.appendChild(reviewSection("💡 记住这几点", bulletList(review.takeaways)));
+        }
+
+        // 5. 下次试试
+        if (review.next_time.length) {
+            box.appendChild(reviewSection("➡️ 下次试试", bulletList(review.next_time)));
+        }
+
+        // 6. 学生自己写一句总结（可选，写下来比看一遍记得牢）
+        const self = el("div", "review-self");
+        if (review.self_summary) {
+            self.appendChild(el("div", "saved", `你的总结：${review.self_summary}`));
+        } else {
+            const text = el("textarea");
+            text.placeholder = "例如：先找出题目里哪两个量相等，再用 x 写成方程";
+            const send = el("button", "guided-send", "保存我的总结");
+            send.type = "button";
+            send.addEventListener("click", function () {
+                if (!text.value.trim()) return;
+                sendGuided({ type: "self_summary", text: text.value.trim() });
+            });
+            self.append(el("div", "guided-note", review.self_summary_prompt), text, send);
+        }
+        box.appendChild(reviewSection("✍️ 用一句话总结", self));
+
+        // 7. 练一道同类题：题库优先；没有就由 AI 出题，并经过同样的核对
+        const more = el("button", "guided-send", `练一道同类题${review.topic_family ? `（${review.topic_family}）` : ""}`);
+        more.type = "button";
+        more.addEventListener("click", practiceSimilar);
+        box.appendChild(reviewSection("🔁 巩固一下", more));
+
+        box.appendChild(el("div", "guided-note",
+            `追问 ${summary.metacognitive_follow_ups} 次 · 主动提问 ${summary.learner_questions || 0} 次 · 主动检验：${summary.active_verification ? "是" : "否"}`));
 
         guidedInput.appendChild(box);
 
@@ -2608,6 +2827,8 @@
             }
 
         });
+
+        guidedCurrentState = data.state;
 
         renderProgress(data.state);
 
@@ -2672,6 +2893,12 @@
         guidedInput.querySelectorAll("button, input, textarea")
             .forEach(node => node.disabled = true);
 
+        const stateBefore = guidedCurrentState;
+
+        if (input.type !== "reveal_request" && input.type !== "reflection") {
+            lastDraft = { state: stateBefore, input: input };
+        }
+
         try {
 
             const data = await postJSON("/api/guided/submit", {
@@ -2695,15 +2922,24 @@
     }
 
 
-    async function beginGuidedSession(questionId) {
+    let practicedIds = [];
+
+    async function beginGuidedSession(questionId, understandingConfirmed) {
 
         showStatus("正在准备引导学习…", "loading");
 
         try {
 
-            const data = await postJSON("/api/guided/start", { question_id: questionId });
+            const data = await postJSON("/api/guided/start", {
+                question_id: questionId,
+                understanding_confirmed: !!understandingConfirmed
+            });
+
+            if (!practicedIds.includes(questionId)) practicedIds.push(questionId);
 
             guidedSessionId = data.session_id;
+
+            lastDraft = null;
 
             guidedQuestion.textContent = data.question.text;
 
@@ -2776,6 +3012,95 @@
     }
 
 
+    // -------- 开始前：让学生确认 AI 读到的已知条件（只显示已知条件，不显示要求什么和等量关系） --------
+
+    function showUnderstanding(prep, text, note) {
+
+        guidedChat.innerHTML = "";
+        guidedProgress.innerHTML = "";
+        guidedInput.innerHTML = "";
+        guidedQuestion.textContent = text;
+
+        const card = el("div", "guided-summary");
+        card.appendChild(el("div", "section-title", "开始之前，确认一下我有没有读对题目"));
+        if (note) card.appendChild(el("div", "guided-note", note));
+        card.appendChild(el("div", "", "我读到的已知条件："));
+        card.appendChild(bulletList(prep.understanding.known_quantities));
+
+        const actions = el("div", "understanding-actions");
+        const ok = el("button", "guided-send", "没问题，开始");
+        ok.type = "button";
+        ok.addEventListener("click", function () { beginGuidedSession(prep.question_id, true); });
+        actions.appendChild(ok);
+
+        if (prep.can_correct) {
+            const wrong = el("button", "guided-option", "有不对的地方");
+            wrong.type = "button";
+            wrong.addEventListener("click", function () {
+                wrong.disabled = true;
+                const box = el("textarea");
+                box.placeholder = "哪里不对？例如：乙每小时走 6 千米，不是 4 千米";
+                const redo = el("button", "guided-send", "按我的说明重新读题");
+                redo.type = "button";
+                redo.addEventListener("click", async function () {
+                    if (!box.value.trim()) return;
+                    redo.disabled = true;
+                    showStatus("正在按你的说明重新读题，并再次核对…", "loading");
+                    try {
+                        const again = await postJSON("/api/guided/prepare", { text: text, correction: box.value.trim() });
+                        if (again.usable) {
+                            showUnderstanding(again, text, "我按你的说明重新读了一遍，请再确认一下：");
+                            showStatus("请再确认一次。", "success");
+                        } else {
+                            showQuestionPicker((again.message || "这道题暂时不能引导。") + "\n\n你也可以从下面的题库中选一道开始：");
+                            showStatus(again.message || "这道题暂时不能引导。", "error");
+                        }
+                    } catch (error) {
+                        showStatus(`重新读题失败：${error.message}`, "error");
+                        redo.disabled = false;
+                    }
+                });
+                card.append(el("div", "guided-note", "注意：我会对照原题重新读，你的说明如果和原题不符，我不会照着改。"), box, redo);
+            });
+            actions.appendChild(wrong);
+        }
+
+        card.appendChild(actions);
+        guidedInput.appendChild(card);
+
+    }
+
+
+    async function practiceSimilar() {
+
+        showStatus("正在找一道同类题（题库里没有时，AI 会出题并自己核对，大约 10–20 秒）…", "loading");
+
+        try {
+
+            const res = await postJSON("/api/guided/similar", { session_id: guidedSessionId, exclude: practicedIds });
+
+            if (!res.usable) {
+                showStatus(res.message || "暂时没有同类题。", "error");
+                return;
+            }
+
+            if (res.understanding) {
+                showUnderstanding(res, res.text, "这是一道新出的同类题（已经过核对）。");
+                showStatus("请先确认我读到的已知条件。", "success");
+            } else {
+                guidedQuestion.textContent = res.text;
+                await beginGuidedSession(res.question_id);
+            }
+
+        } catch (error) {
+
+            showStatus(`出错了：${error.message}`, "error");
+
+        }
+
+    }
+
+
     async function startGuidedMode() {
 
         learningSection.style.display = "block";
@@ -2807,7 +3132,12 @@
 
                 if (prep.usable) {
 
-                    await beginGuidedSession(prep.question_id);
+                    if (prep.understanding) {
+                        showUnderstanding(prep, text);
+                        showStatus("请先确认我读到的已知条件。", "success");
+                    } else {
+                        await beginGuidedSession(prep.question_id);
+                    }
 
                     return;
 
@@ -2844,3 +3174,4 @@
 
 </body>
 </html>
+

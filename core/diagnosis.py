@@ -17,7 +17,7 @@ D2-style learner_response dict.
 How categories are decided
   S2  learner equation + variable definition
       - which quantity does x stand for? (standard definition or an accepted
-        alternative; deterministic text match, see _quantity / _match_definition)
+        alternative; deterministic text match, see _quantity / resolve_definition)
       - equivalent to the matching reference            → no_error_detected
       - equivalent to a bank modelling mutation         → that category (Level A)
       - equivalent to a reference for a DIFFERENT x     → E2 (Level A)
@@ -68,6 +68,7 @@ ASK_REWRITE = "rewrite_expression"             # unreadable or outside V1 (e.g. 
 ASK_RECHECK_PART = "recheck_answer_part"       # one quantity in the final answer is wrong
 ASK_ADD_UNIT = "add_unit"                      # right numbers, unit missing
 ASK_COMPLETE_ANSWER = "complete_answer"        # some asked quantity is missing
+ASK_EQUATION = "write_equation"                # definition written and fine, equation still missing
 
 ANSWER_LEVEL_A = {"E1", "E5"}
 
@@ -173,6 +174,58 @@ def _match_definition(definition, candidates, key="variable_definition"):
     return candidates[scored[0][1]]
 
 
+# unit families: a definition is only *incompatible* with a reference when its unit
+# clearly belongs to a different family ("设甲走了x千米" vs a time unknown)
+UNIT_FAMILY = {
+    "time": ["小时", "分钟", "秒", "天", "周", "个月", "时间"],
+    "length": ["平方厘米", "平方米", "厘米", "毫米", "千米", "公里", "米", "路程", "距离"],
+    "age": ["岁", "年龄"],
+    "money": ["元", "价格", "钱"],
+    "mass": ["千克", "公斤", "克", "吨"],
+    "people": ["人", "名"],
+}
+
+
+def _unit_family(definition):
+    """Family of the unit written right after x (or named after '表示/为'); None if none is given."""
+    if not definition:
+        return None
+    first = re.split(r"[，,；;。]|则", definition)[0]
+    parts = re.split(r"[xX]", first, maxsplit=1)
+    if len(parts) < 2:
+        return None
+    after = re.sub(r"^\s*(为|是|表示)", "", parts[1])
+    best = None
+    for fam, words in UNIT_FAMILY.items():
+        for w in words:
+            i = after.find(w)
+            if i >= 0 and (best is None or i < best[0]):
+                best = (i, fam)
+    return best[1] if best else None
+
+
+def resolve_definition(definition, refs):
+    """
+    Which reference model the learner's definition refers to.
+    1. a clear quantity match (_match_definition), else
+    2. the ONLY reference whose unit family is compatible with the definition — a vague
+       but non-contradicting definition ("设x小时相遇", "设x表示相遇时间") must not block
+       a learner whose equation is right.
+    Returns (ref | None, how) with how ∈ {"match", "compatible", None}.
+    """
+    ref = _match_definition(definition, refs)
+    if ref is not None:
+        return ref, "match"
+    if not definition or not re.search(r"[xX]", definition):
+        return None, None
+    fam = _unit_family(definition)
+    compatible = [r for r in refs
+                  if fam is None or _unit_family(r["variable_definition"]) in (None, fam)]
+    if len(compatible) == 1:
+        return compatible[0], "compatible"
+    return None, None
+
+
 # ---------------------------------------------------------------------------
 # E4 closed-list templates (error_taxonomy.md §4.2, §12.1 "predefined E4
 # phrase-pattern errors") — applied to the question's standard equation.
@@ -185,7 +238,7 @@ NUM = r"\d+(?:\.\d+)?"
 def _flip_signs(eq):
     """E4-01 / E4-02: reverse the comparison  x+k ↔ x-k  (each occurrence)."""
     out = []
-    for m in re.finditer(rf"x\s*([+-])\s*({NUM})", eq):
+    for m in re.finditer(rf"x\s*([+-])\s*({NUM})(?![\d.]|\s*\*?\s*[xX(])", eq):   # a constant, not k*x
         flipped = "-" if m.group(1) == "+" else "+"
         out.append(eq[:m.start()] + f"x {flipped} {m.group(2)}" + eq[m.end():])
     return out
@@ -298,7 +351,7 @@ def _check_system(question, text, variable_definition=None):
         return None
     values = {str(sym): nsimplify(v, rational=True) for sym, v in zip(syms, sol[0])}
     refs = _references(question)
-    ref = _match_definition(variable_definition, refs) if variable_definition else None
+    ref = resolve_definition(variable_definition, refs)[0] if variable_definition else None
     x_val = values.get("x", next(iter(values.values())))
     targets = [ref] if ref else refs
     correct = any(nsimplify(S(r["answer"]), rational=True) == x_val for r in targets)
@@ -314,6 +367,18 @@ def _check_system(question, text, variable_definition=None):
 
 def diagnose_modelling(question, equation, variable_definition=None, exclude_mutation=None) -> Diagnosis:
     state = "S2"
+    if not (equation or "").strip():
+        # the learner wrote only "设……" so far: check that part and ask for the equation
+        if not (variable_definition or "").strip():
+            return Diagnosis(status=INSUFFICIENT, state=state, evidence_level="D", rule="nothing_written",
+                             evidence="还没有写设法和方程", follow_up=ASK_WORKING)
+        ref, _how = resolve_definition(variable_definition, _references(question))
+        if ref is None:
+            return Diagnosis(status=INSUFFICIENT, state=state, evidence_level="D", rule="definition_only_unclear",
+                             evidence="只写了设法，而且看不出 x 表示题目中的哪个量", follow_up=ASK_DEFINITION)
+        return Diagnosis(status=INSUFFICIENT, state=state, evidence_level="D", rule="definition_only_ok",
+                         evidence="设法合理，还没有列方程", follow_up=ASK_EQUATION,
+                         details={"ref": ref["label"], "defines_relation": _defines_second_quantity(variable_definition)})
     nl = normalize_line(equation)
     if nl.status != OK or nl.kind != "equation":
         if nl.status == OK:            # an expression without "="
@@ -326,7 +391,9 @@ def diagnose_modelling(question, equation, variable_definition=None, exclude_mut
     if variable_definition is None:
         variable_definition = question["variable_definition"]
         notes.append("未提供变量定义，按题目标准定义处理")
-    ref = _match_definition(variable_definition, refs)
+    ref, how = resolve_definition(variable_definition, refs)
+    if how == "compatible":
+        notes.append("变量定义不够具体，但与这个量不矛盾，按它理解")
 
     learner_set = mc.solution_set(equation)
     if not learner_set.linear:
@@ -337,13 +404,14 @@ def diagnose_modelling(question, equation, variable_definition=None, exclude_mut
     if ref is not None and mc.equivalent(equation, ref["equation"]):
         return Diagnosis(status=NO_ERROR, state=state, evidence_level="A",
                          evidence=f"与{'标准' if ref['label'] == 'standard' else '另一种正确'}方程同解（x = {ref['answer']}）",
-                         notes=notes)
+                         notes=notes, details={"ref": ref["label"], "definition_match": how})
 
     # 2. matches a known modelling mutation whose definition fits the learner's
     mutations = [m for m in question["mutations"] if m["layer"] == "modelling" and m["id"] != exclude_mutation]
     for m in mutations:
         m_def = m.get("variable_definition", question["variable_definition"])
-        same_def = _similarity(_quantity(variable_definition), _quantity(m_def)) >= 0.5
+        same_def = (_similarity(_quantity(variable_definition), _quantity(m_def)) >= 0.5
+                    or (ref is not None and m_def == ref["variable_definition"]))
         if same_def and mc.equivalent(equation, m["equation"]):
             return _diagnosed(state, m["error"], f"方程与已知错误模式 {m['id']} 同解：{m['description']}",
                               matched_mutation=m["id"], rule="mutation_match", notes=notes)
@@ -621,7 +689,25 @@ def _final_value_of(m, question):
     return None
 
 
-PART_RE = re.compile(r"([\u4e00-\u9fff]+)?(-?\d+(?:\.\d+)?(?:/\d+)?)\s*([\u4e00-\u9fff]+(?:/[\u4e00-\u9fff]+)?)?")
+# units are a closed list (+ the question's own units): the text after a unit is NOT part
+# of it — "4小时后甲乙两人相遇" is 4 小时, not 4 "小时后甲乙两人相遇"
+ANSWER_UNITS = [
+    "平方厘米", "平方分米", "平方千米", "平方米", "立方厘米", "立方米", "毫升", "公顷",
+    "千米", "公里", "厘米", "分米", "毫米", "米", "个小时", "小时", "分钟", "秒", "天", "周", "个月", "月", "年",
+    "岁", "元", "角", "千克", "公斤", "克", "吨", "斤", "升", "亩",
+    "人", "名", "台", "本", "支", "页", "个", "件", "辆", "瓶", "张", "次", "箱", "袋", "盒", "棵", "只",
+    "头", "块", "条", "份", "套", "双", "道", "间", "包", "杯", "场", "组", "段", "行", "位", "分", "度", "倍",
+]
+UNIT_ALIASES = {"个小时": "小时", "公里": "千米", "公斤": "千克"}
+
+
+def _part_re(extra_units=()):
+    units = sorted(set(ANSWER_UNITS) | {u for u in extra_units if u}, key=len, reverse=True)
+    alt = "|".join(re.escape(u) for u in units)
+    return re.compile(rf"([\u4e00-\u9fff]+)?(-?\d+(?:\.\d+)?(?:/\d+)?)\s*((?:{alt})(?:/(?:{alt}))?)?")
+
+
+PART_RE = _part_re()
 
 
 RATE_RE = re.compile(r"每(分钟|小时|秒|天|周|月|年|千克|公斤|千米|公里|米|人|个|本|支|件|台|次|页)")
@@ -635,11 +721,20 @@ def _canon_unit(label: str, unit: str) -> tuple[str, str]:
     return label, unit
 
 
-def _answer_parts(text):
+def _question_units(question):
+    """Units the question's own answer uses (extracted records carry answer_parts)."""
+    out = []
+    for p in (question or {}).get("answer_parts", []) or []:
+        out += [u for u in re.split(r"/", p.get("unit") or "") if u]
+    return tuple(out)
+
+
+def _answer_parts(text, units=()):
     """'甲班32台，乙班24台' → [('甲班', 32, '台'), ('乙班', 24, '台')]; '每分钟250米' → [('', 250, '米/分钟')]."""
     out = []
-    for label, num, unit in PART_RE.findall(text or ""):
-        label, unit = _canon_unit(label or "", unit or "")
+    for label, num, unit in (_part_re(units) if units else PART_RE).findall(text or ""):
+        unit = "/".join(UNIT_ALIASES.get(u, u) for u in unit.split("/")) if unit else ""
+        label, unit = _canon_unit(label or "", unit)
         out.append((label, nsimplify(S(num), rational=True), unit))
     return out
 
@@ -650,8 +745,9 @@ def _compare_parts(question, text):
     matching parts by their label (甲班 / 乙班 / 宽 / 长 …). Returns None when the
     reference has no labelled parts or none of them can be matched.
     """
-    ref = [p for p in _answer_parts(question["final_answer_text"]) if p[0]]
-    learner = _answer_parts(text)
+    units = _question_units(question)
+    ref = [p for p in _answer_parts(question["final_answer_text"], units) if p[0]]
+    learner = _answer_parts(text, units)
     if not ref or not learner:
         return None
     ref_labels = {p[0] for p in ref}
@@ -726,7 +822,8 @@ def diagnose_final_answer(question, final_answer_text, exclude_mutation=None) ->
 
     learner_nums, ref_nums = _numbers(final_answer_text), _numbers(question["final_answer_text"])
     if learner_nums and sorted(learner_nums) == sorted(ref_nums):
-        units = lambda t: sorted(u for _, _, u in _answer_parts(t))  # noqa: E731
+        qu = _question_units(question)
+        units = lambda t: sorted(u for _, _, u in _answer_parts(t, qu))  # noqa: E731
         if units(final_answer_text) == units(question["final_answer_text"]):
             return Diagnosis(status=NO_ERROR, state=state, evidence_level="A", evidence="数值和单位都正确")
         return _diagnosed(state, "E5", "数值正确，但单位或表述与题目要求不符", rule="numbers_right_unit_wrong")

@@ -34,7 +34,8 @@ from pathlib import Path
 from core import math_checker as mc
 from core.normalizer import normalize_line
 from core.state_manager import (
-    ANSWER_QUESTION, ASK, COMPLETE, EVIDENCE_REQUEST, HINT, METACOGNITIVE, REVEAL, UNEXPECTED_INPUT,
+    ANSWER_QUESTION, ASK, COMPLETE, EVIDENCE_REQUEST, HINT, METACOGNITIVE, REVEAL, SELF_SUMMARY_ACK,
+    UNEXPECTED_INPUT,
 )
 
 # ---------------------------------------------------------------------------
@@ -99,7 +100,18 @@ EVIDENCE_TEXT_BY_RULE = {
                                    "（写成“设 x 表示……，则另一个量为……”），再列一个只含 x 的方程。",
     "power": "这道题只需要一次方程，不会出现 x² 这样的项。再想想题目里的数量关系。",
     "no_equals_sign": "这是一个式子，还不是方程。想一想它应该等于题目中的哪个数量，补上等号。",
+    "definition_only_unclear": "你设的 x 具体表示题目中的哪个量？写成“设 x 表示……”，然后在下面列出方程。",
+    "nothing_written": "先写出“设 x 表示……”，再根据题意列出方程。",
 }
+
+
+def _definition_only_text(spec, details) -> str:
+    """The learner wrote a sensible '设……' but no equation yet: acknowledge it, point to the next step."""
+    vd = (spec.get("learner_definition") or "").strip()
+    head = f"“{vd}”这个设法可以" if vd else "这个设法可以"
+    if details.get("defines_relation"):
+        head += "，另一个量也已经用 x 表示出来了"
+    return head + "。下一步：找一找题目里哪两个量是相等的，用 x 把它们写成一个方程。"
 
 
 def _answer_part_text(rule, details):
@@ -268,6 +280,8 @@ SYSTEM_PROMPT = """你是一名耐心的初中数学辅导老师，正在用引�
   等级3 可以指出下一步该做什么运算，但不给运算结果或最终答案；
   等级4 可以解释关系并给出部分过程。
 - 不得包含 must_not_contain 中列出的内容；不要出现数学错误，不要引入题目中没有的条件。
+- 学生错在哪里只能依据“错误类型”和“诊断证据”；不要自己推断新的错误原因，证据里没有说的问题不要说学生犯了。
+  错误类型为空时，只能引导学生对照题目自己检查，不能断言哪里错了。
 - “该等级的参考提示”表示这一步的教学意图，不要照抄。
 只输出 JSON：{"message": "..."}"""
 
@@ -384,7 +398,13 @@ def _ack_prefix(spec) -> str:
 
 def _template_hint(category, level, spec) -> str:
     level = min(level or 1, 3)
-    text = HINTS.get(category, HINTS[None])[level]
+    if category is None and spec.get("current_state") == "S1":
+        category_text = "E1"                          # the only thing S1 asks about is the target
+    else:
+        category_text = category
+    text = HINTS.get(category_text, HINTS[None])[level]
+    if spec.get("rule") == "s1_unsure" and level == 1:
+        text = "没关系，我们一起看。" + text
     if category == "E4" and level == 2 and spec.get("error_subtype") in E4_PHRASES:
         text = f"题目中的{E4_PHRASES[spec['error_subtype']]}描述的是变化量，还是变化后的总量？请先用自己的话解释。"
     k = spec.get("first_invalid_step")
@@ -397,18 +417,26 @@ def _template_hint(category, level, spec) -> str:
 def _level4_fallback(category, spec) -> str:
     """Deterministic Level-4 explanation: Level-3 prompt + the question's relationship."""
     base = _template_hint(category, 3, spec)
+    if spec.get("current_state") == "S1":             # S1 is about the target, not the relationship
+        return base + " 题目最后一句通常以“求……”或“……是多少？”结尾，答案就在那里。"
     rel = spec.get("relationship")
     return base + (f" 题目中的数量关系是：{rel}。" if rel else "")
+
+
+def _pretty(eq: str) -> str:
+    """'2*(x + (x + 4)) = 28' → '2(x + (x + 4)) = 28' (written form, no programming '*')."""
+    eq = re.sub(r"(\d|\))\s*\*\s*(?=[xX(])", r"\1", str(eq))
+    return eq.replace("*", "×")
 
 
 def _reveal_text(spec, state) -> str:
     if state == "S1":
         return f"这道题要求的是：{spec.get('target', '题目最后一句中问的量')}。"
     if state == "S2":
-        return f"可以这样设：{spec['learner_variable_definition']}，列出方程 {spec['reference_equation']}。我们接着解这个方程。"
+        return f"可以这样设：{spec['learner_variable_definition']}，列出方程 {_pretty(spec['reference_equation'])}。我们接着解这个方程。"
     if state == "S3":
         return f"这个方程的解是 x = {spec['reference_answer']}。对照一下，看看你是哪一步开始不一样的。"
-    return f"参考答案：{spec.get('final_answer_text', spec['reference_answer'])}。"
+    return f"参考答案：{spec.get('final_answer_text') or spec['reference_answer']}。"
 
 
 # ---------------------------------------------------------------------------
@@ -473,9 +501,10 @@ class TutorVoice:
     """
 
     def __init__(self, backend=None, question: dict | None = None, mode: str | None = None,
-                 cache: dict | None = None):
+                 cache: dict | None = None, target: str | None = None):
         self.backend = backend
         self.q = question or {}
+        self.target = target or (self.q.get("s1") or {}).get("target")
         self.mode = mode or default_mode()
         if self.mode == CACHED and cache is None:
             cache = load_hint_cache()
@@ -486,6 +515,8 @@ class TutorVoice:
         spec.setdefault("category", action.category)
         spec.setdefault("relationship", self.q.get("relationship"))
         spec.setdefault("final_answer_text", self.q.get("final_answer_text"))
+        if self.target:
+            spec.setdefault("target", self.target)
         return spec
 
     def render(self, action) -> Message:
@@ -496,7 +527,8 @@ class TutorVoice:
         if t == EVIDENCE_REQUEST:
             d = action.diagnosis or {}
             rule = d.get("rule")
-            text = (_answer_part_text(rule, d.get("details") or {})
+            text = (_definition_only_text(spec, d.get("details") or {}) if rule == "definition_only_ok" else None) \
+                or (_answer_part_text(rule, d.get("details") or {})
                     or EVIDENCE_TEXT_BY_RULE.get(rule) or EVIDENCE_TEXT.get(action.request))
             if text is None:                       # notation clarification from the normaliser
                 d = action.diagnosis or {}
@@ -509,9 +541,14 @@ class TutorVoice:
             template = METACOGNITIVE_TEXT.get(action.task, "你是怎么确定这一步是对的？")
             return self._llm_or(template, META_SYSTEM_PROMPT, _meta_user_prompt(spec, template), spec, t)
         if t == REVEAL:
-            return Message(_reveal_text(spec, action.state), "template", t, hint_level=4, category=action.category)
+            text = _reveal_text(spec, action.state)
+            if spec.get("requested"):
+                text = "好的，这一步给你看参考。" + text
+            return Message(text, "template", t, hint_level=4, category=action.category)
         if t == COMPLETE:
             return Message(DONE_TEXT, "template", t)
+        if t == SELF_SUMMARY_ACK:
+            return Message("记下了！能用自己的话说出这道题的关键，比做对一道题更重要。", "template", t)
         if t == UNEXPECTED_INPUT:
             return Message(ASK_TEXT.get(action.task, "请按提示作答。"), "template", t)
         if t == HINT:
