@@ -269,8 +269,10 @@ def start():
     if qid not in QUESTIONS:
         session.record_understanding(bool(data.get("understanding_confirmed")),
                                      corrections=len(_corrections.get(qid, [])), notes=_corrections.get(qid, []))
-    entry = {"session": session, "voice": TutorVoice(_backend, q, target=targets[qid]["target"]),
-             "s1_item": build_s1_item(q, targets)}
+    s1_item = build_s1_item(q, targets)
+    entry = {"session": session, "s1_item": s1_item,
+             "voice": TutorVoice(_backend, q, target=targets[qid]["target"],
+                                 s1_options=[o["text"] for o in s1_item["options"]])}
     _sessions[sid] = entry
     while len(_sessions) > MAX_SESSIONS:
         _sessions.popitem(last=False)

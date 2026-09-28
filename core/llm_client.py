@@ -192,6 +192,10 @@ def _learner_equations(spec: dict) -> list[str]:
     return out
 
 
+def _squash_text(t: str) -> str:
+    return re.sub(r"[\s()（）*×·，,。“”\"'：:；;？?！!]", "", t or "")
+
+
 def check_leakage(text: str, spec: dict) -> list[str]:
     """
     Violations of spec["must_not_contain"] that can be detected automatically:
@@ -210,6 +214,16 @@ def check_leakage(text: str, spec: dict) -> list[str]:
         given = _numbers(spec.get("question", "")) | _numbers(learner_text)
         if answer in _numbers(text) and answer not in given:
             violations.append("final_answer")
+    if "reference_model" in forbidden or "s1_target" in forbidden:
+        said = _squash_text(text)
+        mine = _squash_text(" ".join(spec.get("learner_history") or []) + json.dumps(
+            spec.get("learner_input") or {}, ensure_ascii=False))
+        if "reference_model" in forbidden and any(e and e in said and e not in mine
+                                                  for e in (_squash_text(x) for x in spec.get("reference_expressions") or [])):
+            violations.append("reference_model")
+        target = _squash_text(spec.get("target") or "")
+        if "s1_target" in forbidden and len(target) >= 4 and target in said:
+            violations.append("s1_target")
     if "complete_equation" in forbidden:
         own = _learner_equations(spec)
         for cand in EQ_CANDIDATE_RE.findall(text or ""):
@@ -307,6 +321,9 @@ SYSTEM_PROMPT = """你是一名耐心的初中数学辅导老师，正在用引�
   等级3 可以指出下一步该做什么运算，但不给运算结果或最终答案；
   等级4 可以解释关系并给出部分过程。
 - 不得包含 must_not_contain 中列出的内容；不要出现数学错误，不要引入题目中没有的条件。
+- 理解题意（S1）阶段：只引导学生对照题目最后一句和选项自己判断，不要说出正确选项，也不要提前说怎么设未知数或列方程。
+- “学生的变量定义”为空时，说明学生还没有设 x：不要替他设，也不要说“你已经设好了”。
+- 如果学生说不知道（rule=help_request），先安慰一句，再给出这一步该从哪里下手的提示，不要批评。
 - 学生错在哪里只能依据“错误类型”和“诊断证据”；不要自己推断新的错误原因，证据里没有说的问题不要说学生犯了。
   错误类型为空时，只能引导学生对照题目自己检查，不能断言哪里错了。
 - “该等级的参考提示”表示这一步的教学意图，不要照抄。
@@ -322,6 +339,27 @@ CHAT_SYSTEM_PROMPT = """你是一名耐心的初中数学老师，学生正在�
   key_intermediate_value=关键中间结果）。must_not_contain 为空时说明学生已做完这一步，可以结合答案具体说明。
 - 不要出现数学错误，不要引入题目中没有的条件。
 只输出 JSON：{"message": "..."}"""
+
+DEFINE_SYSTEM_PROMPT = """你是一名初中数学老师。学生写的设法看不出 x 表示题目里的哪个量（可能写了题目里没有的人或量，或者只写了“不知道”）。
+用 1–2 句简体中文回应：如果他写的人或量题目里没有，直接说题目里没有，并提醒他题目里出现的是哪些人或量；
+然后请他改写成“设（题目中的某个量）为 x”。不要替他决定设哪个量，不要写出另一个量的表达式或方程。
+不得包含 must_not_contain 中列出的内容。只输出 JSON：{"message": "..."}"""
+
+
+def _name_not_in_question(definition: str | None, question: str | None) -> str | None:
+    """'设小红的年龄为x' on a problem about 小明 and 小华 → '小红'."""
+    m = re.match(r"^\s*(?:解\s*[:：])?\s*设\s*([\u4e00-\u9fff]{1,4}?)(?:的|今年|现在|原来|有|每|为|是)", definition or "")
+    if not m or not question:
+        return None
+    name = m.group(1)
+    return name if name not in question and name not in ("x", "X") else None
+
+
+def _define_user_prompt(spec: dict, template: str) -> str:
+    return json.dumps({"题目": spec.get("question"), "学生写的设法": spec.get("learner_definition"),
+                       "题目要求的量": spec.get("target"), "must_not_contain": spec.get("must_not_contain", []),
+                       "参考说法": template}, ensure_ascii=False, indent=2)
+
 
 DISCRIMINATE_SYSTEM_PROMPT = """你是一名初中数学老师。学生写的式子和题意（或上一步）不一致，但系统还不能确定他错在哪里。
 请针对他写的内容问一个简短的问题（1–2 句），帮他自己对照题目检查：例如请他说出方程里某一部分对应题目里的哪个量，
@@ -481,6 +519,8 @@ def _hint_user_prompt(spec: dict, template: str) -> str:
         "它的上一行": spec.get("prev_line"),
         "先肯定的部分": spec.get("acknowledge"),
         "学生的变量定义": spec.get("learner_variable_definition"),
+        "规则": spec.get("rule"),
+        "S1 的选项（只在理解题意阶段有）": spec.get("s1_options"),
         "错误类型": spec.get("category"),
         "错误细分": spec.get("error_subtype"),
         "诊断证据": spec.get("evidence"),
@@ -497,8 +537,25 @@ def _ack_prefix(spec) -> str:
     return (("，".join(ack) + "。") if ack else "")
 
 
+HELP_HINTS = {
+    "S2": {1: "没关系，我们一起来。题目要求的是“{target}”，可以先把其中一个量设为 x，写成“设……为 x”。",
+           2: "设好 x 以后，用 x 把另一个量也表示出来；再找题目里说明两个量关系的话（比如“一共”“比……多”），写成等式。",
+           3: "先用文字写出“什么 = 什么”，再把每一部分换成含 x 的式子。"},
+    "S3": {1: "没关系，从你列的方程开始，一步一步变形。这道题会用到：{solving}。先写出第一步试试。",
+           2: "每一步都要让等式两边保持相等：两边同时加、减同一个数，或同时乘、除以同一个不为 0 的数。",
+           3: "写出第一步后提交，我会帮你看每一行是否正确。"},
+    "S4": {1: "没关系。你已经解出 x 了，回到题目：题目要求的是“{target}”，每个量分别怎么用 x 算出来？",
+           2: "把每个要求的量写成“名称 + 数值 + 单位”，题目问几个量就写几个。",
+           3: "先写出 x 表示的那个量，再算出另一个量，最后一起写成答案。"},
+}
+
+
 def _template_hint(category, level, spec) -> str:
     level = min(level or 1, 3)
+    state = spec.get("current_state")
+    if spec.get("rule") == "help_request" and state in HELP_HINTS:
+        return HELP_HINTS[state][level].format(target=spec.get("target") or "题目最后问的量",
+                                               solving=spec.get("solving_steps") or "移项、合并同类项、系数化为 1")
     if category is None and spec.get("current_state") == "S1":
         category_text = "E1"                          # the only thing S1 asks about is the target
     else:
@@ -540,7 +597,8 @@ def _reveal_text(spec, state) -> str:
     if state == "S1":
         return f"这道题要求的是：{spec.get('target', '题目最后一句中问的量')}。"
     if state == "S2":
-        return f"可以这样设：{spec['learner_variable_definition']}，列出方程 {_pretty(spec['reference_equation'])}。我们接着解这个方程。"
+        vd = spec.get("reference_definition") or spec.get("learner_variable_definition")
+        return f"可以这样设：{vd}，列出方程 {_pretty(spec['reference_equation'])}。我们接着解这个方程。"
     if state == "S3":
         return f"这个方程的解是 x = {spec['reference_answer']}。对照一下，看看你是哪一步开始不一样的。"
     return f"参考答案：{spec.get('final_answer_text') or spec['reference_answer']}。"
@@ -608,9 +666,10 @@ class TutorVoice:
     """
 
     def __init__(self, backend=None, question: dict | None = None, mode: str | None = None,
-                 cache: dict | None = None, target: str | None = None):
+                 cache: dict | None = None, target: str | None = None, s1_options=None):
         self.backend = backend
         self.q = question or {}
+        self.s1_options = list(s1_options or [])
         self.target = target or (self.q.get("s1") or {}).get("target")
         self.mode = mode or default_mode()
         if self.mode == CACHED and cache is None:
@@ -624,6 +683,8 @@ class TutorVoice:
         spec.setdefault("final_answer_text", self.q.get("final_answer_text"))
         if self.target:
             spec.setdefault("target", self.target)
+        if action.state == "S1" and self.s1_options:
+            spec.setdefault("s1_options", self.s1_options)
         if getattr(self, "last_text", None):
             spec.setdefault("last_tutor_text", self.last_text)
         return spec
@@ -648,6 +709,14 @@ class TutorVoice:
             if text is None:                       # notation clarification from the normaliser
                 d = action.diagnosis or {}
                 text = d.get("evidence", "").split("：", 1)[-1] or "这个写法有歧义，请用括号写清楚。"
+            if action.request == "clarify_variable_definition":
+                if (spec.get("evidence_repeat") or 1) >= 2 and spec.get("target"):
+                    text = (f"题目要求的是“{spec['target']}”。从这里面选一个量设为 x，写成“设……为 x”，"
+                            "注意用题目里出现的名称。")
+                missing = _name_not_in_question(spec.get("learner_definition"), spec.get("question"))
+                if missing:
+                    text = f"题目里没有“{missing}”哦，再读一遍题目里出现的是谁。" + text
+                return self._llm_or(text, DEFINE_SYSTEM_PROMPT, _define_user_prompt(spec, text), spec, t)
             if action.request == "ask_discriminating_question" and action.state == "S3" and spec.get("line_no"):
                 k, line, prev = spec["line_no"], spec.get("learner_line"), spec.get("prev_line")
                 src = f"你列的方程“{prev}”" if spec.get("from_start_equation") and prev else "上一行"

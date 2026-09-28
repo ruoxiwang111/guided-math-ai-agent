@@ -181,6 +181,10 @@ class TutorSession:
             forbidden.remove("complete_equation")
         if self.records[S3].passed:
             forbidden = [f for f in forbidden if f not in ("final_answer", "key_intermediate_value")]
+        if level <= 2 and not self.records[S2].passed:
+            forbidden.append("reference_model")          # e.g. "小明(x+5)岁" before the learner set up x
+        if level <= 2 and self.state == S1:
+            forbidden.append("s1_target")                # do not name the right option
         return forbidden
 
     def _learner_history(self) -> list[str]:
@@ -216,14 +220,36 @@ class TutorSession:
         return {"corrected_error": rv._weak_point(c, sub, rule, family),
                 "reason": rv._takeaway(c, sub, rule, self.q.get("relationship"))}
 
+    def _learner_definition(self) -> str | None:
+        """The learner's OWN definition of x: the accepted one after S2, else the last one they wrote."""
+        if self.records[S2].passed:
+            return self.model["variable_definition"]
+        for e in reversed(self.events):
+            if e.get("event") == "learner_response" and (e.get("response") or {}).get("variable_definition"):
+                return e["response"]["variable_definition"]
+        return None
+
+    def _reference_expressions(self) -> list[str]:
+        """Expressions of the reference models ('x+5', '4x', 'x/4', '2-x'): the S2 answer in pieces."""
+        defs = [self.q["variable_definition"]] + [f["variable_definition"] for f in
+                                                   self.q.get("accepted_equivalent_forms", []) if "variable_definition" in f]
+        out = []
+        for d in defs:
+            for m in re.findall(r"[(（][^()（）]*x[^()（）]*[)）]|\d+(?:\.\d+)?\s*\*?\s*x|x\s*/\s*\d+", d or ""):
+                e = re.sub(r"[\s()（）*]", "", m)
+                if e and e != "x" and e not in out:
+                    out.append(e)
+        return out
+
     def _spec(self, level: int | None = None, **extra) -> dict:
         spec = {
             "question_id": self.q["question_id"],
             "question": self.q["question"],
-            "learner_variable_definition": self.model["variable_definition"],
+            "learner_variable_definition": self._learner_definition(),
             "reference_answer": str(self.model["answer"]),
             "reference_equation": self.model["equation"],
             "learner_history": self._learner_history(),
+            "reference_expressions": self._reference_expressions(),
         }
         if level is not None:
             spec["hint_level"] = level
@@ -288,12 +314,13 @@ class TutorSession:
         rec.evidence_requests += 1
         self.evidence_request_count += 1
         request = d.follow_up or dx.ASK_WORKING
-        self.awaiting_explanation = request == dx.ASK_DISCRIMINATING
+        self.awaiting_explanation = self.state in (S2, S3)
         self._log("evidence_request", request=request, diagnosis_status=d.status,
                   candidates=d.candidates, evidence_level=d.evidence_level)
         return TutorAction(EVIDENCE_REQUEST, self.state, task=INPUT_FOR_STATE[self.state],
                            request=request, diagnosis=asdict(d),
                            prompt_spec=self._spec(level=1, request=request, candidates=d.candidates,
+                                                  evidence_repeat=rec.evidence_requests, rule=d.rule,
                                                   current_state=self.state, evidence=d.evidence,
                                                   **self._learner_context(d, None)))
 
@@ -312,7 +339,8 @@ class TutorSession:
                           "is_standard": True}
         if state == S3:
             self.final_x = self.model["answer"]
-        spec = self._spec(level=4, reveal=True, requested=requested)
+        spec = self._spec(level=4, reveal=True, requested=requested,
+                          reference_definition=self.q["variable_definition"])
         note = ("the learner asked to see this step" if requested
                 else "level 4 did not resolve the error; the correct step is shown")
         reveal = TutorAction(REVEAL, state, category=category, hint_level=4, prompt_spec=spec, note=note)
@@ -338,6 +366,7 @@ class TutorSession:
             return self._reveal(category)
         level = min(MAX_HINT_LEVEL, rec.failed_attempts)
         rec.max_hint_level = max(rec.max_hint_level, level)
+        self.awaiting_explanation = self.state in (S2, S3)
         self._log("hint", diagnosed_error=category, hint_level=level,
                   diagnosis_status=d.status if d else "diagnosed",
                   evidence_level=d.evidence_level if d else None)
@@ -349,6 +378,7 @@ class TutorSession:
                                                   error_subtype=d.error_subtype if d else None,
                                                   evidence=d.evidence if d else None,
                                                   first_invalid_step=d.first_invalid_step if d else None,
+                                                  solving_steps=rv.knowledge_points(self.q)[1].split("：", 1)[-1],
                                                   current_state=self.state,
                                                   **self._learner_context(d, category)))
 
@@ -425,6 +455,23 @@ class TutorSession:
                           verification_conditions=[c["description"] for c in self.q.get("verification_conditions", [])],
                           relationship=self.q.get("relationship"))
         return TutorAction(ANSWER_QUESTION, self.state, task=TASK_OF_STATE.get(self.state), prompt_spec=spec)
+
+    @staticmethod
+    def _is_help_request(r: dict) -> bool:
+        """'不知道' / '不会' written instead of work (no x, no digits, no '=')."""
+        text = " ".join(str(r.get(k) or "") for k in ("variable_definition", "equation", "steps",
+                                                       "final_answer_text", "text")).strip()
+        if not text or re.search(r"[xX=＝\d]", text):
+            return False
+        return bool(DONT_KNOW_RE.search(text)) or text in ("?", "？")
+
+    def _help(self, r: dict) -> TutorAction:
+        rec = self.records[self.state]
+        rec.attempts += 1
+        self._log("help_request", text={k: v for k, v in r.items() if k != "type"})
+        d = dx.Diagnosis(status=dx.INSUFFICIENT, state=self.state, evidence_level="D", rule="help_request",
+                         evidence="学生表示不知道这一步怎么做")
+        return self._hint_or_reveal(d, None)
 
     def _reflection_feedback(self, text: str, explain: bool) -> TutorAction:
         """Close a reflection: short feedback on the reply, or the reason itself for "不知道"."""
@@ -525,6 +572,9 @@ class TutorSession:
             self._log("unexpected_input", got=kind, expected=expected)
             return TutorAction(UNEXPECTED_INPUT, self.state, task=expected,
                                note=f"expected '{expected}' in {self.state}, got '{kind}'")
+
+        if self._is_help_request(response):
+            return self._help(response)
 
         self.records[self.state].attempts += 1
         self._last_response = response
