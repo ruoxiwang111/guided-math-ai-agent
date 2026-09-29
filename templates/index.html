@@ -767,6 +767,51 @@
             margin-top: 14px;
         }
 
+        .mode-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+        }
+
+        .learner-row {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .learner-row button {
+            margin-left: 6px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 8px;
+            padding: 2px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .learner-note {
+            margin-left: 6px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .practice-form label {
+            display: block;
+            font-size: 13px;
+            color: #374151;
+            margin: 8px 0 4px;
+        }
+
+        .practice-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .practice-actions button {
+            flex: 1;
+            min-width: 160px;
+        }
+
         .guided-question:empty {
             display: none;
         }
@@ -1172,6 +1217,33 @@
 
                     </div>
 
+
+                    <div
+                        class="mode-card"
+                        data-mode="practice"
+                    >
+
+                        <div class="mode-icon">
+                            📝
+                        </div>
+
+                        <div class="mode-title">
+                            独立作答
+                        </div>
+
+                        <div class="mode-description">
+                            不给任何提示，自己完整做一遍。
+                            提交后告诉你哪一步对、哪一步错。
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="learner-row">
+                    学生编号：<span id="learner-id"></span>
+                    <button id="new-learner" type="button">换一个学生</button>
+                    <span class="learner-note">（只用来把同一个学生的几次练习记录串起来，不记录姓名）</span>
                 </div>
 
             </div>
@@ -1519,17 +1591,7 @@
                         this.dataset.mode;
 
 
-                    if (selectedMode === "quick") {
-
-                        startButton.textContent =
-                            "快速解题";
-
-                    } else {
-
-                        startButton.textContent =
-                            "开始引导学习";
-
-                    }
+                    startButton.textContent = modeButtonText();
 
                 }
             );
@@ -1772,7 +1834,7 @@
             ) {
 
                 // 引导学习可以直接从题库选题
-                if (selectedMode === "guided") {
+                if (selectedMode === "guided" || selectedMode === "practice") {
 
                     startGuidedMode();
 
@@ -2027,17 +2089,7 @@
                 false;
 
 
-            if (selectedMode === "quick") {
-
-                startButton.textContent =
-                    "快速解题";
-
-            } else {
-
-                startButton.textContent =
-                    "开始引导学习";
-
-            }
+            startButton.textContent = modeButtonText();
 
         }
 
@@ -2968,9 +3020,13 @@
 
         try {
 
+            guidedAskBox.style.display = "";
+            learningModeTitle.textContent = "🧑‍🏫 引导学习";
+
             const data = await postJSON("/api/guided/start", {
                 question_id: questionId,
-                understanding_confirmed: !!understandingConfirmed
+                understanding_confirmed: !!understandingConfirmed,
+                learner_id: learnerId
             });
 
             if (!practicedIds.includes(questionId)) practicedIds.push(questionId);
@@ -3033,7 +3089,7 @@
                     el("div", "", q.text)
                 );
 
-                card.addEventListener("click", () => beginGuidedSession(q.question_id));
+                card.addEventListener("click", () => startChosen(q.question_id));
 
                 list.appendChild(card);
 
@@ -3076,7 +3132,7 @@
         const actions = el("div", "understanding-actions");
         const ok = el("button", "guided-send", "没问题，开始");
         ok.type = "button";
-        ok.addEventListener("click", function () { beginGuidedSession(prep.question_id, true); });
+        ok.addEventListener("click", function () { startChosen(prep.question_id, true); });
         actions.appendChild(ok);
 
         if (prep.can_correct) {
@@ -3136,7 +3192,7 @@
                         showStatus("请确认一下。", "success");
                     } else if (again.usable) {
                         guidedQuestion.textContent = newText;
-                        await beginGuidedSession(again.question_id);
+                        await startChosen(again.question_id);
                     } else {
                         showQuestionPicker((again.message || "这道题暂时不能引导。") + "\n\n你也可以从下面的题库中选一道开始：");
                         showStatus(again.message || "这道题暂时不能引导。", "error");
@@ -3185,11 +3241,167 @@
     }
 
 
+    // -------- 学生编号：匿名，只用来串起同一个学生的记录（D3 迁移测试） --------
+
+    function newLearnerId() {
+        return "L-" + Math.random().toString(36).slice(2, 8);
+    }
+
+    let learnerId = null;
+    try { learnerId = localStorage.getItem("aipeiwoxue_learner_id"); } catch (e) { learnerId = null; }
+    if (!learnerId) {
+        learnerId = newLearnerId();
+        try { localStorage.setItem("aipeiwoxue_learner_id", learnerId); } catch (e) { /* 不影响使用 */ }
+    }
+    document.getElementById("learner-id").textContent = learnerId;
+    document.getElementById("new-learner").addEventListener("click", function () {
+        if (!confirm("换成一个新的学生编号？之后的练习会记在新编号下。")) return;
+        learnerId = newLearnerId();
+        try { localStorage.setItem("aipeiwoxue_learner_id", learnerId); } catch (e) { /* 忽略 */ }
+        document.getElementById("learner-id").textContent = learnerId;
+    });
+
+    function modeButtonText() {
+        return selectedMode === "quick" ? "快速解题"
+            : selectedMode === "practice" ? "开始独立作答" : "开始引导学习";
+    }
+
+    const guidedAskBox = document.getElementById("guided-ask");
+
+    function startChosen(questionId, understandingConfirmed) {
+        return selectedMode === "practice"
+            ? beginPractice(questionId, understandingConfirmed)
+            : beginGuidedSession(questionId, understandingConfirmed);
+    }
+
+
+    // -------- 独立作答：一次写完，作答过程中不给任何提示 --------
+
+    async function beginPractice(questionId, understandingConfirmed) {
+
+        showStatus("正在准备独立作答…", "loading");
+
+        try {
+
+            const data = await postJSON("/api/practice/start", {
+                question_id: questionId,
+                understanding_confirmed: !!understandingConfirmed,
+                learner_id: learnerId
+            });
+
+            learningModeTitle.textContent = "📝 独立作答";
+            guidedQuestion.textContent = data.question.text;
+            guidedProgress.innerHTML = "";
+            guidedChat.innerHTML = "";
+            guidedAskBox.style.display = "none";          // 作答时不能问 AI
+            renderPracticeForm(data.practice_id, questionId);
+            showStatus("开始作答吧，这次不会有提示。写完四项后提交。", "success");
+
+        } catch (error) {
+
+            showStatus(`无法开始：${error.message}`, "error");
+
+        }
+
+    }
+
+
+    function renderPracticeForm(practiceId, questionId) {
+
+        guidedInput.innerHTML = "";
+
+        const form = el("div", "practice-form");
+        const field = (label, tag, placeholder) => {
+            const node = el(tag);
+            if (tag === "input") node.type = "text";
+            node.placeholder = placeholder;
+            form.append(el("label", "", label), node);
+            return node;
+        };
+        const vd = field("① 设未知数", "input", "设……为 x");
+        const eq = field("② 列方程", "input", "方程");
+        const steps = field("③ 解方程（每一行写一个等式）", "textarea", "一行一个等式");
+        const ans = field("④ 最终答案（带单位）", "input", "答：……");
+        const checkRow = el("label", "guided-check");
+        const check = el("input");
+        check.type = "checkbox";
+        checkRow.append(check, el("span", "", "我已经把答案代回原题检查过"));
+        form.appendChild(checkRow);
+
+        const actions = el("div", "practice-actions");
+        const submit = el("button", "guided-send", "提交作答");
+        submit.type = "button";
+        const help = el("button", "guided-option", "我需要帮助（改为引导学习）");
+        help.type = "button";
+        actions.append(submit, help);
+        form.appendChild(actions);
+
+        submit.addEventListener("click", async function () {
+            if (!eq.value.trim() && !ans.value.trim()) {
+                showStatus("至少写出方程或答案再提交。", "error");
+                return;
+            }
+            submit.disabled = help.disabled = true;
+            try {
+                const res = await postJSON("/api/practice/submit", {
+                    practice_id: practiceId,
+                    variable_definition: vd.value.trim(), equation: eq.value.trim(),
+                    steps: steps.value, final_answer_text: ans.value.trim(), verified: check.checked
+                });
+                renderPracticeResult(res, questionId);
+                showStatus("已提交。", "success");
+            } catch (error) {
+                showStatus(`提交失败：${error.message}`, "error");
+                submit.disabled = help.disabled = false;
+            }
+        });
+
+        help.addEventListener("click", async function () {
+            if (!confirm("求助会被记录下来，这道题会改为引导学习。确定吗？")) return;
+            try {
+                await postJSON("/api/practice/help", { practice_id: practiceId });
+                await beginGuidedSession(questionId);
+            } catch (error) {
+                showStatus(`出错了：${error.message}`, "error");
+            }
+        });
+
+        guidedInput.appendChild(form);
+        vd.focus();
+
+    }
+
+
+    function renderPracticeResult(res, questionId) {
+
+        guidedInput.innerHTML = "";
+
+        const box = el("div", "guided-summary");
+        box.appendChild(el("div", "section-title", res.result.fully_correct ? "🎉 全部正确！" : "📝 作答结果"));
+        box.appendChild(el("div", "learning-message", res.summary_lines.join("\n")));
+        const m = Math.floor(res.duration_seconds / 60), sec = res.duration_seconds % 60;
+        box.appendChild(el("div", "guided-note", `用时 ${m} 分 ${sec} 秒${res.help_requested ? " · 求助过" : ""}`));
+        if (!res.result.fully_correct && res.reference_answer) {
+            box.appendChild(el("div", "guided-note", `参考答案：${res.reference_answer}`));
+        }
+
+        const actions = el("div", "practice-actions");
+        const review = el("button", "guided-send", "用引导学习把这道题再过一遍");
+        review.type = "button";
+        review.addEventListener("click", () => beginGuidedSession(questionId));
+        actions.appendChild(review);
+        box.appendChild(actions);
+
+        guidedInput.appendChild(box);
+
+    }
+
+
     async function startGuidedMode() {
 
         learningSection.style.display = "block";
 
-        learningModeTitle.textContent = "🧑‍🏫 引导学习";
+        learningModeTitle.textContent = selectedMode === "practice" ? "📝 独立作答" : "🧑‍🏫 引导学习";
 
         quickSolutionContent.innerHTML = "";
 
@@ -3220,7 +3432,7 @@
                         showUnderstanding(prep, text);
                         showStatus("请先确认我读到的已知条件。", "success");
                     } else {
-                        await beginGuidedSession(prep.question_id);
+                        await startChosen(prep.question_id);
                     }
 
                     return;

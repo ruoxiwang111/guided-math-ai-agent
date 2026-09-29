@@ -46,11 +46,13 @@ import os
 import re
 import uuid
 from collections import OrderedDict
+from datetime import datetime
 from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
 from core.llm_client import TutorVoice, default_backend
+from core.practice import grade_attempt, learner_view
 from core.review import build_review
 from core.s1_options import build_s1_item, load_targets, to_submission
 from core.state_manager import INPUT_FOR_STATE, TutorSession
@@ -62,6 +64,7 @@ BANK = json.loads((BASE_DIR / "data" / "question_bank.json").read_text(encoding=
 QUESTIONS = {q["question_id"]: q for q in BANK["questions"]}
 S1_TARGETS = load_targets(BASE_DIR / "data" / "s1_targets.json")
 LOG_DIR = BASE_DIR / "logs" / "guided"
+PRACTICE_DIR = BASE_DIR / "logs" / "practice"
 EXTRACT_DIR = BASE_DIR / "data" / "extracted"
 MAX_SESSIONS = 200
 STATE_LABELS = {"S1": "理解题意", "S2": "设未知数、列方程", "S3": "解方程", "S4": "写答案并检验", "DONE": "完成"}
@@ -72,6 +75,7 @@ _backend = None if os.environ.get("GUIDED_USE_LLM", "1") == "0" else default_bac
 _sessions: "OrderedDict[str, dict]" = OrderedDict()
 _extracted: dict[str, dict] = {}            # question_id → extracted record (usable ones only)
 _corrections: dict[str, list[str]] = {}     # question_id → learner corrections of the reading
+_practices: "OrderedDict[str, dict]" = OrderedDict()   # independent attempts (D3), no feedback while working
 MAX_CORRECTIONS = 2
 
 
@@ -155,6 +159,80 @@ def list_questions():
 @guided_bp.post("/api/guided/match")
 def match_question():
     return jsonify({"success": True, "question_id": _bank_match((request.get_json(silent=True) or {}).get("text", ""))})
+
+
+def _learner_id(data: dict) -> str | None:
+    """Anonymous id chosen in the browser ('L-3f2a…'), to link one learner's sessions (D3)."""
+    lid = str(data.get("learner_id") or "").strip()
+    return lid[:40] if re.fullmatch(r"[A-Za-z0-9_\-]{1,40}", lid or "") else None
+
+
+def _question(qid):
+    return QUESTIONS.get(qid) or _extracted.get(qid)
+
+
+def _save_practice(pid: str, rec: dict):
+    try:
+        PRACTICE_DIR.mkdir(parents=True, exist_ok=True)
+        (PRACTICE_DIR / f"{pid}.json").write_text(json.dumps(rec, ensure_ascii=False, indent=2, default=str),
+                                                 encoding="utf-8")
+    except OSError:
+        pass
+
+
+@guided_bp.post("/api/practice/start")
+def practice_start():
+    """Independent attempt: the whole solution at once, no hints while working (D3)."""
+    data = request.get_json(silent=True) or {}
+    qid = data.get("question_id")
+    q = _question(qid)
+    if q is None:
+        return _error("找不到这道题，请重新输入题目或从题库中选择。")
+    pid = "p_" + uuid.uuid4().hex[:12]
+    rec = {"practice_id": pid, "learner_id": _learner_id(data), "question_id": qid, "question": q["question"],
+           "started_at": datetime.now().isoformat(timespec="seconds"), "help_requested": False,
+           "understanding_confirmed": bool(data.get("understanding_confirmed"))}
+    _practices[pid] = rec
+    while len(_practices) > MAX_SESSIONS:
+        _practices.popitem(last=False)
+    _save_practice(pid, rec)
+    return jsonify({"success": True, "practice_id": pid,
+                    "question": {"question_id": qid, "text": q["question"]}})
+
+
+@guided_bp.post("/api/practice/help")
+def practice_help():
+    """The learner gives up on working alone: recorded, then Guided Mode takes over."""
+    data = request.get_json(silent=True) or {}
+    rec = _practices.get(data.get("practice_id"))
+    if rec is None:
+        return _error("练习不存在或已过期。", 404)
+    rec["help_requested"] = True
+    rec["help_requested_at"] = datetime.now().isoformat(timespec="seconds")
+    _save_practice(rec["practice_id"], rec)
+    return jsonify({"success": True, "question_id": rec["question_id"]})
+
+
+@guided_bp.post("/api/practice/submit")
+def practice_submit():
+    data = request.get_json(silent=True) or {}
+    rec = _practices.get(data.get("practice_id"))
+    if rec is None:
+        return _error("练习不存在或已过期。", 404)
+    if rec.get("submitted_at"):
+        return _error("这次作答已经提交过了。")
+    q = _question(rec["question_id"])
+    answer = {k: str(data.get(k) or "") for k in ("variable_definition", "equation", "steps", "final_answer_text")}
+    answer["verified"] = bool(data.get("verified"))
+    result = grade_attempt(q, answer["variable_definition"], answer["equation"], answer["steps"],
+                           answer["final_answer_text"])
+    now = datetime.now()
+    rec.update(submitted_at=now.isoformat(timespec="seconds"), answer=answer, result=result,
+               duration_seconds=int((now - datetime.fromisoformat(rec["started_at"])).total_seconds()))
+    _save_practice(rec["practice_id"], rec)
+    return jsonify({"success": True, "result": result, "summary_lines": learner_view(result),
+                    "duration_seconds": rec["duration_seconds"], "help_requested": rec["help_requested"],
+                    "reference_answer": q.get("final_answer_text")})
 
 
 def _bank_match(text: str):
@@ -266,6 +344,7 @@ def start():
     targets = S1_TARGETS if qid in QUESTIONS else {qid: q["s1"]}
     sid = uuid.uuid4().hex[:12]
     session = TutorSession(q, session_id=f"anon_{sid}")
+    session.learner_id = _learner_id(data)
     if qid not in QUESTIONS:
         session.record_understanding(bool(data.get("understanding_confirmed")),
                                      corrections=len(_corrections.get(qid, [])), notes=_corrections.get(qid, []))

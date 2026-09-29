@@ -591,7 +591,7 @@ class TutorSession:
 
     # ------------------------------------------------------------------ public API
     def start(self) -> TutorAction:
-        self._log("session_start", mode="guided")
+        self._log("session_start", mode="guided", learner_id=getattr(self, "learner_id", None))
         return self._ask()
 
     def submit(self, response: dict) -> TutorAction:
@@ -745,6 +745,7 @@ class TutorSession:
                                        if e["event"] == "verification"),
             "learner_questions": self.learner_questions,
             "self_summary": self.self_summary,
+            "learner_id": getattr(self, "learner_id", None),
             "understanding": self.understanding,
         }
 
