@@ -143,6 +143,9 @@ class TutorSession:
         self.self_summary: str | None = None
         self.reflection_about: str | None = None       # the state a reflection question is about
         self.awaiting_explanation = False              # a discriminating question may be answered in words
+        self._last_diagnosis: dx.Diagnosis | None = None
+        self._diag_by_state: dict = {}
+        self._step_revealed: set = set()               # S3 lines already shown as a step reference
         self.understanding: dict | None = None       # "我读到的已知条件" check before S1 (extracted problems)
         # the learner's accepted model (standard or an accepted alternative definition)
         self.model = {"variable_definition": question["variable_definition"],
@@ -214,6 +217,14 @@ class TutorSession:
         """What the learner just corrected, in words (deterministic, from core/review)."""
         err = self._corrected_error(state)
         if not err:
+            d = self._diag_by_state.get(state)
+            if d is not None and d.rule == "one_side_wrong":
+                side = d.details
+                if side.get("missing_brackets"):
+                    return {"corrected_error": f"方程{side['wrong_side_name']}：倍数关系少了括号",
+                            "reason": f"“{side.get('bracket_factor')}倍”要乘的是一个完整的量，这个量有两项时要加括号。"}
+                return {"corrected_error": f"方程{side['wrong_side_name']}表示的量",
+                        "reason": "方程两边要表示题目里同一个量的两种说法，每一边都要和题目的描述对得上。"}
             return {}
         c, sub, rule = err
         family = rv.topic_family(self.q.get("topic"))
@@ -357,7 +368,49 @@ class TutorSession:
             self._log("reveal_refused", attempts=self.records[self.state].attempts if self.state in self.records else None)
             return TutorAction(UNEXPECTED_INPUT, self.state, task=INPUT_FOR_STATE.get(self.state),
                                note=f"reveal is available after {REVEAL_AFTER_ATTEMPTS} attempts at this step")
+        step = self._step_reference()
+        if step is not None:
+            return step
         return self._reveal(None, requested=True)
+
+    def _step_reference(self) -> TutorAction | None:
+        """
+        S3: show only the correct version of the first wrong line and let the learner go on
+        (a second request for the same line shows the whole step). None if there is no line.
+        """
+        d = self._last_diagnosis
+        if self.state != S3 or d is None or not d.first_invalid_step or not d.details.get("prev_line"):
+            return None
+        r = self._last_response or {}
+        steps = r.get("steps")
+        lines = [ln.strip() for ln in (steps.splitlines() if isinstance(steps, str) else steps or []) if ln.strip()]
+        k = d.first_invalid_step
+        if not 1 <= k <= len(lines):
+            return None
+        key = (k, lines[k - 1])
+        if key in self._step_revealed:
+            return None
+        from core.normalizer import normalize_line
+        prev_nl, cur_nl = normalize_line(d.details["prev_line"]), normalize_line(lines[k - 1])
+        if not (prev_nl.ok and cur_nl.ok):
+            return None
+        correct = dx.correct_next_line(prev_nl.normalized, cur_nl.normalized)
+        if not correct:
+            return None
+        self._step_revealed.add(key)
+        rec = self.records[S3]
+        rec.revealed = True
+        rec.reveal_requested = True
+        self._log("reveal_step", diagnosed_error=d.primary_error, requested_by_learner=True, scope="line",
+                  line_no=k, attempts=rec.attempts)
+        reason = self._reason_for(S3).get("reason")
+        spec = self._spec(level=3, reveal=True, requested=True, step_reveal=True, line_no=k,
+                          learner_line=lines[k - 1], prev_line=d.details["prev_line"],
+                          from_start_equation=bool(d.details.get("from_start_equation")),
+                          correct_line=correct, reason=reason)
+        spec["must_not_contain"] = []            # the learner asked for this line
+        return TutorAction(REVEAL, S3, task=INPUT_FOR_STATE[S3], hint_level=3, prompt_spec=spec,
+                           note="the learner asked to see the correct version of the wrong line")
 
     def _hint_or_reveal(self, d: dx.Diagnosis | None, category: str | None) -> TutorAction:
         rec = self.records[self.state]
@@ -395,6 +448,10 @@ class TutorSession:
             ref = dx.resolve_definition(vd, dx._references(self.q))[0] if vd else None
             if ref is not None and category not in ("E2",):
                 ctx["acknowledge"].append(f"你写的“{vd.strip()}”这个设法没问题")
+            if d is not None and d.details.get("wrong_side_text"):
+                ctx.update({k: d.details[k] for k in ("correct_side_name", "correct_side_text", "wrong_side_name",
+                                                      "wrong_side_text", "missing_brackets", "bracket_factor")
+                            if k in d.details})
         elif self.state == S3 and d is not None and d.first_invalid_step:
             steps = r.get("steps")
             lines = [ln.strip() for ln in (steps.splitlines() if isinstance(steps, str) else steps or []) if ln.strip()]
@@ -412,13 +469,18 @@ class TutorSession:
         return ctx
 
     def _handle_diagnosis(self, d: dx.Diagnosis) -> TutorAction:
+        self._last_diagnosis = d
         rec = self.records[self.state]
         self._log("diagnosis", diagnosed_error=d.primary_error, error_subtype=d.error_subtype,
                   diagnosis_status=d.status, evidence_level=d.evidence_level,
                   first_invalid_step=d.first_invalid_step, rule=d.rule)
+        self._diag_by_state[self.state] = d
         if d.status == dx.DIAGNOSED:
             rec.errors.append(d.error_subtype or d.primary_error)
             return self._hint_or_reveal(d, d.primary_error)
+        if d.rule == "one_side_wrong":
+            # located but not labelled: guidance on the normal hint ladder, no error category claimed
+            return self._hint_or_reveal(d, None)
         # uncertain / insufficient: collect evidence first (§9 step 6), never claim an error
         req = self._evidence_request(d)
         if req is not None:

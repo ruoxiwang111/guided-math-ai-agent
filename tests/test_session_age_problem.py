@@ -82,7 +82,7 @@ def test_discriminating_question_can_be_answered_in_words(q):
     s = TutorSession(q)
     s.start()
     s.submit({"type": "s1_choice", "correct": True})
-    a = s.submit({"type": "modelling", "variable_definition": DEF, "equation": "3x+5=2x"})
+    a = s.submit({"type": "modelling", "variable_definition": DEF, "equation": "3x=2x"})   # no side matches
     assert a.type == EVIDENCE_REQUEST and a.request == dx.ASK_DISCRIMINATING and s.awaiting_explanation
     text = voice(q).render(a).text
     assert "用文字" in text and "修改" in text                    # says how to answer

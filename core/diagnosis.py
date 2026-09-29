@@ -444,11 +444,104 @@ def diagnose_modelling(question, equation, variable_definition=None, exclude_mut
                          follow_up=ASK_DEFINITION, notes=notes)
 
     # 5. no known pattern: the equation is wrong, but the deterministic layer
-    #    cannot tell WHICH relationship is wrong → uncertain, never a forced label
+    #    cannot tell WHICH relationship is wrong → uncertain, never a forced label.
+    #    It can still say WHERE: one side may equal a side of the reference equation.
     cands = ["E3"] + (["E4"] if question.get("e4_patterns") else []) + ["E2"]
+    side = locate_wrong_side(equation, ref["equation"])
+    if side:
+        evidence = f"方程{side['correct_side_name']}“{side['correct_side_text']}”与题意一致，" \
+                   f"{side['wrong_side_name']}“{side['wrong_side_text']}”与题目中的量对不上" + \
+                   ("（像是少了括号：倍数只乘了其中一项）" if side.get("missing_brackets") else "")
+        return Diagnosis(status=UNCERTAIN, state=state, candidates=cands, evidence_level="C", details=side,
+                         evidence=evidence, follow_up=ASK_DISCRIMINATING, rule="one_side_wrong", notes=notes)
     return Diagnosis(status=UNCERTAIN, state=state, candidates=cands, evidence_level="C",
                      evidence="变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
                      follow_up=ASK_DISCRIMINATING, rule="unmatched_relationship", notes=notes)
+
+
+def locate_wrong_side(learner_eq: str, reference_eq: str) -> dict | None:
+    """
+    3x+5 = 2x+5  vs  3x+5 = 2(x+5)  →  the left side matches, the right side does not, and the
+    right side is the reference side with its brackets dropped (k·(p+q) written as k·p+q).
+    Sides are compared as expressions (sympy), in both orientations. None if no side matches.
+    """
+    nl = normalize_line(learner_eq)
+    if not nl.ok or nl.kind != "equation":
+        return None
+    try:
+        l_raw = [p.strip() for p in re.split(r"[=＝]", learner_eq, maxsplit=1)]
+        ll, lr = mc._sides(nl.normalized)
+        rl, rr = mc._sides(reference_eq)
+        ref_raw = _raw_sides(reference_eq)
+    except Exception:  # noqa: BLE001
+        return None
+    same = lambda a, b: (a - b).expand() == 0  # noqa: E731
+    for (ok_i, bad_i), (ref_ok, ref_bad, ref_bad_raw) in (
+            ((0, 1), (rl, rr, ref_raw[1])), ((0, 1), (rr, rl, ref_raw[0])),
+            ((1, 0), (rr, rl, ref_raw[0])), ((1, 0), (rl, rr, ref_raw[1]))):
+        learner_ok, learner_bad = (ll, lr) if ok_i == 0 else (lr, ll)
+        if same(learner_ok, ref_ok) and not same(learner_bad, ref_bad):
+            names = ("左边", "右边")
+            out = {"correct_side_name": names[ok_i], "wrong_side_name": names[bad_i],
+                   "correct_side_text": l_raw[ok_i], "wrong_side_text": l_raw[bad_i]}
+            k = _dropped_brackets(ref_bad_raw, learner_bad)
+            if k is not None:
+                out.update(missing_brackets=True, bracket_factor=str(k))
+            return out
+    return None
+
+
+def _dropped_brackets(ref_side_raw, learner_side):
+    """k·(p+q) in the reference side written as k·p + q by the learner → k, else None."""
+    for node in ref_side_raw.atoms(Mul):
+        nums = [f for f in node.args if isinstance(f, Number)]
+        adds = [f for f in node.args if isinstance(f, Add)]
+        if len(nums) == 1 and len(adds) == 1:
+            k, inner = nums[0], adds[0]
+            terms = list(inner.args)
+            wrong = ref_side_raw.xreplace({node: k * terms[0] + Add(*terms[1:])}).doit()
+            if (wrong - learner_side).expand() == 0:
+                return nsimplify(k, rational=True)
+    return None
+
+
+def correct_next_line(prev_norm: str, curr_norm: str) -> str | None:
+    """
+    The correct line the learner was most likely aiming for: among the correct transformations
+    of the previous line, the one closest to what they wrote (x = 8-12 → x = 20;
+    2x+x+3 = 26 → 4x + 6 = 26). Used for the learner-requested step reference in S3.
+    """
+    try:
+        target = _canon(curr_norm)
+        forms = _correct_forms(prev_norm)
+    except Exception:  # noqa: BLE001
+        return None
+    if not forms:
+        return None
+    best = min(forms, key=lambda f: (sum(u != v for u, v in zip(f, target)),
+                                     sum(abs(u - v) for u, v in zip(f, target))))
+    return render_form(best)
+
+
+def render_form(form) -> str:
+    """(a, b, c, d) → 'a·x + b = c·x + d' in written form (4x + 6 = 26, x = 20)."""
+    def side(a, b):
+        parts = []
+        if a != 0:
+            parts.append("x" if a == 1 else "-x" if a == -1 else f"{_fmt_num(a)}x")
+        if b != 0 or not parts:
+            if parts:
+                parts.append(f"- {_fmt_num(-b)}" if b < 0 else f"+ {_fmt_num(b)}")
+            else:
+                parts.append(_fmt_num(b))
+        return " ".join(parts)
+    a, b, c, d = form
+    return f"{side(a, b)} = {side(c, d)}"
+
+
+def _fmt_num(v):
+    v = nsimplify(v, rational=True)
+    return str(v) if v.q == 1 else f"{v.p}/{v.q}"
 
 
 # ---------------------------------------------------------------------------

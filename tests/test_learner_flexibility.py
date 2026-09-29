@@ -87,7 +87,7 @@ def test_clear_bank_alternative_still_matches():
 def test_wrong_sign_between_x_terms_is_not_e4(meet):
     d = dx.diagnose_modelling(meet, "5x-4x=36", "设x小时相遇")
     assert d.primary_error is None and d.status == dx.UNCERTAIN
-    assert d.rule == "unmatched_relationship"
+    assert d.rule == "one_side_wrong" and d.details["wrong_side_text"] == "5x-4x"   # located, not labelled
 
 
 def test_e4_flip_still_applies_to_constants():
@@ -201,7 +201,9 @@ def test_reveal_in_s3_lets_s4_check_conditions():
         s.submit({"type": "reflection", "text": "ok"})
     for steps in ("4x+8=28\nx=6", "4x=20\nx=4"):
         s.submit({"type": "steps", "steps": steps})
-    s.submit({"type": "reveal_request"})
+    a = s.submit({"type": "reveal_request"})                 # 1st: only the wrong line, stay in S3
+    assert a.type == "reveal_step" and a.prompt_spec["step_reveal"] and s.state == "S3"
+    s.submit({"type": "reveal_request"})                     # 2nd for the same line: the whole step
     assert s.state == "S4" and s.final_x == q["answer"]
 
 

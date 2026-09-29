@@ -379,6 +379,9 @@ def _discriminate_user_prompt(spec: dict, template: str) -> str:
         "学生的方程": spec.get("learner_equation"),
         "出问题的那一行": spec.get("learner_line"),
         "它的上一行（或学生列好的方程）": spec.get("prev_line"),
+        "方程中已经对的一边": spec.get("correct_side_text"),
+        "方程中对不上的一边": spec.get("wrong_side_text"),
+        "对不上的一边像是少了括号": spec.get("missing_brackets"),
         "先肯定的部分": spec.get("acknowledge"),
         "must_not_contain": spec.get("must_not_contain", []),
         "参考问法": template,
@@ -517,6 +520,9 @@ def _hint_user_prompt(spec: dict, template: str) -> str:
         "学生这次写的": spec.get("learner_input"),
         "出错的那一行": spec.get("learner_line"),
         "它的上一行": spec.get("prev_line"),
+        "方程中已经对的一边": spec.get("correct_side_text"),
+        "方程中对不上的一边": spec.get("wrong_side_text"),
+        "对不上的一边像是少了括号": spec.get("missing_brackets"),
         "先肯定的部分": spec.get("acknowledge"),
         "学生的变量定义": spec.get("learner_variable_definition"),
         "规则": spec.get("rule"),
@@ -537,6 +543,25 @@ def _ack_prefix(spec) -> str:
     return (("，".join(ack) + "。") if ack else "")
 
 
+def _side_hint(level: int, spec: dict) -> str | None:
+    """S2, one side of the equation matches the problem and the other does not."""
+    ok, bad = spec.get("correct_side_text"), spec.get("wrong_side_text")
+    if not (ok and bad):
+        return None
+    okn, badn = spec.get("correct_side_name", "一边"), spec.get("wrong_side_name", "另一边")
+    k = spec.get("bracket_factor")
+    if level <= 1:
+        return f"{okn}的“{ok}”是对的。问题在{badn}的“{bad}”：它应该表示题目里的哪个量？"
+    if level == 2:
+        if spec.get("missing_brackets") and k:
+            return (f"看{badn}的“{bad}”：题目里的“{k}倍”，要乘的是一个完整的量，而不是只乘 x。"
+                    f"先想想被乘的是哪个量、它用 x 怎么表示，再乘 {k}。")
+        return f"先用文字说出{badn}应该表示的量（比如“某个时候某人的年龄”），再把这个量用 x 表示出来。"
+    rel = spec.get("relationship")
+    return (f"题目中的数量关系是：{rel}。{okn}已经表示好了，{badn}应该怎样用 x 表示？"
+            if rel else f"{okn}已经表示好了，把{badn}表示的那个量完整地用 x 写出来（需要时加括号）。")
+
+
 HELP_HINTS = {
     "S2": {1: "没关系，我们一起来。题目要求的是“{target}”，可以先把其中一个量设为 x，写成“设……为 x”。",
            2: "设好 x 以后，用 x 把另一个量也表示出来；再找题目里说明两个量关系的话（比如“一共”“比……多”），写成等式。",
@@ -553,6 +578,10 @@ HELP_HINTS = {
 def _template_hint(category, level, spec) -> str:
     level = min(level or 1, 3)
     state = spec.get("current_state")
+    if category is None and state == "S2":
+        side = _side_hint(level, spec)
+        if side:
+            return _ack_prefix(spec) + side
     if spec.get("rule") == "help_request" and state in HELP_HINTS:
         return HELP_HINTS[state][level].format(target=spec.get("target") or "题目最后问的量",
                                                solving=spec.get("solving_steps") or "移项、合并同类项、系数化为 1")
@@ -717,6 +746,12 @@ class TutorVoice:
                 if missing:
                     text = f"题目里没有“{missing}”哦，再读一遍题目里出现的是谁。" + text
                 return self._llm_or(text, DEFINE_SYSTEM_PROMPT, _define_user_prompt(spec, text), spec, t)
+            if action.request == "ask_discriminating_question" and action.state == "S2" and spec.get("wrong_side_text"):
+                level = 2 if (spec.get("evidence_repeat") or 1) >= 2 else 1
+                text = _side_hint(level, spec) + " 可以在下面用文字说一说，也可以直接修改再提交。"
+            elif action.request == "ask_discriminating_question" and (spec.get("evidence_repeat") or 1) >= 2:
+                text = ("再对照题目逐句看：你方程里的每一项，分别是题目里哪句话说的量？"
+                        "找出对不上的那一项，改好再提交。")
             if action.request == "ask_discriminating_question" and action.state == "S3" and spec.get("line_no"):
                 k, line, prev = spec["line_no"], spec.get("learner_line"), spec.get("prev_line")
                 src = f"你列的方程“{prev}”" if spec.get("from_start_equation") and prev else "上一行"
@@ -732,6 +767,14 @@ class TutorVoice:
                 template = (f"现在对了！刚才的问题出在“{spec['corrected_error']}”。"
                             "用一句话说说：为什么要这样改？")
             return self._llm_or(template, META_SYSTEM_PROMPT, _meta_user_prompt(spec, template), spec, t)
+        if t == REVEAL and spec.get("step_reveal"):
+            src = "你列的方程" if spec.get("from_start_equation") else "上一行"
+            text = (f"好的，这一步给你看参考：从{src}“{spec['prev_line']}”往下，"
+                    f"第{spec['line_no']}行应该是“{spec['correct_line']}”。")
+            if spec.get("reason"):
+                text += f"要点：{spec['reason']}"
+            text += " 把这一行改过来，再接着往下算。"
+            return Message(text, "template", t, hint_level=3, category=action.category)
         if t == REVEAL:
             text = _reveal_text(spec, action.state)
             if spec.get("requested"):
