@@ -87,6 +87,15 @@ def assign_splits(cases: list[dict], previous: dict, seed: int = SEED, dev_ratio
             c["split"] = "dev" if i < max(want_dev, 0) else "test"
 
 
+def response_origin(case: dict, generated: dict | None) -> str:
+    """llm_generated (kept as written by d2b_generate.py) / llm_edited / researcher_written."""
+    if not generated:
+        return "researcher_written"
+    mine = {k: ("\n".join(v) if isinstance(v, list) else v) for k, v in case["learner_response"].items()}
+    theirs = {k: v for k, v in generated.items() if v}
+    return "llm_generated" if mine == theirs else "llm_edited"
+
+
 def relabelled(old: dict, new: dict) -> list[str]:
     return [f for f in io.REFERENCE_FIELDS if old.get(f) != new.get(f)]
 
@@ -97,6 +106,7 @@ def main():
     ap.add_argument("--cases", default=str(io.CASES_JSON))
     ap.add_argument("--second", default=str(io.SECOND_JSON))
     ap.add_argument("--corrections", default=str(io.CORRECTIONS_MD))
+    ap.add_argument("--generation-log", default=str(io.ROOT / "eval" / "d2b_generation_log.json"))
     ap.add_argument("--check", action="store_true", help="validate and report only; write nothing")
     ap.add_argument("--allow-relabel", metavar="REASON", help="permit label changes to reviewed cases, with a reason")
     args = ap.parse_args()
@@ -113,6 +123,11 @@ def main():
     data = json.loads(Path(args.cases).read_text(encoding="utf-8"))
     old = {c["case_id"]: c for c in data["cases"] if c.get("source") == "hand_crafted"}
     cases = [io.to_record(r, split="") for r in rows] if not errors else []
+    gen_path = Path(args.generation_log)
+    gen = json.loads(gen_path.read_text(encoding="utf-8"))["cases"] if gen_path.exists() else {}
+    for c in cases:
+        g = gen.get(c["case_id"])
+        c["response_origin"] = response_origin(c, g["generated"] if g and g["question_id"] == c["question_id"] else None)
     second_path = Path(args.second)
     second_ids = set(json.loads(second_path.read_text(encoding="utf-8")).get("case_ids", [])) \
         if second_path.exists() else set()
@@ -163,6 +178,8 @@ def main():
     data["cases"] = [c for c in data["cases"] if c.get("source") != "hand_crafted"] + cases
     Path(args.cases).write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     split = Counter(c["split"] for c in cases)
+    origin = Counter(c["response_origin"] for c in cases)
+    print("  response origin: " + ", ".join(f"{k} {v}" for k, v in sorted(origin.items())))
     print(f"\n✓ wrote {len(cases)} D2b case(s) to {Path(args.cases).name}: {split['dev']} dev, {split['test']} test"
           f" (D2a untouched: {sum(c.get('source') == 'mutation' for c in data['cases'])} cases)")
 

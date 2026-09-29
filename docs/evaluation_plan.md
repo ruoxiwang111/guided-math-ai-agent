@@ -452,6 +452,8 @@ D2a results are reported separately because the mutations were generated from th
 
 D2b contains **40–60 learner-style responses** written by the researcher.
 
+*V1.2:* the responses may be drafted by a language model that plays a learner (`scripts/d2b_generate.py`): it sees only the problem text and a plain description of the kind of response wanted, never the diagnosis rules, error codes or reference solution. The researcher screens, edits or deletes each draft and annotates every case blind to the drafting intention (kept in `eval/d2b_generation_log.json`, not in the workbook). Each case records its `response_origin` (`llm_generated`, `llm_edited`, `researcher_written`), and results are reported by origin as well as overall.
+
 D2b must include:
 
 * at least **5 cases per category** E1–E7;
@@ -853,6 +855,7 @@ The report should distinguish **system errors** from **annotation uncertainty** 
 | Simulated learners do not represent real learners                                 | D4 is used only for Agent-side evaluation; no learner-outcome claims are made.                                               |
 | Chinese-specific E4 taxonomy may not generalise                                   | Results are explicitly scoped to the Chinese-language V1 task domain.                                                        |
 | Question-bank composition may bias error coverage                                 | D2b includes independently designed cases across E1–E7 and includes uncertain, correct, multi-error, and line-by-line cases. |
+| D2b responses drafted by a language model may be less varied or less realistic than real learner work | The researcher screens and edits every draft and annotates blind to the drafting intention; `response_origin` is recorded per case and results are also reported by origin; learner-written responses remain outside V1 (§12). |
 | Automated leakage detection may miss paraphrased answers                          | All flagged hints and a random 20% of unflagged hints are manually reviewed.                                                 |
 | Small test sets may produce unstable percentages                                  | Raw counts, repeated-run ranges, and failure cases are reported.                                                             |
 
@@ -1051,3 +1054,4 @@ Before presenting V1 results, confirm:
 | ------- | ------ |
 | V1.0 | Initial canonical evaluation specification. |
 | V1.1 | D1 composition updated to 15 / 10 / 1 / 2 / 2 with the scope-from-problem-statement rule (§3.8, §4, §4.1). D2a build rules, dev/test default and absence of reference-correct cases recorded (§4.2, §5.2). Interpretation of D2a step localisation added (§3.7, §6.3). D2a diagnosis reported in full and leave-one-out modes; leave-one-out is the cited figure (§6.1). Freezing defined (§5.1). E4 subtype collapsing stated (§3.1, §3.6). Two threats added (§9). Implemented scripts and file layout updated (§5.4, §11). Checklist extended (§14). |
+| V1.2 | D2b responses may be drafted by a language model playing a learner and then screened, edited and annotated by the researcher; provenance recorded per case (§4.2); threat added (§9). Workbook, import, second-annotator and evaluation scripts: `d2b_template.py`, `d2b_import.py`, `d2b_second.py`, `eval_diagnosis_d2b.py`. |

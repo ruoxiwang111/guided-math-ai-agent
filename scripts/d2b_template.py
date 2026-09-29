@@ -25,6 +25,7 @@ GUIDE = [
     ("5", "execution 行：steps 一行一步，单元格内换行用 Alt+Enter（也可以用 || 分隔）。first_invalid_step 从 1 数，只数 steps 单元格里的行。"),
     ("6", "execution 行的 equation 选填：填了表示学生在 S2 已经列好这个方程，steps 可以不重抄它，第 1 行按“从这个方程变形”来检查。"),
     ("7", "全部写完、自己复查一遍后，把 review_status 改成 reviewed。之后改标签需要写明理由（见 d2b_import.py --allow-relabel）。"),
+    ("8", "用 DeepSeek 生成候选作答时（python scripts/d2b_generate.py）：逐条看，不像真实学生的删掉或改写，然后像自己写的一样独立标注。生成意图存在 eval/d2b_generation_log.json，标注完成并冻结之前不要打开它。"),
     ("", ""),
     ("数据集必须包含（评估计划 §4.2，导入时会自动检查）", ""),
     ("总数", "40–60 条"),

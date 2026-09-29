@@ -70,7 +70,7 @@ def evaluate(cases, bank):
             "status": d.status, "output": d.primary_error if d.status == DIAGNOSED else d.status,
             "system_step": d.first_invalid_step, "rule": d.rule, "candidates": ";".join(d.candidates or []),
             "evidence_level": d.evidence_level, "system_evidence": d.evidence,
-            "reference_evidence": c.get("evidence"),
+            "reference_evidence": c.get("evidence"), "response_origin": c.get("response_origin", ""),
         })
 
     inc = [r for r in rows if r["reference_status"] == "incorrect"]
@@ -100,6 +100,17 @@ def evaluate(cases, bank):
         by_layer[layer] = {"n_incorrect": len(li), "coverage": rate(len(ls), len(li)),
                            "conditional_accuracy": rate(sum(r["output"] == r["reference"] for r in ls), len(ls))}
 
+    by_origin = {}
+    for origin in sorted({r["response_origin"] for r in rows}):
+        o = [r for r in rows if r["response_origin"] == origin]
+        oi = [r for r in o if r["reference_status"] == "incorrect"]
+        os_ = [r for r in oi if r["status"] == DIAGNOSED]
+        oc = [r for r in o if r["reference_status"] == "correct"]
+        by_origin[origin or "unknown"] = {
+            "n": len(o), "coverage": rate(len(os_), len(oi)),
+            "conditional_accuracy": rate(sum(r["output"] == r["reference"] for r in os_), len(os_)),
+            "fpr": rate(sum(r["status"] == DIAGNOSED for r in oc), len(oc))}
+
     return {
         "n_cases": len(rows),
         "n": {"incorrect": len(inc), "correct": len(cor), "uncertain": len(unc), "not_assessable": len(na)},
@@ -118,6 +129,7 @@ def evaluate(cases, bank):
                                                "correct_line_by_line_flagged": len(correct_flagged)},
         },
         "by_layer": by_layer,
+        "by_origin": by_origin,
         "confusion_matrix": {k: dict(v) for k, v in confusion.items()},
         "cases": rows,
     }
@@ -193,6 +205,10 @@ def main():
     print("\n  by layer:")
     for layer, v in r["by_layer"].items():
         print(f"    {layer:<10} n={v['n_incorrect']:<3} coverage {pct(v['coverage']):>7}   cond. acc. {pct(v['conditional_accuracy']):>7}")
+    print("\n  by response origin:")
+    for origin, v in r["by_origin"].items():
+        print(f"    {origin:<19} n={v['n']:<3} coverage {pct(v['coverage']):>7}   cond. acc. {pct(v['conditional_accuracy']):>7}"
+              f"   FPR {pct(v['fpr']):>7}")
     print("\n  confusion matrix (rows = reference, cols = system output, raw counts):")
     cm = r["confusion_matrix"]
     cols = [c for c in OUT_COLS if any(c in row for row in cm.values())]

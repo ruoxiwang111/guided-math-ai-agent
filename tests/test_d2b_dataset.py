@@ -216,3 +216,63 @@ def test_template_does_not_overwrite(tmp_path):
     code, msg = run("d2b_template.py", "--out", out)
     assert code != 0 and "already exists" in msg
     assert io.read_workbook(out) == []
+
+
+# ---------------------------------------------------------------- DeepSeek candidates (fake backend)
+
+class FakeStudent:
+    """Stands in for DeepSeek; records what it was shown."""
+    seen = []
+
+    def __init__(self, temperature=1.0):
+        self.temperature = temperature
+
+    def describe(self):
+        return {"backend": "fake"}
+
+    def complete(self, system, user):
+        FakeStudent.seen.append(user)
+        if "需要写的内容：只写最后的答案" in user:
+            return json.dumps({"final_answer_text": "答：10岁"}, ensure_ascii=False)
+        if "一步一行" in user:
+            return json.dumps({"variable_definition": "设x", "equation": "2x＋5＝25", "steps": ["2x=20", "x=10"]},
+                              ensure_ascii=False)
+        return json.dumps({"variable_definition": "解：设x", "equation": "x+5=25"}, ensure_ascii=False)
+
+
+def test_generated_candidates_fill_responses_only(tmp_path, monkeypatch):
+    import core.llm_client as llm
+    import d2b_generate as gen
+    monkeypatch.setattr(llm, "DeepSeekBackend", FakeStudent)
+    FakeStudent.seen = []
+    wb = tmp_path / "d2b.xlsx"
+    assert run("d2b_template.py", "--out", wb)[0] == 0
+    monkeypatch.setattr(sys, "argv", ["d2b_generate.py", "--workbook", str(wb), "--log", str(tmp_path / "log.json")])
+    gen.main()
+
+    rows = io.read_workbook(wb)
+    assert len(rows) == 60 and len({r["case_id"] for r in rows}) == 60
+    assert all(not r.get(k) for r in rows for k in ("reference_status", "primary_error", "first_invalid_step"))
+    assert {r["layer"] for r in rows} == {"modelling", "execution", "answer"}
+    bank = io.load_bank()
+    for shown in FakeStudent.seen:                                   # no reference solution, no codes
+        assert not any(q["equation"] in shown for q in bank.values())
+        assert not any(f"E{i}" in shown for i in range(1, 8))
+    log = json.loads((tmp_path / "log.json").read_text(encoding="utf-8"))
+    kinds = [log["cases"][r["case_id"]]["intended_kind"] for r in rows]
+    assert kinds != sorted(kinds, key=[k for k, _ in gen.PLAN].index)  # shuffled, order gives nothing away
+
+    # provenance at import: one row edited by the researcher, one kept as generated
+    rows[0]["equation"] = rows[0].get("equation", "") + " "              # whitespace only → unchanged
+    rows[1] = dict(rows[1], final_answer_text="答：小明15岁", equation="", steps="")
+    rows[1]["layer"] = "answer"
+    labelled = [dict(r, reference_status="uncertain", review_status="pending") for r in rows[:2]]
+    workbook(tmp_path / "labelled.xlsx", labelled)
+    cases = tmp_path / "cases.json"
+    shutil.copy(io.CASES_JSON, cases)
+    code, out = run("d2b_import.py", "--workbook", tmp_path / "labelled.xlsx", "--cases", cases,
+                    "--second", tmp_path / "s.json", "--generation-log", tmp_path / "log.json")
+    assert code == 0, out
+    got = {c["case_id"]: c["response_origin"] for c in json.loads(cases.read_text(encoding="utf-8"))["cases"]
+           if c["source"] == "hand_crafted"}
+    assert got[rows[0]["case_id"]] == "llm_generated" and got[rows[1]["case_id"]] == "llm_edited"
