@@ -120,6 +120,66 @@ def _eval_at(expr_text: str, xv):
     return nsimplify(mc._expr(nl.normalized).subs(mc.X, xv), rational=True)
 
 
+CN_DIGITS = {"零": 0, "〇": 0, "一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
+
+
+def _cn_int(t: str):
+    """'十二' → 12, '三十五' → 35, '一百二十' → 120, '八' → 8 (simple forms up to 999)."""
+    if not t or any(ch not in CN_DIGITS and ch not in "十百" for ch in t):
+        return None
+    total, cur = 0, 0
+    for ch in t:
+        if ch in CN_DIGITS:
+            cur = CN_DIGITS[ch]
+        elif ch == "十":
+            total += (cur or 1) * 10
+            cur = 0
+        elif ch == "百":
+            total += (cur or 1) * 100
+            cur = 0
+    return total + cur
+
+
+def numbers_in_text(text: str) -> set:
+    """Numbers a problem states, in any usual form: 36, 1.5, 3/4, 20%, 八折, 百分之二十, 三分之一, 一半, 十二."""
+    out = set()
+    t = text or ""
+    for m in re.finditer(r"(\d+(?:\.\d+)?)\s*/\s*(\d+)", t):
+        out.add(nsimplify(S(m.group(1)) / S(m.group(2)), rational=True))
+    for m in re.finditer(r"\d+(?:\.\d+)?", t):
+        out.add(nsimplify(S(m.group()), rational=True))
+    for m in re.finditer(r"(\d+(?:\.\d+)?)\s*[%％]", t):
+        out.add(nsimplify(S(m.group(1)) / 100, rational=True))
+    for m in re.finditer(r"([一二两三四五六七八九十百]+)分之([一二两三四五六七八九十百]+)", t):
+        a, b = _cn_int(m.group(1)), _cn_int(m.group(2))
+        if a and b is not None:
+            out.add(nsimplify(S(b) / S(a), rational=True))
+    for m in re.finditer(r"百分之([一二两三四五六七八九十百]+)", t):
+        v = _cn_int(m.group(1))
+        if v is not None:
+            out |= {S(v), nsimplify(S(v) / 100, rational=True)}
+    for m in re.finditer(r"([一二三四五六七八九])([一二三四五六七八九])?折", t):
+        first, second = CN_DIGITS[m.group(1)], CN_DIGITS.get(m.group(2) or "")
+        out.add(nsimplify(S(first * 10 + second) / 100 if second is not None else S(first) / 10, rational=True))
+    for m in re.finditer(r"(\d)(\d)?\s*折", t):
+        out.add(nsimplify(S(m.group(1) + (m.group(2) or "")) / (100 if m.group(2) else 10), rational=True))
+    for m in re.finditer(r"[零〇一二两三四五六七八九十百]+", t):
+        v = _cn_int(m.group())
+        if v is not None:
+            out.add(S(v))
+    if "半" in t:
+        out.add(S(1) / 2)
+    return out
+
+
+def _grounded(value, in_text: set) -> bool:
+    try:
+        v = _num(value)
+    except Exception:  # noqa: BLE001
+        return False
+    return v in in_text or v * 100 in in_text or v / 100 in in_text
+
+
 def _is_number(v) -> bool:
     try:
         n = nsimplify(S(str(v).replace("％", "%").rstrip("%")), rational=True)
@@ -206,6 +266,16 @@ def validate_structure(raw: dict, text: str = "") -> tuple[dict | None, list[Che
         else:
             dropped.append(f"{k['name']}={k['value']}")
     add("known_quantities_numeric", True, f"dropped {dropped}" if dropped else f"{len(known)} kept")
+
+    # every known quantity must come from the problem text — an LLM that invents numbers for an
+    # incomplete problem ("小明有一些钱，买东西后还剩一些钱") must not produce a "verified" structure
+    if text:
+        in_text = numbers_in_text(text)
+        invented = [f"{k['name']}={k['value']}" for k in known if not _grounded(k["value"], in_text)]
+        if not add("known_quantities_grounded", bool(known) and not invented,
+                   f"not in the problem text: {invented}" if invented else
+                   ("no known quantity" if not known else f"{len(known)} found in the text")):
+            return None, checks
 
     record = {
         "question_id": question_id_for(text),

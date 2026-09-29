@@ -278,7 +278,7 @@ class DeepSeekBackend:
             with urllib.request.urlopen(req, timeout=self.timeout) as r:
                 data = json.loads(r.read().decode("utf-8"))
             return data["choices"][0]["message"]["content"]
-        except (urllib.error.URLError, KeyError, json.JSONDecodeError, TimeoutError) as exc:
+        except Exception as exc:  # noqa: BLE001  (URLError, timeouts, dropped connections, bad JSON …)
             raise LLMError(f"DeepSeek call failed: {exc}") from exc
 
     def describe(self):
@@ -806,7 +806,7 @@ class TutorVoice:
         for _ in range(2):
             try:
                 text = json.loads(self.backend.complete(system, user))["message"].strip()
-            except (LLMError, json.JSONDecodeError, KeyError, TypeError) as exc:
+            except Exception as exc:  # noqa: BLE001  (any backend failure → template, never a crash)
                 attempts.append({"error": str(exc)})
                 break
             violations = check_leakage(text, spec)
@@ -826,7 +826,7 @@ class TutorVoice:
             try:
                 raw = self.backend.complete(CHAT_SYSTEM_PROMPT, _chat_user_prompt(spec))
                 text = json.loads(raw)["message"].strip()
-            except (LLMError, json.JSONDecodeError, KeyError, TypeError) as exc:
+            except Exception as exc:  # noqa: BLE001  (any backend failure → template, never a crash)
                 attempts.append({"error": str(exc)})
                 break
             violations = check_leakage(text, spec)
@@ -855,7 +855,7 @@ class TutorVoice:
             try:
                 raw = self.backend.complete(SYSTEM_PROMPT, _hint_user_prompt(spec, template))
                 text = json.loads(raw)["message"].strip()
-            except (LLMError, json.JSONDecodeError, KeyError, TypeError) as exc:
+            except Exception as exc:  # noqa: BLE001  (any backend failure → template, never a crash)
                 attempts.append({"error": str(exc)})
                 break
             violations = check_leakage(text, spec)
@@ -875,7 +875,7 @@ class TutorVoice:
         user = json.dumps({"题目": question_text, "题目要求的量": target, "学生回答": learner_text}, ensure_ascii=False)
         try:
             v = json.loads(self.backend.complete(system, user)).get("matches_target")
-        except (LLMError, json.JSONDecodeError, AttributeError):
+        except Exception:  # noqa: BLE001
             return None
         return v if isinstance(v, bool) else None
 

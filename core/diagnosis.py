@@ -897,6 +897,8 @@ def _compare_parts(question, text):
         matched += 1
         if p[1] != num:
             result["wrong"].append(label)
+        elif not unit:                              # the asked quantity has no unit ("求这个数")
+            result["right"].append(label)
         elif not p[2]:
             result["unit_missing"].append(label)
         elif p[2] != unit:

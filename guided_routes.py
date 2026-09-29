@@ -317,7 +317,14 @@ def prepare():
         _extracted[qid] = ex.question
         return jsonify(_usable_body(qid, "extracted", ex.question))
     if correction:
-        _extracted.pop(qid, None)
+        previous = _extracted.get(qid)
+        if previous is not None:
+            # the re-read failed its checks: keep the verified reading, say why, let the learner go on
+            body = _usable_body(qid, previous.get("source", "extracted"), previous)
+            body.update(correction_rejected=True, quote="",
+                        message="我按你的说明重新读了一遍，但结果和原题核对不上，所以保留原来的理解。"
+                                "如果题目文字本身有错，可以直接修改题目。")
+            return jsonify(body)
         return jsonify({"success": True, "usable": False, "source": "extracted", "consistency": ex.consistency,
                         "message": "按你的说明重新读题后，我自己核对没有通过。为了不误导你，这道题先用“快速解题”，"
                                    "或者从题库选一道。"})
@@ -420,6 +427,14 @@ def similar():
                         "message": "题库里暂时没有同类题；连接 AI 后可以自动出一道同类题。"})
     ex, attempts = generate_similar(q, _backend)
     if ex is None:
+        try:                                    # rejected generations are kept for review
+            EXTRACT_DIR.mkdir(parents=True, exist_ok=True)
+            (EXTRACT_DIR / f"variants-rejected-{q['question_id']}-{uuid.uuid4().hex[:6]}.json").write_text(
+                json.dumps({"generated_from": q["question_id"], "attempts": attempts,
+                            "at": datetime.now().isoformat(timespec="seconds")}, ensure_ascii=False, indent=2),
+                encoding="utf-8")
+        except OSError:
+            pass
         return jsonify({"success": True, "usable": False,
                         "message": "这次没能出一道经过核对的同类题，可以稍后再试，或者从题库选一道。"})
     nq = ex.question

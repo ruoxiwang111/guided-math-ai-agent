@@ -172,9 +172,12 @@ def test_wrong_correction_cannot_change_the_problem(client, monkeypatch):
     monkeypatch.setattr(guided_routes, "_backend", FakeBackend())
     b = post(client, "/api/guided/prepare", text=MEET)
     qid = b["question_id"]
+    first = b["understanding"]
     b = post(client, "/api/guided/prepare", text=MEET, correction="乙每小时走6千米")
-    assert b["usable"] is False and "核对没有通过" in b["message"]
-    assert qid not in guided_routes._extracted
+    # the re-read fails its checks → the verified reading is kept, the learner is told why
+    assert b["usable"] and b["correction_rejected"] and "保留原来的理解" in b["message"]
+    assert b["understanding"] == first and "乙的速度：4 千米/小时" in first["known_quantities"]
+    assert "6*x" not in guided_routes._extracted[qid]["equation"]          # the wrong claim never got in
 
 
 def test_corrections_are_capped(client, monkeypatch):

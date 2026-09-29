@@ -73,7 +73,7 @@ WRONG = {"verdict": LEARNER_WRONG, "quote": "5年后小明的年龄是小红的2
 def test_expressions_are_not_known_quantities():
     rec, checks = validate_structure(raw([{"name": "小明今年的年龄", "value": "3*x", "unit": "岁"},
                                           {"name": "5年后的时间", "value": 5, "unit": "年"},
-                                          {"name": "倍数", "value": "1/2"}]), TEXT)
+                                          {"name": "倍数", "value": 2}]), TEXT)
     assert [k["name"] for k in rec["known_quantities"]] == ["5年后的时间", "倍数"]
     c = next(c for c in checks if c.name == "known_quantities_numeric")
     assert "小明今年的年龄=3*x" in c.detail

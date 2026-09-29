@@ -60,6 +60,7 @@ TOPIC_FAMILIES = [
     ("几何图形问题", ["周长", "面积", "长方形", "正方形", "三角形", "图形"]),
     ("购物与价格问题", ["价格", "购买", "单价", "文具", "买"]),
     ("分配与调配问题", ["分配", "分组", "人数", "调配", "转移", "调运"]),
+    ("数字与倍数问题", ["数字", "一个数", "某数", "倍数", "和差"]),
 ]
 
 WEAK_POINT = {
@@ -154,6 +155,31 @@ def _diagnosed_errors(session):
     return out
 
 
+LOCATED_RULES = ("one_side_wrong", "unmatched_relationship")
+
+
+def _located_errors(session):
+    """
+    Modelling errors that were located but deliberately not labelled E2/E3/E4 (uncertain).
+    They are real mistakes the learner corrected, so the review must mention them too.
+    [(state, text)]
+    """
+    out, seen = [], set()
+    for e in session.events:
+        if e.get("event") == "diagnosis" and e.get("diagnosis_status") == "uncertain" \
+                and e.get("rule") in LOCATED_RULES and e["state"] not in seen:
+            seen.add(e["state"])
+            d = getattr(session, "_diag_by_state", {}).get(e["state"])
+            side = d.details if d is not None and d.rule == "one_side_wrong" else {}
+            if side.get("wrong_side_text"):
+                text = f"方程{side['wrong_side_name']}“{side['wrong_side_text']}”和题意对不上" + \
+                       ("（倍数关系少了括号）" if side.get("missing_brackets") else "")
+            else:
+                text = "方程和题意对不上"
+            out.append((e["state"], text))
+    return out
+
+
 def _takeaway(category, subtype, rule, relationship):
     if category == "E7":
         return E7_RULE_TAKEAWAY.get(rule, "每一步变形都要保证等式两边仍然相等，可以把上一行和这一行都代入同一个数检查。")
@@ -238,6 +264,7 @@ def build_review(session, target: str | None = None) -> dict:
     q = session.q
     recs = session.records
     errors = _diagnosed_errors(session)
+    located = _located_errors(session)
     relationship = q.get("relationship")
 
     # ---- the whole solution, in the learner's accepted model
@@ -266,6 +293,7 @@ def build_review(session, target: str | None = None) -> dict:
         for c, _sub, _rule, line in stage_errors:
             where = f"第{line}行" if line else ""
             detail.append(f"{where}{ERROR_PLAIN.get(c, c)}")
+        detail += [text for st, text in located if st == s]
         journey.append({"state": s, "label": label, "status": _stage_status(rec),
                         "attempts": rec.attempts, "max_hint_level": rec.max_hint_level,
                         "errors": list(dict.fromkeys(detail))})
@@ -276,12 +304,14 @@ def build_review(session, target: str | None = None) -> dict:
     # allows one level-1 hint, V1_design §24 — right for mastery, but reads as a contradiction
     # next to "在提示下改正" in a review shown to the learner.)
     independent = [STAGE_LABELS[s] for s in STAGE_LABELS
-                   if recs[s].passed and not recs[s].revealed and not recs[s].errors and recs[s].max_hint_level == 0]
+                   if recs[s].passed and not recs[s].revealed and not recs[s].errors and recs[s].max_hint_level == 0
+                   and not any(st == s for st, _ in located)]
     if len(independent) == 4:
         highlights.append("四个环节都独立完成了！")
     elif independent:
         highlights.append(f"独立完成：{'、'.join(independent)}")
-    corrected = [STAGE_LABELS[s] for s in STAGE_LABELS if recs[s].errors and recs[s].passed and not recs[s].revealed]
+    corrected = [STAGE_LABELS[s] for s in STAGE_LABELS
+                 if (recs[s].errors or any(st == s for st, _ in located)) and recs[s].passed and not recs[s].revealed]
     if corrected:
         highlights.append(f"出错后在提示下自己改正了：{'、'.join(corrected)}")
     active = any(e.get("active_verification") for e in session.events if e.get("event") == "verification")
@@ -300,6 +330,10 @@ def build_review(session, target: str | None = None) -> dict:
         t = _takeaway(c, sub, rule, relationship)
         if t and t not in takeaways:
             takeaways.append(t)
+    if located:
+        t = _takeaway("E3", None, None, relationship)
+        if t and t not in takeaways:
+            takeaways.append(t)
     if not takeaways and relationship:
         takeaways.append(f"这类题的关键是找准等量关系：{relationship}。")
     takeaways = takeaways[:3]
@@ -310,6 +344,10 @@ def build_review(session, target: str | None = None) -> dict:
     for _st, c, sub, rule, _line in errors:
         w = _weak_point(c, sub, rule, family)
         if w and w not in weak:
+            weak.append(w)
+    if located:
+        w = _weak_point("E3", None, None, family)
+        if w not in weak:
             weak.append(w)
 
     # ---- next time
