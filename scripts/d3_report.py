@@ -72,7 +72,7 @@ def rows(guided, practice, learner=None):
         for e in res.get("errors", []):
             attempt_errors |= error_keys(e.get("category"), e.get("rule"))
         earlier = [g for g in guided if a.get("learner_id") and g["learner_id"] == a.get("learner_id")
-                   and g["started"] and g["started"] < a["started_at"]]
+                   and g["started"] and g["started"] <= a["started_at"]]
         prior = set().union(*(g["errors"] for g in earlier)) if earlier else set()
         repeated = sorted(prior & attempt_errors)
         out.append({
