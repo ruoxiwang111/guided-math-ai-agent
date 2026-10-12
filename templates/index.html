@@ -988,6 +988,30 @@
                 display: none;
             }
         }
+
+        .lang-toggle {
+            margin-left: auto;
+            padding: 6px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #374151;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .lang-toggle:hover {
+            background: #f3f4f6;
+        }
+
+        .lang-note {
+            max-width: 1100px;
+            margin: 12px auto 0;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: #6b7280;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -1381,6 +1405,362 @@
 
 </main>
 
+
+<script id="i18n">
+/* ==================================================
+   Interface language (zh / en).
+   Only the INTERFACE is translated. Problem text, the tutor's questions/hints/feedback, and review
+   content are Chinese because the evaluated task domain is Chinese junior-high mathematics.
+   Mechanism: Chinese is the source language. In English mode, a lookup table (exact strings) plus a
+   few patterns (strings with numbers) replace interface text; anything not found stays Chinese.
+   ================================================== */
+(function () {
+    "use strict";
+    var params = new URLSearchParams(window.location.search);
+    var lang = params.get("lang");
+    try {
+        if (lang === "en" || lang === "zh") localStorage.setItem("aipeiwoxue_lang", lang);
+        else lang = localStorage.getItem("aipeiwoxue_lang");
+    } catch (e) { /* storage unavailable: use the URL parameter only */ }
+    lang = (lang === "en") ? "en" : "zh";
+    window.UI_LANG = lang;
+
+    var EXACT = {
+        // ---- page / hero ----
+        "AI 陪我学": "AI Guided Math Tutor",
+        "不只是告诉你答案，": "Not just the answer,",
+        "而是陪你把题做会。": "but guidance until you can do it yourself.",
+        "上传数学题，让 AI 先理解问题，再根据你的回答和理解程度，提供适合当前学习状态的帮助。":
+            "Upload a maths problem. The AI first reads it, then helps according to your answers and how well you seem to understand.",
+        "开始学习": "Start learning",
+        "上传题目图片，或直接输入题目。": "Upload a picture of the problem, or type it in.",
+        "上传数学题": "Upload a maths problem",
+        "支持拍照、相册图片或电脑文件": "Photo, gallery image or computer file",
+        "题目图片预览": "Problem image preview",
+        "删除图片": "Remove image",
+        "也可以直接输入题目（可选）": "Or type the problem (optional)",
+        "例如：一本书，第一天看了全书的1/3，第二天看了40页，还剩60页没看。这本书一共多少页？":
+            "e.g. 一本书，第一天看了全书的1/3，第二天看了40页，还剩60页没看。这本书一共多少页？ (problems are in Chinese)",
+        "识别结果": "Recognition result",
+        "确认题目": "Confirm problem",
+        "AI 识别可能存在误差，请先检查并修改题目。": "AI recognition can contain errors. Please check and correct the problem text.",
+        "题目内容": "Problem text",
+        "选择学习方式": "Choose a mode",
+        "你可以直接查看解题思路，也可以让 AI 通过提问和提示陪你完成。":
+            "You can read a worked solution, or let the AI guide you with questions and hints.",
+        "快速解题": "Quick solve",
+        "快速获得答案和关键步骤。适合检查答案或快速复习。": "Get the answer and key steps quickly. Good for checking or quick revision.",
+        "引导学习": "Guided learning",
+        "AI 根据你的回答判断理解状态，通过提问、提示和反馈帮助你自己完成题目。":
+            "The AI judges your understanding from your answers and helps you finish the problem through questions, hints and feedback.",
+        "独立作答": "Independent attempt",
+        "不给任何提示，自己完整做一遍。提交后告诉你哪一步对、哪一步错。":
+            "No hints: work through the whole problem yourself. After submitting you see which step is right or wrong.",
+        "学生编号：": "Learner ID: ",
+        "换一个学生": "New learner",
+        "（只用来把同一个学生的几次练习记录串起来，不记录姓名）":
+            "(Only used to link one learner's sessions; no name is recorded.)",
+        "识别题目": "Recognise problem",
+        "有不懂的地方？随时问我，比如：设哪个量为 x 比较好？": "Stuck? Ask me anything, e.g. which quantity should be x?",
+        "问老师": "Ask the tutor",
+        "理解学习状态": "Understanding learning state",
+        "不只判断答案是否正确，而是关注学生是否真正理解当前步骤。":
+            "Not only whether the answer is correct, but whether the learner understands the current step.",
+        "渐进式提示": "Progressive hints",
+        "从轻提示到具体提示，尽量避免一开始直接给出完整答案。":
+            "From light nudges to specific hints, avoiding the full answer at the start.",
+        "迁移练习": "Transfer practice",
+        "完成题目后通过新的数字或情境检查是否真正掌握了相关概念。":
+            "After a problem, a new set of numbers or context checks whether the concept is really understood.",
+        // ---- status / image ----
+        "请选择图片文件。": "Please choose an image file.",
+        "图片已选择，可以开始识别。": "Image selected. You can start recognition.",
+        "图片已删除。": "Image removed.",
+        "请选择学习方式，然后开始。": "Choose a mode, then start.",
+        "请先上传题目图片或输入题目。": "Upload a problem image or type a problem first.",
+        "题目已准备好，请选择学习方式。": "Problem ready. Choose a mode.",
+        "请先选择一道题。": "Please select a problem first.",
+        "题目不能为空。": "The problem cannot be empty.",
+        "没有找到图片。": "No image found.",
+        "AI 正在识别题目…": "AI is recognising the problem…",
+        "正在上传图片并让 AI 识别，请稍候…": "Uploading the image for recognition, please wait…",
+        "题目识别失败": "Recognition failed",
+        "AI 返回的数据格式不正确": "The AI returned data in an unexpected format",
+        "AI 正在解题…": "AI is solving…",
+        "⚡ 快速解题": "⚡ Quick solve",
+        "AI 正在分析题目并生成解题步骤，请稍候…": "AI is analysing the problem and writing the steps, please wait…",
+        "AI 解题失败": "Solving failed",
+        "解题完成。": "Solved.",
+        "重新解题": "Solve again",
+        "没有获得有效的解题结果。": "No valid solution was returned.",
+        "主要知识点": "Key concept",
+        "最终答案": "Final answer",
+        "请求失败": "Request failed",
+        // ---- guided mode ----
+        "理解题意": "Understand the problem",
+        "列方程": "Write the equation",
+        "解方程": "Solve the equation",
+        "答案与检验": "Answer and check",
+        "设未知数、列方程": "Define x and write the equation",
+        "写答案并检验": "Write and check the answer",
+        "完成": "Done",
+        "写答案": "Write the answer",
+        "我想看这一步的参考": "I'd like to see the reference for this step",
+        "（跳过）": "(skipped)",
+        "回答你的问题": "Answer to your question",
+        "回应你的说明": "Reply to your explanation",
+        "想不出来？看这一步的参考": "Stuck? See the reference for this step",
+        "看参考后，这一步会记为“看了参考步骤”。确定要看吗？": "If you look, this step will be recorded as “reference viewed”. Continue?",
+        "用文字回答老师的问题（也可以直接在下面修改再提交）": "Answer the tutor's question in words (or edit below and resubmit)",
+        "例如：等号左边表示……，右边表示……": "e.g. The left side means …, the right side means …",
+        "发送回答": "Send answer",
+        "设 x 表示……（例如：设小华今年 x 岁，则小明 (x+5) 岁）": "Let x be … (e.g. 设小华今年 x 岁，则小明 (x+5) 岁)",
+        "方程（例如：x + (x + 5) = 25）": "Equation (e.g. x + (x + 5) = 25)",
+        "提交方程": "Submit equation",
+        "设未知数": "Define the unknown",
+        "每一行写一个等式，例如：\n2x + 5 = 25\n2x = 20\nx = 10": "One equation per line, e.g.\n2x + 5 = 25\n2x = 20\nx = 10",
+        "提交解题过程": "Submit working",
+        "最终答案（带单位），例如：小华10岁，小明15岁": "Final answer with unit, e.g. 小华10岁，小明15岁",
+        "我已经把答案代回原题检查过": "I have checked the answer against the original problem",
+        "提交答案": "Submit answer",
+        "用一两句话说说你的想法": "Tell me your thinking in a sentence or two",
+        "发送": "Send",
+        "出错了": "Something went wrong",
+        "这道题完成了。": "Problem finished.",
+        "🧑‍🏫 引导学习": "🧑‍🏫 Guided learning",
+        "📝 独立作答": "📝 Independent attempt",
+        "正在准备引导学习…": "Preparing guided learning…",
+        "引导学习已开始。": "Guided learning started.",
+        "引导学习已开始（未连接 AI，使用固定提示）。": "Guided learning started (no AI connected: fixed hints).",
+        "简单": "Easy", "中等": "Medium", "较难": "Hard",
+        // ---- review ----
+        "🎉 这道题完成了 · 复盘一下": "🎉 Problem finished · quick review",
+        "📝 解题思路回顾": "📝 Your solution path",
+        "👍 做得好的地方": "👍 What went well",
+        "🧭 这次的过程": "🧭 How it went",
+        "📚 知识点": "📚 Concepts",
+        "💡 记住这几点": "💡 Remember",
+        "➡️ 下次试试": "➡️ Next time",
+        "例如：先找出题目里哪两个量相等，再用 x 写成方程": "e.g. First find which two quantities are equal, then write it with x",
+        "保存我的总结": "Save my summary",
+        "✍️ 用一句话总结": "✍️ Summarise in one sentence",
+        "🔁 巩固一下": "🔁 Consolidate",
+        // ---- before starting ----
+        "开始之前，确认一下我有没有读对题目": "Before we start, please check that I read the problem correctly",
+        "我读到的已知条件：": "Known quantities I read:",
+        "没问题，开始": "Looks right, start",
+        "有不对的地方": "Something is wrong",
+        "哪里不对？例如：乙每小时走 6 千米，不是 4 千米": "What is wrong? e.g. 乙每小时走 6 千米，不是 4 千米",
+        "按我的说明重新读题": "Re-read using my correction",
+        "正在按你的说明重新读题，并再次核对…": "Re-reading with your correction and checking again…",
+        "我按你的说明重新读了一遍，请再确认一下：": "I re-read it with your correction. Please check again:",
+        "请再确认一次。": "Please confirm once more.",
+        "这道题暂时不能引导。": "This problem cannot be guided for now.",
+        "你也可以从下面的题库中选一道开始：": "You can also start from one of the bank problems below:",
+        "注意：我会对照原题重新读，你的说明如果和原题不符，我不会照着改。": "Note: I check against the original; if your correction contradicts it, I will not follow it.",
+        "题目文字本身有错？直接修改题目": "Problem text itself wrong? Edit it",
+        "用修改后的题目重新读题": "Re-read the edited problem",
+        "正在读修改后的题目，并自己核对一遍…": "Reading the edited problem and checking it…",
+        "这是按你修改后的题目读的：": "This is read from your edited problem:",
+        "请确认一下。": "Please confirm.",
+        "改好后，我会按新的题目文字重新读一遍、再核对一遍。": "After editing, I will read it again and double-check.",
+        "正在找一道同类题（题库里没有时，AI 会出题并自己核对，大约 10–20 秒）…": "Looking for a similar problem (if none in the bank, the AI writes and checks one; about 10–20 s)…",
+        "暂时没有同类题。": "No similar problem available for now.",
+        "这是一道新出的同类题（已经过核对）。": "This is a new, checked problem of the same type.",
+        "请先确认我读到的已知条件。": "Please confirm the known quantities first.",
+        "AI 正在分析这道题的数量关系，并自己核对一遍（大约 5–15 秒）…": "AI is analysing the quantities and checking its own reading (about 5–15 s)…",
+        "分析题目时出错了，你可以从下面的题库中选一道开始：": "Analysis failed. You can start from one of the bank problems below:",
+        "请选择一道题开始引导学习（也可以在上面输入任意一道一元一次方程应用题）：": "Pick a problem to start guided learning (or type any one-variable linear-equation word problem above):",
+        "请选择题目。": "Please choose a problem.",
+        "换成一个新的学生编号？之后的练习会记在新编号下。": "Switch to a new learner ID? Later practice will be recorded under it.",
+        "开始独立作答": "Start independent attempt",
+        "开始引导学习": "Start guided learning",
+        "我不确定": "I'm not sure",
+        // ---- practice ----
+        "正在准备独立作答…": "Preparing the independent attempt…",
+        "开始作答吧，这次不会有提示。写完四项后提交。": "Go ahead. There are no hints this time. Fill in all four parts, then submit.",
+        "① 设未知数": "① Define the unknown", "② 列方程": "② Write the equation",
+        "③ 解方程（每一行写一个等式）": "③ Solve (one equation per line)", "④ 最终答案（带单位）": "④ Final answer (with unit)",
+        "设……为 x": "Let … be x", "方程": "Equation", "一行一个等式": "One equation per line", "答：……": "Answer: …",
+        "提交作答": "Submit attempt",
+        "我需要帮助（改为引导学习）": "I need help (switch to guided learning)",
+        "至少写出方程或答案再提交。": "Write at least the equation or the answer before submitting.",
+        "已提交。": "Submitted.",
+        "求助会被记录下来，这道题会改为引导学习。确定吗？": "Asking for help is recorded and this problem switches to guided learning. Continue?",
+        "🎉 全部正确！": "🎉 All correct!",
+        "📝 作答结果": "📝 Attempt result",
+        "用引导学习把这道题再过一遍": "Go through this problem again with guided learning",
+        // ---- backend messages ----
+        "找不到这道题，请重新输入题目或从题库中选择。": "Problem not found. Re-enter it or choose one from the bank.",
+        "练习不存在或已过期。": "Session not found or expired.",
+        "这次作答已经提交过了。": "This attempt was already submitted.",
+        "题目不能为空": "The problem cannot be empty",
+        "当前没有连接 AI，引导学习只能使用题库中的 15 道题。": "No AI connected: guided learning only works with the 15 bank problems.",
+        "我还是没有把握读对这道题。为了不误导你，这道题先用“快速解题”，或者从题库选一道。":
+            "I am still not sure I read this problem correctly. To avoid misleading you, use “Quick solve” or pick a bank problem.",
+        "我按你的说明重新读了一遍，但结果和原题核对不上，所以保留原来的理解。如果题目文字本身有错，可以直接修改题目。":
+            "I re-read it with your correction, but it did not match the original, so I kept my earlier reading. If the problem text itself is wrong, edit it.",
+        "按你的说明重新读题后，我自己核对没有通过。为了不误导你，这道题先用“快速解题”，或者从题库选一道。":
+            "My own check failed after re-reading with your correction. To avoid misleading you, use “Quick solve” or pick a bank problem.",
+        "这道题不是一元一次方程应用题。引导学习暂时不支持，可以先用“快速解题”。":
+            "This is not a one-variable linear-equation word problem. Guided learning does not support it yet; try “Quick solve”.",
+        "我分析这道题时自己核对没有通过，为了不误导你，这道题先用“快速解题”，或者从题库选一道。":
+            "My own check failed while analysing this problem. To avoid misleading you, use “Quick solve” or pick a bank problem.",
+        "会话不存在或已过期，请重新开始。": "Session not found or expired. Please start again.",
+        "题库里暂时没有同类题；连接 AI 后可以自动出一道同类题。": "No similar problem in the bank; with an AI connected one can be generated.",
+        "这次没能出一道经过核对的同类题，可以稍后再试，或者从题库选一道。": "Could not produce a checked similar problem this time. Try later or pick a bank problem.",
+        "会话不存在或已过期。": "Session not found or expired.",
+        // ---- topics (question bank) ----
+        "人数分组": "Grouping people", "分段行程": "Multi-leg journey", "分配与转移": "Allocation and transfer",
+        "工作效率": "Work rate", "年龄关系": "Age relations", "年龄变化": "Age change", "往返时间": "Round-trip time",
+        "往返路程": "Round-trip distance", "打折求原价": "Original price from discount", "折扣加优惠": "Discount plus coupon",
+        "文具价格": "Stationery prices", "涨价求原价": "Original price from increase", "混合购买": "Mixed purchase",
+        "连续百分比": "Successive percentages", "长方形周长": "Rectangle perimeter",
+        // ---- practice-result wording ----
+        "移项没有变号": "Sign not changed when moving a term", "去括号时只乘了第一项": "Only the first term multiplied when expanding",
+        "去括号时符号出错": "Sign error when expanding brackets", "只对等式一边做了运算": "Operation applied to one side only",
+        "系数化为 1 用错了运算": "Wrong operation when making the coefficient 1", "系数化为 1 时除反了": "Division inverted when making the coefficient 1",
+        "方程有一边和题意对不上": "One side of the equation does not match the problem", "方程和题意对不上": "Equation does not match the problem",
+        "没有写方程": "No equation written", "没有写解方程过程": "No working written", "没有写最终答案": "No final answer written",
+        "还没有解出 x": "x not solved yet", "答案少写了一部分": "Part of the answer missing", "答案少了单位": "Unit missing in the answer",
+        "主动查看了参考": "Asked to see the reference", "看了参考步骤": "Reference step viewed", "在提示下改正": "Corrected with a hint",
+        "在提示下完成": "Finished with a hint", "独立完成": "Done independently",
+        "四个环节都独立完成了！": "All four stages were done independently!", "没等提醒就主动检验了答案": "Checked the answer without being prompted",
+        "最后，用一句话写下：这道题的关键是什么？（写下来比看一遍记得更牢）": "Finally, write one sentence: what is the key idea of this problem? (Writing it down helps you remember.)",
+        "题目要求": "Asked", "等量关系": "Relation", "解得": "Solution"
+    };
+
+    var PATTERNS = [
+        [/^识别到 (\d+) 道题$/, "Found $1 problem(s)"],
+        [/^(Q\d+) · (.+?) · (.+)$/, function (m, id, d, t) { return id + " · " + (EXACT[d] || d) + " · " + (EXACT[t] || t); }],
+        [/^(.+)：$/, function (m, t) { return (EXACT[t] || t) + ": "; }],
+        [/^(S[1-4]) (.+)$/, function (m, id, t) { return id + " " + (EXACT[t] || t); }],
+        [/^第 (\d+) 题$/, "Problem $1"],
+        [/^AI 识别置信度：(.+)%$/, "AI recognition confidence: $1%"],
+        [/^识别成功，共识别到 (\d+) 道题。请选择要学习的题目。$/, "Recognised $1 problem(s). Choose one to study."],
+        [/^识别失败：(.*)$/, "Recognition failed: $1"],
+        [/^解题失败：(.*)$/, "Solving failed: $1"],
+        [/^步骤 (.+)$/, "Step $1"],
+        [/^选择：(.*)$/, "Chose: $1"],
+        [/^(.*)（已检查）$/, "$1 (checked)"],
+        [/^提示 (\d+) 级$/, "Hint level $1"],
+        [/^出错了：(.*)$/, "Something went wrong: $1"],
+        [/^当前：(.*)$/, function (m, t) { return "Now: " + (EXACT[t] || t); }],
+        [/^无法开始：(.*)$/, "Cannot start: $1"],
+        [/^题库加载失败：(.*)$/, "Could not load the question bank: $1"],
+        [/^原题原文：“(.*)”$/, "Original text: “$1”"],
+        [/^重新读题失败：(.*)$/, "Re-reading failed: $1"],
+        [/^读题失败：(.*)$/, "Reading failed: $1"],
+        [/^提交失败：(.*)$/, "Submit failed: $1"],
+        [/^分析失败：(.*)$/, "Analysis failed: $1"],
+        [/^出现过：(.*)$/, "Seen: $1"],
+        [/^本题涉及：(.*)$/, "Covers: $1"],
+        [/^这次暴露的薄弱点：(.*)$/, "Weak points shown: $1"],
+        [/^你的总结：(.*)$/, "Your summary: $1"],
+        [/^练一道同类题（(.*)）$/, "Practise a similar problem ($1)"],
+        [/^练一道同类题$/, "Practise a similar problem"],
+        [/^追问 (\d+) 次 · 主动提问 (\d+) 次 · 主动检验：(.*)$/, function (m, a, b, c) { return "Follow-ups " + a + " · questions asked " + b + " · self-check: " + (c === "是" ? "yes" : c === "否" ? "no" : c); }],
+        [/^用时 (\d+) 分 (\d+) 秒( · 求助过)?$/, function (m, a, b, c) { return "Time " + a + " min " + b + " s" + (c ? " · asked for help" : ""); }],
+        [/^参考答案：(.*)$/, "Reference answer: $1"],
+        [/^第(\d+)行$/, "line $1"],
+        [/^这道题不是一元一次方程应用题：(.*)。引导学习暂时不支持，可以先用“快速解题”。$/, "This is not a one-variable linear-equation word problem: $1. Guided learning does not support it yet; try “Quick solve”."],
+        [/^这道题的题意我还不能确定：(.*)。请检查题目文字后再试。$/, "I cannot yet pin down what this problem means: $1. Please check the text and retry."]
+    ];
+
+    function norm(s) { return s.trim().replace(/\s*\n\s*/g, ""); }
+
+    function tr(s) {
+        if (window.UI_LANG !== "en" || typeof s !== "string" || !/[一-鿿]/.test(s)) return s;
+        var raw = s.trim(), key = norm(s), hit = null;
+        if (Object.prototype.hasOwnProperty.call(EXACT, raw)) hit = EXACT[raw];
+        else if (Object.prototype.hasOwnProperty.call(EXACT, key)) hit = EXACT[key];
+        if (hit !== null) {
+            var lead = s.match(/^\s*/)[0], trail = s.match(/\s*$/)[0];
+            return lead + hit + trail;
+        }
+        // multi-line messages: translate line by line / segment by segment
+        if (s.indexOf("\n") >= 0 && s.trim().indexOf("\n") >= 0) {
+            var parts = s.split("\n"), changed = false;
+            var out = parts.map(function (p) { var t = tr(p); if (t !== p) changed = true; return t; });
+            if (changed) return out.join("\n");
+        }
+        for (var i = 0; i < PATTERNS.length; i++) {
+            if (PATTERNS[i][0].test(key)) return key.replace(PATTERNS[i][0], PATTERNS[i][1]);
+        }
+        return s;
+    }
+    window.tr = tr;
+
+    var SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1 };
+
+    function translateNode(root) {
+        if (root.nodeType === 3) {
+            var v = root.nodeValue, t = tr(v);
+            if (t !== v) root.nodeValue = t;
+            return;
+        }
+        if (root.nodeType !== 1) return;
+        ["placeholder", "alt", "title"].forEach(function (a) {
+            if (root.hasAttribute && root.hasAttribute(a)) {
+                var av = root.getAttribute(a), at = tr(av);
+                if (at !== av) root.setAttribute(a, at);
+            }
+        });
+        if (SKIP[root.nodeName]) return;
+        for (var c = root.firstChild; c; c = c.nextSibling) translateNode(c);
+    }
+
+    function applyEnglish() {
+        document.documentElement.lang = "en";
+        document.title = "AI Guided Math Learning Agent";
+        translateNode(document.body);
+        var busy = false;
+        new MutationObserver(function (muts) {
+            if (busy) return;
+            busy = true;
+            muts.forEach(function (m) {
+                if (m.type === "childList") m.addedNodes.forEach(translateNode);
+                else if (m.type === "characterData") translateNode(m.target);
+                else if (m.type === "attributes") translateNode(m.target);
+            });
+            busy = false;
+        }).observe(document.body, { childList: true, subtree: true, characterData: true,
+                                    attributes: true, attributeFilter: ["placeholder", "alt", "title"] });
+        var nativeConfirm = window.confirm.bind(window);
+        window.confirm = function (msg) { return nativeConfirm(tr(msg)); };
+    }
+
+    function addToggle() {
+        var inner = document.querySelector(".header-inner");
+        if (!inner) return;
+        var b = document.createElement("button");
+        b.type = "button";
+        b.id = "lang-toggle";
+        b.className = "lang-toggle";
+        b.textContent = (window.UI_LANG === "en") ? "中文" : "English";
+        b.title = (window.UI_LANG === "en") ? "切换到中文界面" : "Switch to English interface";
+        b.addEventListener("click", function () {
+            try { localStorage.setItem("aipeiwoxue_lang", window.UI_LANG === "en" ? "zh" : "en"); } catch (e) { /* ignore */ }
+            var u = new URL(window.location.href);
+            u.searchParams.set("lang", window.UI_LANG === "en" ? "zh" : "en");
+            window.location.href = u.toString();
+        });
+        inner.appendChild(b);
+        if (window.UI_LANG === "en") {
+            var note = document.createElement("div");
+            note.className = "lang-note";
+            note.textContent = "Interface in English. Problems and tutoring dialogue are in Chinese: the evaluated domain is Chinese junior-high mathematics.";
+            var hero = document.querySelector("main");
+            if (hero) hero.insertBefore(note, hero.firstChild);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.UI_LANG === "en") applyEnglish();
+        addToggle();
+    });
+})();
+</script>
 
 <script>
 
