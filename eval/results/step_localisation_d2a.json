@@ -1,7 +1,7 @@
 {
   "dataset": "D2a",
   "metric": "EQ4 step localisation",
-  "run_at": "2026-09-28T13:13:52",
+  "run_at": "2026-10-12T20:20:45",
   "question_bank_version": "1.3",
   "interpretation": "On the 30 annotated D2a execution cases, the deterministic checker's first invalid step is compared with the reference label, in both bank-format and learner-style input, where the reference labels were produced by the same solution-set criterion. The result therefore measures agreement with that criterion and pipeline integrity, not independent step-localisation accuracy; independent evidence comes from D2b.",
   "results": {

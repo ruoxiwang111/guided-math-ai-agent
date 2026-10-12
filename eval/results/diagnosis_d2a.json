@@ -1,7 +1,7 @@
 {
   "dataset": "D2a",
   "metric": "EQ2 diagnosis",
-  "run_at": "2026-09-28T13:10:08",
+  "run_at": "2026-10-12T20:20:43",
   "question_bank_version": "1.3",
   "results": {
     "full": {
@@ -1037,7 +1037,7 @@
       "n_cases": 65,
       "n_reference_incorrect": 64,
       "n_reference_uncertain": 1,
-      "coverage": 0.671875,
+      "coverage": 0.6875,
       "conditional_accuracy": 1.0,
       "wrong_specific_diagnoses": 0,
       "uncertainty_appropriateness": 1.0,
@@ -1054,7 +1054,7 @@
         },
         "answer": {
           "n_incorrect": 6,
-          "coverage": 0.5,
+          "coverage": 0.6666666666666666,
           "conditional_accuracy": 1.0
         }
       },
@@ -1072,8 +1072,7 @@
           "E7": 15
         },
         "E5": {
-          "E5": 3,
-          "uncertain": 1
+          "E5": 4
         },
         "E2": {
           "uncertain": 3,
@@ -1084,7 +1083,7 @@
           "insufficient_evidence": 1
         },
         "uncertain": {
-          "insufficient_evidence": 1
+          "uncertain": 1
         }
       },
       "cases": [
@@ -1101,8 +1100,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程右边“25”与题意一致，左边“x + 5”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
@@ -1163,8 +1162,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程右边“28”与题意一致，左边“x + 12”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
@@ -1268,8 +1267,8 @@
             "E5"
           ],
           "evidence_level": "A",
-          "rule": "numbers_right_unit_wrong",
-          "evidence": "数值正确，但单位或表述与题目要求不符",
+          "rule": "answer_unit_wrong",
+          "evidence": "原价的单位与题目不一致",
           "first_invalid_step": null
         },
         {
@@ -1284,8 +1283,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程右边“5500”与题意一致，左边“3000 + x”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
@@ -1377,8 +1376,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程右边“28”与题意一致，左边“x + (x + 4)”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
@@ -1439,8 +1438,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程左边“x + (x - 6)”与题意一致，右边“48”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
@@ -1561,8 +1560,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程右边“190”与题意一致，左边“0.8*(x - 10)”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
@@ -1607,8 +1606,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程左边“6000 + 400*x”与题意一致，右边“6000”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
@@ -1681,8 +1680,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程右边“1”与题意一致，左边“x*(1/6 - 1/3)”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
@@ -1760,8 +1759,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程右边“29”与题意一致，左边“(x + 2) + 3*x”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
@@ -1861,12 +1860,15 @@
           "layer": "answer",
           "reference_status": "uncertain",
           "reference": "uncertain",
-          "status": "insufficient_evidence",
-          "output": "insufficient_evidence",
-          "candidates": [],
+          "status": "uncertain",
+          "output": "uncertain",
+          "candidates": [
+            "E6",
+            "E1"
+          ],
           "evidence_level": "C",
-          "rule": null,
-          "evidence": "答案不正确，但只有最终答案，无法判断原因",
+          "rule": "answer_part_wrong",
+          "evidence": "小红的数值不对",
           "first_invalid_step": null
         },
         {
@@ -1896,8 +1898,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程右边“36”与题意一致，左边“12*x + 30*x”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
@@ -1950,14 +1952,14 @@
           "layer": "answer",
           "reference_status": "incorrect",
           "reference": "E5",
-          "status": "uncertain",
-          "output": "uncertain",
+          "status": "diagnosed",
+          "output": "E5",
           "candidates": [
-            "E2"
+            "E5"
           ],
-          "evidence_level": "B",
-          "rule": null,
-          "evidence": "答案与已知错误结果一致（Q13-E2），需要看过程",
+          "evidence_level": "A",
+          "rule": "answer_unit_wrong",
+          "evidence": "骑自行车、乘汽车的单位与题目不一致",
           "first_invalid_step": null
         },
         {
@@ -1988,8 +1990,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程右边“216”与题意一致，左边“1.2*x - 0.1*x”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
@@ -2034,8 +2036,8 @@
             "E2"
           ],
           "evidence_level": "C",
-          "rule": "unmatched_relationship",
-          "evidence": "变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式",
+          "rule": "one_side_wrong",
+          "evidence": "方程左边“(56 - x) - 4”与题意一致，右边“x”与题目中的量对不上",
           "first_invalid_step": null
         },
         {
