@@ -1,0 +1,41 @@
+﻿case_id,question_id,layer,split,reference_status,reference,reference_step,tags,status,output,system_step,rule,candidates,evidence_level,system_evidence,reference_evidence,response_origin
+D2b-032,Q11,answer,test,incorrect,E1,,,uncertain,uncertain,,answer_part_wrong,E6;E1,C,笔的数值不对,作答依据：答：一支笔7元。；题目要求分别求练习册和笔的价格；只回答“笔7元”把练习册价格当成笔价，属于目标/对象错置。,llm_generated
+D2b-050,Q08,answer,test,incorrect,E1,,,uncertain,uncertain,,answer_part_wrong,E6;E1,C,原价的数值不对,作答依据：答：实际支付了190元。；题目要求原价；回答实际支付金额190元，答非所问。,llm_generated
+D2b-069,Q07,execution,test,incorrect,E1,,,uncertain,uncertain,0,unmatched_relationship,E3;E4;E2,C,变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式,作答依据：答:涨了36元。；题目要求原价；计算并回答涨价金额36元，目标量不符。,researcher_written
+D2b-048,Q10,modelling,test,incorrect,E3,,,uncertain,uncertain,,,,C,写法有歧义：这个写法有两种可能的理解。你想表达的是 `(1/6)×x`，还是 `1/(6×x)`？请用括号写清楚。,作答依据：“解：设需要x天完成全部工作。”；合作效率应相加，却写成相减。,llm_generated
+D2b-057,Q15,modelling,test,incorrect,E3,,,no_error_detected,no_error_detected,,,,A,与另一种正确方程同解（x = 32）,作答依据：“解：设甲班原来分到x台，乙班原来分到（56－x）台。”；转移后乙班应增加4台，甲班减少4台，方程未表达该关系。,llm_generated
+D2b-081,Q06,execution,test,incorrect,E3,,,uncertain,uncertain,0,,E2;E3,C,变量定义与题目中的量对不上，无法判断方程错在哪里,作答依据：“设女生比男生少x人”；42＋x＝2x未正确表达总人数与男女生人数的关系。 次要错误依据：除关系建模问题外，最终只回答“少42人”，没有给出题目要求的男女生人数。,researcher_written
+D2b-001,Q14,modelling,test,incorrect,E4,,,uncertain,uncertain,,one_side_wrong,E3;E4;E2,C,方程右边“216”与题意一致，左边“x＋20%－10%”与题目中的量对不上,作答依据：“解：设商品原来的价格是x元。”；把连续百分比变化直接加减，未按比例作用于原价及涨价后价格。,llm_generated
+D2b-013,Q08,execution,test,incorrect,E4,,,no_error_detected,no_error_detected,,,,A,每一步变形都保持解不变,作答依据：“设这件商品的原价是x元”；把“再优惠10元”写成加10元。,llm_generated
+D2b-021,Q06,modelling,test,incorrect,E4,,,diagnosed,E4,,mutation_match,E4,A,方程与已知错误模式 Q06-E4-02 同解：“比……少6人”方向写反,作答依据：“解：设女生有x人，则男生有x＋6人。”；把男生比女生少6人写成男生多6人。,llm_generated
+D2b-006,Q13,modelling,test,incorrect,E5,,,insufficient_evidence,insufficient_evidence,,two_unknowns,,D,用了两个未知数；V1 要求只用一个未知数 x 列一元一次方程,作答依据：“解：设骑自行车用了x分钟，乘汽车用了y分钟”；x用分钟、y用小时，和以千米/小时表示的速度混用时间单位。,llm_generated
+D2b-034,Q09,answer,test,incorrect,E5,,,diagnosed,E5,,numbers_right_unit_wrong,E5,A,数值正确，但单位或表述与题目要求不符,作答依据：“答：小王回家用了15米。”；题目询问回家所用时间，答案却使用长度单位“米”，属于量纲/单位错误。,llm_generated
+D2b-035,Q13,modelling,test,incorrect,E5,,,insufficient_evidence,insufficient_evidence,,two_unknowns,,D,用了两个未知数；V1 要求只用一个未知数 x 列一元一次方程,作答依据：“解：设骑自行车用了x分钟，乘汽车用了y小时。”；同一方程中将骑车时间设为分钟、乘车时间设为小时，单位混用。 次要错误依据：变量定义同时使用分钟与小时，变量含义和单位设置不一致；主标签仍为单位/量纲混用E5。,llm_generated
+D2b-031,Q15,execution,test,incorrect,E6,3,,uncertain,uncertain,0,,E2,C,方程对应“设甲班原来x台，则乙班(56-x)台”，但变量定义不清楚,作答依据：“设甲班原来分到x台电脑”；x＋x＝60＋4应为2x＝64，不是66。,llm_generated
+D2b-041,Q06,execution,test,incorrect,E6,3,,diagnosed,E6,3,one_number_off_from_valid_step,E6,A,第3行“2x＝56”不再与上一行“2x＝42＋6”同解（one_number_off_from_valid_step）,作答依据：“设女生有x人，男生有（x－6）人”；42＋6应为48，不是56。,llm_generated
+D2b-065,Q09,execution,test,incorrect,E6,3,,diagnosed,E6,3,one_number_off_from_valid_step,E6,A,第3行“x＝12”不再与上一行“400x＝6000”同解（one_number_off_from_valid_step）,作答依据：“设回家用了x分钟”；6000÷400应为15，不是12。,researcher_written
+D2b-004,Q02,execution,test,incorrect,E7,2,,diagnosed,E7,2,transposition_sign,E7,A,第2行“2x＝28＋12”不再与上一行“2x＋12＝28”同解（transposition_sign）,作答依据：“解：设笔x元，则笔记本（x＋12）元。”；第2步移项符号错误：2x＋12＝28应得2x＝28－12。,llm_generated
+D2b-027,Q02,execution,test,incorrect,E7,2,,diagnosed,E7,2,transposition_sign,E7,A,第2行“2x＝28＋12”不再与上一行“2x＋12＝28”同解（transposition_sign）,作答依据：“解：设笔x元，笔记本x＋12元”；2x＋12＝28移项后应为2x＝28－12。,llm_generated
+D2b-047,Q07,execution,test,incorrect,E7,2,,diagnosed,E7,2,subtract_instead_of_divide,E7,A,第2行“x＝180－1.2”不再与上一行“1.2x＝180”同解（subtract_instead_of_divide）,作答依据：“设这件商品原来的价格是x元”；由1.2x＝180应除以1.2，不能写成180－1.2。,llm_generated
+D2b-051,Q09,execution,test,incorrect,E7,2,,diagnosed,E7,2,transposition_sign,E7,A,第2行“400x＝12000＋6000”不再与上一行“6000＋400x＝12000”同解（transposition_sign）,作答依据：“设小王回家用了x分钟”；移项符号错误，应为400x＝12000－6000。 次要错误依据：在移项符号错误后，18000÷400又算成450，另有独立算术错误。,llm_generated
+D2b-054,Q13,answer,test,incorrect,incorrect_unlabelled,,,uncertain,uncertain,,answer_part_wrong,E6;E1,C,骑自行车、乘汽车的数值不对,作答依据：“答：骑自行车用了1小时，乘汽车用了1小时。”；最终答案与题目标准答案不符；仅凭现有内容无法可靠推断错误类型。,llm_generated
+D2b-058,Q05,execution,test,incorrect,E7,1,,diagnosed,E7,1,distribute_first_term_only,E7,A,第1行“2x＋x＋4＝28”不再与学生列好的方程“2（x＋x＋4）＝28”同解（distribute_first_term_only）,作答依据：“解：设宽是x厘米，长是x＋4厘米。”；展开2(x＋x＋4)时，没有把2乘到括号内每一项。,llm_generated
+D2b-060,Q13,execution,test,incorrect,E7,1,,diagnosed,E7,1,distribute_first_term_only,E7,A,第1行“12x＋60－x＝36”不再与学生列好的方程“12x＋30（2－x）＝36”同解（distribute_first_term_only）,作答依据：“解：设骑自行车用了x小时，那么乘汽车用了（2－x）小时。”；展开30(2－x)时漏掉了x项的系数30。,llm_generated
+D2b-078,Q06,execution,test,incorrect,E4,,,no_error_detected,no_error_detected,,,,A,每一步变形都保持解不变,作答依据：“设男生有x人”；x为男生人数时，x＋x＋6把女生人数关系写反。 次要错误依据：除人数关系翻译错误外，步骤中2x=42+6也存在独立的移项符号错误。,researcher_written
+D2b-002,Q10,execution,test,correct,correct,,equivalent_equation,uncertain,uncertain,,,,C,第1行：写法有歧义：这个写法有两种可能的理解。你想表达的是 `(1/2)×x`，还是 `1/(2×x)`？请用括号写清楚。,作答依据：“解：设两人合作需要x天完成全部工作。”；与题目条件及等价数学关系一致。,llm_generated
+D2b-005,Q07,execution,test,correct,correct,,,no_error_detected,no_error_detected,,,,A,每一步变形都保持解不变,作答依据：“解：设这件商品原来的价格是x元。”；与题目条件及等价数学关系一致。,llm_generated
+D2b-007,Q14,modelling,test,correct,correct,,equivalent_equation,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 200）,作答依据：“解：设商品原来的价格是x元。”；与题目条件及等价数学关系一致。,llm_generated
+D2b-014,Q03,answer,test,correct,correct,,,no_error_detected,no_error_detected,,,,A,各部分数值和单位都正确,作答依据：“答：这件衣服的原价是200元。”；与题目条件及等价数学关系一致。,llm_generated
+D2b-016,Q13,modelling,test,correct,correct,,alt_working,uncertain,uncertain,,,E2;E3,C,变量定义与题目中的量对不上，无法判断方程错在哪里,作答依据：“解：设骑车用了x小时，那么乘车用了（2－x）小时”；与题目条件及等价数学关系一致。,llm_generated
+D2b-017,Q12,modelling,test,correct,correct,,equivalent_equation,uncertain,uncertain,,,,C,写法有歧义：这个写法有两种可能的理解。你想表达的是 `(1/4)×x`，还是 `1/(4×x)`？请用括号写清楚。,作答依据：“解：设妈妈今年x岁，那么小红今年就是1/4x岁。”；与题目条件及等价数学关系一致。,llm_generated
+D2b-020,Q07,modelling,test,correct,correct,,equivalent_equation,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 150）,作答依据：“解：设这件商品原来的价格是x元”；与题目条件及等价数学关系一致。,llm_generated
+D2b-025,Q12,modelling,test,correct,correct,,equivalent_equation,uncertain,uncertain,,,,C,写法有歧义：这个写法有两种可能的理解。你想表达的是 `(1/4)×x`，还是 `1/(4×x)`？请用括号写清楚。,作答依据：“解：设妈妈今年x岁，小红今年1/4x岁”；与题目条件及等价数学关系一致。,llm_generated
+D2b-028,Q05,modelling,test,correct,correct,,,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 5）,作答依据：“解：设宽为x厘米，则长为x＋4厘米”；与题目条件及等价数学关系一致。,llm_generated
+D2b-030,Q12,modelling,test,correct,correct,,alt_definition,no_error_detected,no_error_detected,,,,A,与另一种正确方程同解（x = 10）,作答依据：“解：设小红今年x岁，那么妈妈今年4x岁。”；与题目条件及等价数学关系一致。,llm_generated
+D2b-055,Q13,execution,test,correct,correct,,alt_working,no_error_detected,no_error_detected,,,,A,每一步变形都保持解不变,作答依据：“解：设骑自行车用了x小时，那乘汽车用了（2－x）小时。”；与题目条件及等价数学关系一致。,llm_generated
+D2b-011,Q09,modelling,test,uncertain,uncertain,,ambiguous_notation,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 15）,作答依据：“解：设x”；变量定义或记号信息不足，存在不止一种解释。,llm_generated
+D2b-036,Q11,modelling,test,uncertain,uncertain,,,uncertain,uncertain,,,E2;E3,C,变量定义与题目中的量对不上，无法判断方程错在哪里,作答依据：“解：设x元”；变量定义或记号信息不足，存在不止一种解释。,llm_generated
+D2b-056,Q05,modelling,test,uncertain,uncertain,,ambiguous_notation,uncertain,uncertain,,,E2,C,方程对应“设宽为x厘米，则长为(x+4)厘米”，但变量定义不清楚,作答依据：“解：设x厘米”；变量定义或记号信息不足，存在不止一种解释。,llm_generated
+D2b-082,Q01,modelling,test,incorrect,E2,,,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 10）,变量定义分别设为x和y，但方程使用x＋5替代y，变量与方程前后不一致。,researcher_written
+D2b-083,Q02,modelling,test,incorrect,E2,,,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 8）,定义了笔价x和笔记本价y，但方程未使用y，且把笔记本价写成x＋12，变量定义与方程表示不一致。,researcher_written
+D2b-085,Q12,modelling,test,incorrect,E2,,,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 40）,变量定义分别设为妈妈年龄x和小红年龄y，但方程完全未使用y，变量定义与方程表达不一致。,researcher_written

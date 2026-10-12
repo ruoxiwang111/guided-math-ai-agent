@@ -1,0 +1,107 @@
+{
+  "dataset": "D2b",
+  "split": "test",
+  "run_at": "2026-10-12T22:17:55",
+  "commit": "fff51a7",
+  "uncommitted_changes": [],
+  "frozen": true,
+  "pending_cases": [],
+  "results": {
+    "n_cases": 40,
+    "n": {
+      "incorrect": 26,
+      "correct": 11,
+      "uncertain": 3,
+      "not_assessable": 0
+    },
+    "coverage": 0.38461538461538464,
+    "conditional_accuracy": 1.0,
+    "wrong_specific_diagnoses": 0,
+    "uncertainty_appropriateness": 0.6666666666666666,
+    "fpr": 0.0,
+    "correct_returned_uncertain": 4,
+    "not_assessable_outputs": {},
+    "step_localisation": {
+      "n": 9,
+      "accuracy": 0.8888888888888888,
+      "right_step": 8,
+      "wrong_step": 0,
+      "uncertain": 1,
+      "valid_step_false_alarms": 0,
+      "valid_step_false_alarms_detail": {
+        "flagged_before_annotated_step": 0,
+        "correct_line_by_line_flagged": 0
+      }
+    },
+    "by_layer": {
+      "modelling": {
+        "n_incorrect": 9,
+        "coverage": 0.1111111111111111,
+        "conditional_accuracy": 1.0
+      },
+      "execution": {
+        "n_incorrect": 13,
+        "coverage": 0.6153846153846154,
+        "conditional_accuracy": 1.0
+      },
+      "answer": {
+        "n_incorrect": 4,
+        "coverage": 0.25,
+        "conditional_accuracy": 1.0
+      }
+    },
+    "by_origin": {
+      "llm_generated": {
+        "n": 33,
+        "coverage": 0.47368421052631576,
+        "conditional_accuracy": 1.0,
+        "fpr": 0.0
+      },
+      "researcher_written": {
+        "n": 7,
+        "coverage": 0.14285714285714285,
+        "conditional_accuracy": 1.0,
+        "fpr": null
+      }
+    },
+    "confusion_matrix": {
+      "E1": {
+        "uncertain": 3
+      },
+      "E3": {
+        "uncertain": 2,
+        "no_error_detected": 1
+      },
+      "E4": {
+        "uncertain": 1,
+        "no_error_detected": 2,
+        "E4": 1
+      },
+      "E5": {
+        "insufficient_evidence": 2,
+        "E5": 1
+      },
+      "E6": {
+        "uncertain": 1,
+        "E6": 2
+      },
+      "E7": {
+        "E7": 6
+      },
+      "incorrect_unlabelled": {
+        "uncertain": 1
+      },
+      "correct": {
+        "uncertain": 4,
+        "no_error_detected": 7
+      },
+      "uncertain": {
+        "no_error_detected": 1,
+        "uncertain": 2
+      },
+      "E2": {
+        "no_error_detected": 3
+      }
+    }
+  }
+}
