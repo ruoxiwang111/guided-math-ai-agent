@@ -93,15 +93,15 @@ The evaluation plan ([docs/evaluation_plan.md](docs/evaluation_plan.md)) defines
 | Question | Evidence | Status |
 | --- | --- | --- |
 | EQ1 problem structure | **D1-test**, 20 inputs × 3 live runs, commit `f6969cf`, `deepseek-chat`, temperature 0.3: scope accuracy 76.7%, equation correctness 92.6%, field accuracy 82.0%. No wrong equation was accepted as teachable for a solvable problem; 4.4% "consistent but wrong" comes from one ambiguous input the system did not flag | Run |
-| EQ2 diagnosis | **D2a** (65 rule-generated mutations): 100% coverage and accuracy when the matcher may see the mutation list; **leave-one-out** (the case's own mutation removed): coverage 68.8% (modelling 35.7%, execution 100%, answer 66.7%), conditional accuracy 100%, 0 wrong labels | Development result only |
-| EQ3 false alarms | Unit tests on equivalent and alternative correct forms; D2a contains no correct cases | Partial |
-| EQ4 first invalid step | D2a: 30/30 in both the stored and a learner-style format. The reference comes from the same SymPy criterion as the checker, so this shows agreement and pipeline integrity, **not independent accuracy** | Development result only |
+| EQ2 diagnosis | **D2b-test** (40 independently annotated cases, frozen, commit `fff51a7`): coverage 10/26 = 38.5% (target ≥60%, not met), conditional accuracy 10/10, 0 wrong labels. Modelling errors 1/9 diagnosed. **6 of 26 incorrect responses were reported as "no error detected"** — see [D2b results](docs/D2B_RESULTS.md). D2a (65 rule-generated mutations): 100% when the matcher sees the mutation list; leave-one-out coverage 68.8%, a development result only | Run (D2b) |
+| EQ3 false alarms | D2b-test: 0 of 11 correct responses flagged as erroneous; 4 returned *uncertain* (3 from deliberate ambiguous-notation prompts) | Run (small n) |
+| EQ4 first invalid step | D2b-test: 8 right, 0 wrong, 1 uncertain of 9 (88.9%; target ≥80% met). D2a: 30/30, but that reference shares the checker's criterion, so it shows agreement, not independent accuracy | Run (small n) |
 | EQ5 hints and leakage | Template hints per level in scripted scenarios; leakage checker tested. No live-hint review yet | Partial |
 | EQ6 follow-up budget | State-machine tests; scripted end-to-end flows. No simulated-trajectory study | Partial |
 | EQ7 mastery rule | Not built | Not run |
 | EQ8 Challenge AI items | 15/15 bank items validated | Done |
 
-**Not yet done:** D2b — an independently annotated diagnostic set (tooling is built; the cases are still being written and annotated), a second human annotator, the live-hint review, and any study with learners. When D2b is run it becomes the headline result for EQ2–EQ4, and D2a stays a development result.
+**Not yet done:** the live-hint review, a larger and more varied diagnostic set with real learner responses, and any study with learners. D2b responses are simulated (mostly drafted by a language model, then screened and annotated by the researcher); a second human annotator labelled 13 of the 60 cases (status agreement 12/13, category agreement 6/9). The result page lists the limitations, including post-run observations on possible label issues.
 
 Software checks: 798 automated tests, including scripted end-to-end sessions in which the language model is replaced by a fake that errs or fails on purpose.
 
@@ -119,9 +119,13 @@ python scripts/eval_diagnosis_d2a.py
 python scripts/eval_step_localisation.py
 ```
 
+```
+python scripts/eval_diagnosis_d2b.py
+```
+
 The first needs a DeepSeek key and takes a few minutes; results go to `eval/results/`. LLM-dependent results vary between runs, which is why D1 is run three times and the minimum and maximum are reported.
 
-D2b workflow (annotation workbook → import → freeze → run): see the docstrings at the top of `scripts/d2b_template.py`, `d2b_import.py`, `d2b_second.py` and `eval_diagnosis_d2b.py`.
+D2b workflow (annotation workbook → import → second annotator → freeze → run): see the docstrings at the top of `scripts/d2b_template.py`, `d2b_import.py`, `d2b_second.py` and `eval_diagnosis_d2b.py`.
 
 ## Repository layout
 
@@ -142,8 +146,8 @@ templates/index.html         the web interface
 
 - **Scope.** One topic (one-variable linear equation word problems). Anything else is declined or sent to Quick Solve, by design.
 - **Small, constructed data.** D1 has 20 test inputs, the question bank has 15 problems. With so few cases per category, results are reported as raw counts and rates, not as statistical comparisons between categories.
-- **The designer built the first datasets.** D2a was generated from the same design the system was built on, so it is not an independent test. D2b is meant to fix this, but its responses are drafted by a language model (DeepSeek) and then screened and annotated by one researcher; a second, human annotator for at least 20% of cases is still to be added. The diagnosis itself is rule-based, so shared-model bias affects the realism of the drafted answers and the LLM-dependent parts (D1 extraction, hint wording), not the diagnosis rules.
-- **Modelling errors are the weak point.** Without a matching known mutation, relationship errors (E3) are mostly returned as *uncertain* rather than diagnosed. The design prefers saying "not sure" to guessing.
+- **The designer built the first datasets.** D2a was generated from the same design the system was built on, so it is not an independent test. D2b is meant to fix this, but 49 of its 60 responses were drafted by a language model (DeepSeek) and then screened and annotated by one researcher; a second human annotator covered 13 cases (22%), and disagreements were resolved by the primary annotator. The diagnosis itself is rule-based, so shared-model bias affects the realism of the drafted answers and the LLM-dependent parts (D1 extraction, hint wording), not the diagnosis rules.
+- **Modelling errors are the weak point, and some are missed.** On D2b-test only 1 of 9 modelling errors was diagnosed, and 6 of 26 incorrect responses were reported as "no error detected" (for example, an inconsistent variable definition whose equation still gives the right answer). The design prefers saying "not sure" to guessing, but this is a real gap.
 - **Over-cautious structure check.** In D1, three correct extractions of two-stage journey and discount problems were rejected every run because the independent second solve was wrong; ambiguous problems are not yet detected reliably.
 - **Simulated and developer testing only.** No real learner has used it under study conditions. Developer sessions are functional checks, not evidence of learning.
 - **Any future study with school-age participants** needs institutional ethics approval, consent from parents and assent from the child, data protection and safeguarding arrangements first.
@@ -155,6 +159,7 @@ templates/index.html         the web interface
 - [Error taxonomy](docs/error_taxonomy.md) — E1–E7 and the diagnostic rules
 - [Question bank](docs/question_bank.md) — problems, mutations, validation
 - [Evaluation plan](docs/evaluation_plan.md) — questions, metrics, datasets, threats to validity
+- [D2b results and limitations](docs/D2B_RESULTS.md) — the independent diagnostic test, read honestly
 
 ## Licence
 

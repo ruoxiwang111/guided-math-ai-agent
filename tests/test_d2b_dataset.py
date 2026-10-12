@@ -50,7 +50,10 @@ def workbook(path, rows):
 @pytest.fixture()
 def env(tmp_path):
     cases = tmp_path / "diagnostic_cases.json"
-    shutil.copy(io.CASES_JSON, cases)
+    # the repository's file now holds the real, frozen D2b cases; the tests start from D2a only
+    data = json.loads(io.CASES_JSON.read_text(encoding="utf-8"))
+    data["cases"] = [c for c in data["cases"] if c.get("source") != "hand_crafted"]
+    cases.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     return tmp_path, workbook(tmp_path / "d2b.xlsx", ROWS), cases
 
 
@@ -62,7 +65,7 @@ def run(script, *args):
 
 def do_import(tmp, wb, cases, *extra):
     return run("d2b_import.py", "--workbook", wb, "--cases", cases, "--second", tmp / "second.json",
-               "--corrections", tmp / "corrections.md", *extra)
+               "--corrections", tmp / "corrections.md", "--generation-log", tmp / "no_generation_log.json", *extra)
 
 
 # ---------------------------------------------------------------- validation
@@ -269,9 +272,12 @@ def test_generated_candidates_fill_responses_only(tmp_path, monkeypatch):
     labelled = [dict(r, reference_status="uncertain", review_status="pending") for r in rows[:2]]
     workbook(tmp_path / "labelled.xlsx", labelled)
     cases = tmp_path / "cases.json"
-    shutil.copy(io.CASES_JSON, cases)
+    data = json.loads(io.CASES_JSON.read_text(encoding="utf-8"))
+    data["cases"] = [c for c in data["cases"] if c.get("source") != "hand_crafted"]
+    cases.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     code, out = run("d2b_import.py", "--workbook", tmp_path / "labelled.xlsx", "--cases", cases,
-                    "--second", tmp_path / "s.json", "--generation-log", tmp_path / "log.json")
+                    "--second", tmp_path / "s.json", "--corrections", tmp_path / "c.md",
+                    "--generation-log", tmp_path / "log.json")
     assert code == 0, out
     got = {c["case_id"]: c["response_origin"] for c in json.loads(cases.read_text(encoding="utf-8"))["cases"]
            if c["source"] == "hand_crafted"}
