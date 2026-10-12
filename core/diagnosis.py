@@ -95,10 +95,10 @@ def _collapse(err):
     return err.split("-")[0] if err else None
 
 
-def _diagnosed(state, err, evidence, **kw):
+def _diagnosed(state, err, evidence, evidence_level="A", **kw):
     return Diagnosis(status=DIAGNOSED, state=state, primary_error=_collapse(err),
                      error_subtype=err if err and "-" in err else None,
-                     candidates=[_collapse(err)], evidence_level="A", evidence=evidence,
+                     candidates=[_collapse(err)], evidence_level=evidence_level, evidence=evidence,
                      recommended_hint_level=1, **kw)
 
 
@@ -202,6 +202,31 @@ def _unit_family(definition):
             if i >= 0 and (best is None or i < best[0]):
                 best = (i, fam)
     return best[1] if best else None
+
+
+SCALE_UNITS = ["平方厘米", "平方米", "厘米", "毫米", "千米", "公里", "米", "小时", "分钟", "秒", "千克", "公斤", "克", "吨"]
+
+
+def _scale_unit(definition):
+    """The specific unit written right after x ('千米', '分钟' …); None if none is given."""
+    if not definition:
+        return None
+    first = re.split(r"[，,；;。]|则", definition)[0]
+    parts = re.split(r"[xX]", first, maxsplit=1)
+    if len(parts) < 2:
+        return None
+    after = re.sub(r"^\s*(为|是|表示)", "", parts[1])
+    best = None
+    for w in SCALE_UNITS:
+        i = after.find(w)
+        if i >= 0 and (best is None or i < best[0] or (i == best[0] and len(w) > len(best[1]))):
+            best = (i, w)
+    return best[1] if best else None
+
+
+def _same_scale(u, v):
+    alias = {"公里": "千米", "公斤": "千克"}
+    return alias.get(u, u) == alias.get(v, v)
 
 
 def resolve_definition(definition, refs):
@@ -402,6 +427,12 @@ def diagnose_modelling(question, equation, variable_definition=None, exclude_mut
 
     # 1. correct?
     if ref is not None and mc.equivalent(equation, ref["equation"]):
+        u_learner, u_ref = _scale_unit(variable_definition), _scale_unit(ref["variable_definition"])
+        if (u_learner and u_ref and not _same_scale(u_learner, u_ref)
+                and _unit_family(variable_definition) == _unit_family(ref["variable_definition"])):
+            return _diagnosed(state, "E5",
+                              f"方程与标准方程同解，但学生把 x 的单位写成“{u_learner}”，方程里的数据按“{u_ref}”计算，单位不一致",
+                              rule="unit_scale_mismatch", notes=notes)
         return Diagnosis(status=NO_ERROR, state=state, evidence_level="A",
                          evidence=f"与{'标准' if ref['label'] == 'standard' else '另一种正确'}方程同解（x = {ref['answer']}）",
                          notes=notes, details={"ref": ref["label"], "definition_match": how})
@@ -430,6 +461,11 @@ def diagnose_modelling(question, equation, variable_definition=None, exclude_mut
         if other is not ref and mc.equivalent(equation, other["equation"]):
             if _defines_second_quantity(variable_definition):
                 break
+            fam = _unit_family(variable_definition)
+            if ref is None and fam is not None and all(_unit_family(r["variable_definition"]) not in (None, fam) for r in refs):
+                return _diagnosed(state, "E2",
+                                  f"方程对应“{other['variable_definition']}”，但学生把 x 设成了另一类量（“{variable_definition}”）",
+                                  rule="definition_unit_contradicts_equation", notes=notes, evidence_level="B")
             if ref is None:
                 return Diagnosis(status=UNCERTAIN, state=state, candidates=["E2"], evidence_level="C",
                                  evidence=f"方程对应“{other['variable_definition']}”，但变量定义不清楚",
@@ -710,6 +746,9 @@ def classify_transition(prev_norm: str, curr_norm: str):
 
     for good in _correct_forms(prev_norm):
         if _differs_in_one(curr, good):
+            i = next(k for k, (u, v) in enumerate(zip(curr, good)) if u != v)
+            if good[i] != 0 and curr[i] == -good[i]:
+                return "E7", "sign_flip_one_term"
             return "E6", "one_number_off_from_valid_step"
     return None, "no_rule_matched"
 

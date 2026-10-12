@@ -42,6 +42,26 @@ Confusion matrix (rows = reference, raw counts): E1 → uncertain 3; E2 → no e
 - **Scope.** One topic; two E5 cases used two unknowns, which V1 declines by design.
 - **Shared-model concern.** Because the diagnosis is rule-based, drafting by the same model family used elsewhere in the project cannot make the diagnosis rules "grade themselves". It does limit how realistic the drafted responses are, and it affects the LLM-dependent parts (structure extraction, hint wording), which D2b does not test.
 
+## V1.1 development changes (dev split only)
+
+Three small rules were added after the frozen run and tuned on the D2b **dev** split (20 cases) only; the test split was not used to design or check them. Results in `eval/results/diagnosis_d2b_dev/` (first folder: before; second: after).
+
+- A one-term sign change in a solving step is E7 (sign error), not E6.
+- An equation that is the standard one but whose unknown is declared in a different unit scale ("x 千米" with numbers in metres) is E5.
+- An equation that fits the problem under one meaning of x, while the learner defined x as a different kind of quantity (speed instead of time), is E2 at evidence level B.
+
+| Dev split (n = 20, 14 incorrect) | V1 | V1.1 |
+| --- | --- | --- |
+| Coverage | 6 / 14 = 42.9% | 9 / 14 = 64.3% |
+| Conditional accuracy | 4 / 6 | 8 / 9 |
+| Wrong specific labels | 2 | 1 |
+| Correct responses flagged | 0 / 4 | 0 / 4 |
+| First-step localisation | 4 / 4 | 4 / 4 |
+
+D2a leave-one-out is unchanged (68.8% coverage, 0 wrong labels) and the unit tests pass (804). Treat the dev improvement as a development result: the rules were chosen by looking at those 20 cases, so it says nothing yet about new data. **The V1 test-split results above stand as the reported result.** Re-running the same 40 test cases would no longer be a clean test; a V1.1 claim needs a new, frozen test set.
+
+Not addressed, because the dev split holds no example to tune on: line-by-line solutions that are internally consistent with a mistranslated starting equation, and most E1 and E3 modelling errors. One dev label also looks questionable (D2b-003: defining the notebook as x and the pen as x−12 is correct when the notebook costs 12 more); it was not changed.
+
 ## Next steps
 
-Tune on the dev split only (variable-definition consistency check; line-by-line check against the problem's own relationships), then re-run a fresh, frozen test split. Collect real learner responses only with ethics approval, parental consent, child assent and safeguarding arrangements.
+Write a new, independent test set and freeze it before running V1.1 on it; extend the rules on the dev split first (a check of a line-by-line start equation against the problem's own relationships). Collect real learner responses only with ethics approval, parental consent, child assent and safeguarding arrangements.

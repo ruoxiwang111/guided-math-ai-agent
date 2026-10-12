@@ -1,0 +1,21 @@
+﻿case_id,question_id,layer,split,reference_status,reference,reference_step,tags,status,output,system_step,rule,candidates,evidence_level,system_evidence,reference_evidence,response_origin
+D2b-037,Q04,modelling,dev,incorrect,E1,,,diagnosed,E2,,mutation_match,E2,A,方程与已知错误模式 Q04-E2 同解：x定义为速度，却当作回程路程使用,作答依据：x＋300×10＝5500；题目要求回家时的每分钟骑行速度；变量却定义为去学校时骑行的距离，目标量与变量均不匹配。 次要错误依据：除目标量错置外，变量定义为“米”而题目要求速度，变量含义/单位也不一致。,llm_generated
+D2b-042,Q07,answer,dev,incorrect,E1,,,uncertain,uncertain,,answer_part_wrong,E6;E1,C,原价的数值不对,作答依据：答：涨价的钱是30元。；题目要求商品原价；回答涨价金额30元，没有回答所求原价。,llm_generated
+D2b-063,Q09,execution,dev,incorrect,E2,,,uncertain,uncertain,0,,E2;E3,C,变量定义与题目中的量对不上，无法判断方程错在哪里,作答依据：“设回家时每分钟行驶x米”；变量定义为回家速度，但方程把x乘以12并当作速度项，角色不一致。,researcher_written
+D2b-010,Q13,modelling,dev,incorrect,E3,,,uncertain,uncertain,,one_side_wrong,E3;E2,C,方程右边“36”与题意一致，左边“12x＋30×2－x”与题目中的量对不上（像是少了括号：倍数只乘了其中一项）,作答依据：“解：设骑自行车用了x小时，乘汽车用了2－x小时。”；30(2－x)被写成30×2－x，括号展开/数量关系不正确。,llm_generated
+D2b-023,Q13,modelling,dev,incorrect,E3,,,uncertain,uncertain,,unmatched_relationship,E3;E2,C,变量定义能对应到题目中的量，但方程与题意不符，且不符合任何已知错误模式,作答依据：“解：设骑自行车用了x小时，乘汽车用了（2－x）小时。”；没有正确表达两段路程之和等于36千米。,llm_generated
+D2b-003,Q02,modelling,dev,incorrect,E4,,,no_error_detected,no_error_detected,,,,A,与另一种正确方程同解（x = 20）,作答依据：“解：设笔记本x元，则笔（x－12）元。”；“笔记本比笔贵12元”的方向写反。,llm_generated
+D2b-022,Q01,modelling,dev,incorrect,E4,,,diagnosed,E4,,mutation_match,E4,A,方程与已知错误模式 Q01-E4-01 同解：“比……大5岁”方向写反：设小华为x却写小明为x-5,作答依据：“解：设小华今年x岁，小明今年x－5岁。”；小明比小华大5岁，却写成小明比小华小5岁。,llm_generated
+D2b-026,Q04,modelling,dev,incorrect,E5,,,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 250）,作答依据：“解：设小明回家时每分钟骑x千米。”；x为千米/分钟，题目已知路程和速度以米表示，单位混用。,llm_generated
+D2b-039,Q04,modelling,dev,incorrect,E5,,,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 250）,作答依据：“解：设小明回家时每分钟骑x千米”；x为千米/分钟，与米制路程和米/分钟速度混用。,llm_generated
+D2b-009,Q01,execution,dev,incorrect,E6,3,,diagnosed,E6,3,one_number_off_from_valid_step,E6,A,第3行“2x＝15”不再与上一行“2x＝25－5”同解（one_number_off_from_valid_step）,"2x＝25－5 之后写成 2x＝15,应为 2x＝20;第 3 步是第一个错误",llm_generated
+D2b-019,Q11,execution,dev,incorrect,E6,4,,diagnosed,E6,4,one_number_off_from_valid_step,E6,A,第4行“5x＝24”不再与上一行“5x＝29－4”同解（one_number_off_from_valid_step）,作答依据：“解：设一支笔x元，则一本练习册(x＋2)元。”；5x＋4＝29后写成5x＝24，算术错误；应为25。,llm_generated
+D2b-015,Q04,execution,dev,incorrect,E7,1,,diagnosed,E6,1,one_number_off_from_valid_step,E6,A,第1行“3000－10x＝5500”不再与学生列好的方程“300×10＋10x＝5500”同解（one_number_off_from_valid_step）,作答依据：“解：设小明回家时每分钟骑x米。”；第一步把3000＋10x写成3000－10x，等式不等价。,llm_generated
+D2b-024,Q14,execution,dev,incorrect,E7,3,,diagnosed,E7,3,multiply_instead_of_divide,E7,A,第3行“x＝216×1.08”不再与上一行“1.08x＝216”同解（multiply_instead_of_divide）,作答依据：“解：设商品原来的价格是x元”；由1.08x＝216错误地写成x＝216×1.08。,llm_generated
+D2b-012,Q14,modelling,dev,correct,correct,,,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 200）,作答依据：“解：设x”；与题目条件及等价数学关系一致。,llm_generated
+D2b-018,Q11,modelling,dev,correct,correct,,,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 5）,作答依据：“解：设一支笔x元，则一本练习册（x＋2）元”；与题目条件及等价数学关系一致。,llm_generated
+D2b-038,Q09,modelling,dev,correct,correct,,equivalent_equation,no_error_detected,no_error_detected,,,,A,与标准方程同解（x = 15）,作答依据：“解：设小王回家用了x分钟。”；与题目条件及等价数学关系一致。,llm_generated
+D2b-075,Q06,modelling,dev,correct,correct,,alt_definition,no_error_detected,no_error_detected,,,,A,与另一种正确方程同解（x = 18）,作答依据：“设男生有x人”；与题目条件及等价数学关系一致。,researcher_written
+D2b-033,Q12,modelling,dev,uncertain,uncertain,,,uncertain,uncertain,,,E2,C,方程对应“设小红今年x岁，则妈妈4x岁”，但变量定义不清楚,作答依据：“解：设x”；变量定义或记号信息不足，存在不止一种解释。,llm_generated
+D2b-080,Q06,modelling,dev,uncertain,uncertain,,ambiguous_notation,uncertain,uncertain,,,E2,C,方程对应“设女生x人，则男生(x-6)人”，但变量定义不清楚,作答依据：“设x”；变量定义或记号信息不足，存在不止一种解释。,researcher_written
+D2b-084,Q09,modelling,dev,incorrect,E2,,,uncertain,uncertain,,,E2,C,方程对应“设回家用了x分钟”，但变量定义不清楚,题目要求回家所用时间，但变量定义的是速度；方程中的400x又把x当作时间使用。,researcher_written

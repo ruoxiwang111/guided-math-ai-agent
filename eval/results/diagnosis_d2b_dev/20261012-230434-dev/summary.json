@@ -1,0 +1,100 @@
+{
+  "dataset": "D2b",
+  "split": "dev",
+  "run_at": "2026-10-12T23:04:34",
+  "commit": "5c98cc5",
+  "uncommitted_changes": [],
+  "frozen": true,
+  "pending_cases": [],
+  "results": {
+    "n_cases": 20,
+    "n": {
+      "incorrect": 14,
+      "correct": 4,
+      "uncertain": 2,
+      "not_assessable": 0
+    },
+    "coverage": 0.42857142857142855,
+    "conditional_accuracy": 0.6666666666666666,
+    "wrong_specific_diagnoses": 2,
+    "uncertainty_appropriateness": 1.0,
+    "fpr": 0.0,
+    "correct_returned_uncertain": 0,
+    "not_assessable_outputs": {},
+    "step_localisation": {
+      "n": 4,
+      "accuracy": 1.0,
+      "right_step": 4,
+      "wrong_step": 0,
+      "uncertain": 0,
+      "valid_step_false_alarms": 0,
+      "valid_step_false_alarms_detail": {
+        "flagged_before_annotated_step": 0,
+        "correct_line_by_line_flagged": 0
+      }
+    },
+    "by_layer": {
+      "modelling": {
+        "n_incorrect": 8,
+        "coverage": 0.25,
+        "conditional_accuracy": 0.5
+      },
+      "execution": {
+        "n_incorrect": 5,
+        "coverage": 0.8,
+        "conditional_accuracy": 0.75
+      },
+      "answer": {
+        "n_incorrect": 1,
+        "coverage": 0.0,
+        "conditional_accuracy": null
+      }
+    },
+    "by_origin": {
+      "llm_generated": {
+        "n": 16,
+        "coverage": 0.5,
+        "conditional_accuracy": 0.6666666666666666,
+        "fpr": 0.0
+      },
+      "researcher_written": {
+        "n": 4,
+        "coverage": 0.0,
+        "conditional_accuracy": null,
+        "fpr": 0.0
+      }
+    },
+    "confusion_matrix": {
+      "E1": {
+        "E2": 1,
+        "uncertain": 1
+      },
+      "E2": {
+        "uncertain": 2
+      },
+      "E3": {
+        "uncertain": 2
+      },
+      "E4": {
+        "no_error_detected": 1,
+        "E4": 1
+      },
+      "E5": {
+        "no_error_detected": 2
+      },
+      "E6": {
+        "E6": 2
+      },
+      "E7": {
+        "E6": 1,
+        "E7": 1
+      },
+      "correct": {
+        "no_error_detected": 4
+      },
+      "uncertain": {
+        "uncertain": 2
+      }
+    }
+  }
+}
