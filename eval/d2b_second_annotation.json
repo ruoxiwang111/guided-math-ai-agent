@@ -1,0 +1,149 @@
+{
+  "compared_at": "2026-10-12T22:09:08",
+  "annotator": "second annotator",
+  "case_ids": [
+    "D2b-009",
+    "D2b-012",
+    "D2b-015",
+    "D2b-018",
+    "D2b-022",
+    "D2b-023",
+    "D2b-024",
+    "D2b-033",
+    "D2b-037",
+    "D2b-038",
+    "D2b-039",
+    "D2b-054",
+    "D2b-063"
+  ],
+  "summary": {
+    "n_compared": 13,
+    "status_agreement": 0.9230769230769231,
+    "status_kappa": 0.8289473684210528,
+    "n_both_incorrect": 9,
+    "category_agreement": 0.6666666666666666,
+    "category_kappa": 0.6142857142857141,
+    "n_both_step": 3,
+    "step_agreement": 0.6666666666666666,
+    "n_disagreements": 5
+  },
+  "second_labels": {
+    "D2b-009": {
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "3",
+      "evidence": "他把 25－5 算成了 15，所以 2x＝15 就不对了，后面 x＝15÷2 又写成 7。",
+      "note": "方程本身是对的，问题出在口算。"
+    },
+    "D2b-012": {
+      "reference_status": "correct",
+      "primary_error": "",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "",
+      "evidence": "列的方程 x×1.2×0.9＝216 没问题，和标准答案一致。",
+      "note": ""
+    },
+    "D2b-015": {
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "1",
+      "evidence": "方程明明是 300×10＋10x＝5500，第一步就抄成了 3000－10x＝5500，把加号变成了减号。",
+      "note": "后面一直顺着这个错的符号往下算，结果也不对。"
+    },
+    "D2b-018": {
+      "reference_status": "correct",
+      "primary_error": "",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "",
+      "evidence": "2（x＋2）＋3x＝29 列得对，题目关系没搞错。",
+      "note": ""
+    },
+    "D2b-022": {
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "",
+      "evidence": "小明明明比小华大 5 岁，他却写成小明 x－5 岁，把大小关系弄反了。",
+      "note": ""
+    },
+    "D2b-023": {
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "",
+      "evidence": "正确应该两边加起来等于 36，也就是 12x＋30(2－x)＝36，他写成了 12x＝36＋30(2－x)，数量关系不对。",
+      "note": ""
+    },
+    "D2b-024": {
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "3",
+      "evidence": "前面都好好的，到 x＝216×1.08 这一步他用了乘法，其实应该除以 1.08，答案就跑偏了。",
+      "note": "前两步 1.2x×0.9＝216、1.08x＝216 都对。"
+    },
+    "D2b-033": {
+      "reference_status": "correct",
+      "primary_error": "",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "",
+      "evidence": "他是把小红的年龄设为 x，那妈妈就是 4x，写出来 x＋5＝(4x＋5)×1/3 是对的，和标准答案一个意思。",
+      "note": ""
+    },
+    "D2b-037": {
+      "reference_status": "incorrect",
+      "primary_error": "E2",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "",
+      "evidence": "他写的是设去学校时骑了 x 米，可方程 x＋300×10＝5500 里的 x 实际指的是回家那段路程，前后对不上。",
+      "note": ""
+    },
+    "D2b-038": {
+      "reference_status": "correct",
+      "primary_error": "",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "",
+      "evidence": "400x＋500×12＝12000 列对了，把回家用的时间当未知数，没问题。",
+      "note": ""
+    },
+    "D2b-039": {
+      "reference_status": "incorrect",
+      "primary_error": "E5",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "",
+      "evidence": "他说 x 的单位是千米，可方程里 300、5500 全是米，单位没统一。",
+      "note": ""
+    },
+    "D2b-054": {
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "",
+      "evidence": "他答各用了 1 小时，可 12×1＋30×1＝42，根本到不了 36 千米，答案和题目的距离关系对不上。",
+      "note": ""
+    },
+    "D2b-063": {
+      "reference_status": "incorrect",
+      "primary_error": "E1",
+      "error_subtype": "",
+      "secondary_errors": "",
+      "first_invalid_step": "",
+      "evidence": "题问回家用了多少分钟，他设的却是回家速度，解出来 x=500 是速度不是时间，答非所问。",
+      "note": ""
+    }
+  }
+}

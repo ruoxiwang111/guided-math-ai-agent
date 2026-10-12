@@ -2384,6 +2384,2092 @@
       "first_invalid_step": 2,
       "annotation_note": null,
       "review_status": "pending"
+    },
+    {
+      "case_id": "D2b-032",
+      "question_id": "Q11",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "learner_response": {
+        "final_answer_text": "答：一支笔7元。"
+      },
+      "normalized_response": {
+        "final_answer_text": "答：一支笔7元。"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E1",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E1"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "B",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：答：一支笔7元。；题目要求分别求练习册和笔的价格；只回答“笔7元”把练习册价格当成笔价，属于目标/对象错置。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-037",
+      "question_id": "Q04",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设小明去学校时骑了x米。",
+        "equation": "x＋300×10＝5500"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设小明去学校时骑了x米。",
+        "equation": "x+300*10=5500"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E1",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E1"
+      ],
+      "secondary_errors": [
+        "E2"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：x＋300×10＝5500；题目要求回家时的每分钟骑行速度；变量却定义为去学校时骑行的距离，目标量与变量均不匹配。 次要错误依据：除目标量错置外，变量定义为“米”而题目要求速度，变量含义/单位也不一致。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-042",
+      "question_id": "Q07",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "answer",
+      "state": "S4",
+      "learner_response": {
+        "final_answer_text": "答：涨价的钱是30元。"
+      },
+      "normalized_response": {
+        "final_answer_text": "答：涨价的钱是30元。"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E1",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E1"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "B",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：答：涨价的钱是30元。；题目要求商品原价；回答涨价金额30元，没有回答所求原价。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-050",
+      "question_id": "Q08",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "learner_response": {
+        "final_answer_text": "答：实际支付了190元。"
+      },
+      "normalized_response": {
+        "final_answer_text": "答：实际支付了190元。"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E1",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E1"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：答：实际支付了190元。；题目要求原价；回答实际支付金额190元，答非所问。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-069",
+      "question_id": "Q07",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "设涨了x元",
+        "equation": "x＝180×20%",
+        "steps": [
+          "x＝36"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设涨了x元",
+        "equation": "x=180*(20/100)",
+        "steps": [
+          "x=36"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E1",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E1"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：答:涨了36元。；题目要求原价；计算并回答涨价金额36元，目标量不符。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "researcher_written"
+    },
+    {
+      "case_id": "D2b-063",
+      "question_id": "Q09",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "设回家时每分钟行驶x米",
+        "equation": "12×500＋12x＝12000",
+        "steps": [
+          "x＝500"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设回家时每分钟行驶x米",
+        "equation": "12*500+12*x=12000",
+        "steps": [
+          "x=500"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E2",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E2"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“设回家时每分钟行驶x米”；变量定义为回家速度，但方程把x乘以12并当作速度项，角色不一致。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "researcher_written"
+    },
+    {
+      "case_id": "D2b-010",
+      "question_id": "Q13",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设骑自行车用了x小时，乘汽车用了2－x小时。",
+        "equation": "12x＋30×2－x＝36"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设骑自行车用了x小时，乘汽车用了2－x小时。",
+        "equation": "12*x+30*2-x=36"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设骑自行车用了x小时，乘汽车用了2－x小时。”；30(2－x)被写成30×2－x，括号展开/数量关系不正确。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-023",
+      "question_id": "Q13",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设骑自行车用了x小时，乘汽车用了（2－x）小时。",
+        "equation": "12x＝36＋30（2－x）"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设骑自行车用了x小时，乘汽车用了（2－x）小时。",
+        "equation": "12*x=36+30*(2-x)"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设骑自行车用了x小时，乘汽车用了（2－x）小时。”；没有正确表达两段路程之和等于36千米。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-048",
+      "question_id": "Q10",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设需要x天完成全部工作。",
+        "equation": "1/6x － 1/3x ＝ 1"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设需要x天完成全部工作。",
+        "equation": null
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设需要x天完成全部工作。”；合作效率应相加，却写成相减。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-057",
+      "question_id": "Q15",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设甲班原来分到x台，乙班原来分到（56－x）台。",
+        "equation": "56－x＝x－4－4"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设甲班原来分到x台，乙班原来分到（56－x）台。",
+        "equation": "56-x=x-4-4"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设甲班原来分到x台，乙班原来分到（56－x）台。”；转移后乙班应增加4台，甲班减少4台，方程未表达该关系。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-081",
+      "question_id": "Q06",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "设女生比男生少x人",
+        "equation": "42＋x＝2x",
+        "steps": [
+          "x＝42"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设女生比男生少x人",
+        "equation": "42+x=2*x",
+        "steps": [
+          "x=42"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E3",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E3"
+      ],
+      "secondary_errors": [
+        "E1"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“设女生比男生少x人”；42＋x＝2x未正确表达总人数与男女生人数的关系。 次要错误依据：除关系建模问题外，最终只回答“少42人”，没有给出题目要求的男女生人数。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "researcher_written"
+    },
+    {
+      "case_id": "D2b-001",
+      "question_id": "Q14",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设商品原来的价格是x元。",
+        "equation": "x＋20%－10%＝216"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设商品原来的价格是x元。",
+        "equation": "x+(20/100)-(10/100)=216"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E4"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设商品原来的价格是x元。”；把连续百分比变化直接加减，未按比例作用于原价及涨价后价格。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-003",
+      "question_id": "Q02",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设笔记本x元，则笔（x－12）元。",
+        "equation": "x＋（x－12）＝28"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设笔记本x元，则笔（x－12）元。",
+        "equation": "x+(x-12)=28"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E4"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设笔记本x元，则笔（x－12）元。”；“笔记本比笔贵12元”的方向写反。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-013",
+      "question_id": "Q08",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "设这件商品的原价是x元",
+        "equation": "0.8x＋10＝190",
+        "steps": [
+          "0.8x＝190＋10",
+          "0.8x＝200",
+          "x＝200÷0.8",
+          "x＝250"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设这件商品的原价是x元",
+        "equation": "0.8*x+10=190",
+        "steps": [
+          "0.8*x=190+10",
+          "0.8*x=200",
+          "x=200/0.8",
+          "x=250"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E4"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“设这件商品的原价是x元”；把“再优惠10元”写成加10元。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-021",
+      "question_id": "Q06",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设女生有x人，则男生有x＋6人。",
+        "equation": "x＋（x＋6）＝42"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设女生有x人，则男生有x＋6人。",
+        "equation": "x+(x+6)=42"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E4"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设女生有x人，则男生有x＋6人。”；把男生比女生少6人写成男生多6人。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-022",
+      "question_id": "Q01",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设小华今年x岁，小明今年x－5岁。",
+        "equation": "x＋x－5＝25"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设小华今年x岁，小明今年x－5岁。",
+        "equation": "x+x-5=25"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E4"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设小华今年x岁，小明今年x－5岁。”；小明比小华大5岁，却写成小明比小华小5岁。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-006",
+      "question_id": "Q13",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设骑自行车用了x分钟，乘汽车用了y分钟",
+        "equation": "12x＋30y＝36"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设骑自行车用了x分钟，乘汽车用了y分钟",
+        "equation": null
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E5",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E5"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设骑自行车用了x分钟，乘汽车用了y分钟”；x用分钟、y用小时，和以千米/小时表示的速度混用时间单位。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-026",
+      "question_id": "Q04",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设小明回家时每分钟骑x千米。",
+        "equation": "300×10＋10x＝5500"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设小明回家时每分钟骑x千米。",
+        "equation": "300*10+10*x=5500"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E5",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E5"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设小明回家时每分钟骑x千米。”；x为千米/分钟，题目已知路程和速度以米表示，单位混用。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-034",
+      "question_id": "Q09",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "learner_response": {
+        "final_answer_text": "答：小王回家用了15米。"
+      },
+      "normalized_response": {
+        "final_answer_text": "答：小王回家用了15米。"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E5",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E5"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "B",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“答：小王回家用了15米。”；题目询问回家所用时间，答案却使用长度单位“米”，属于量纲/单位错误。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-035",
+      "question_id": "Q13",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设骑自行车用了x分钟，乘汽车用了y小时。",
+        "equation": "12x＋30y＝36"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设骑自行车用了x分钟，乘汽车用了y小时。",
+        "equation": null
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E5",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E5"
+      ],
+      "secondary_errors": [
+        "E2"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设骑自行车用了x分钟，乘汽车用了y小时。”；同一方程中将骑车时间设为分钟、乘车时间设为小时，单位混用。 次要错误依据：变量定义同时使用分钟与小时，变量含义和单位设置不一致；主标签仍为单位/量纲混用E5。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-039",
+      "question_id": "Q04",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设小明回家时每分钟骑x千米",
+        "equation": "300×10＋10x＝5500"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设小明回家时每分钟骑x千米",
+        "equation": "300*10+10*x=5500"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E5",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E5"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设小明回家时每分钟骑x千米”；x为千米/分钟，与米制路程和米/分钟速度混用。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-009",
+      "question_id": "Q01",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "设小华今年x岁，小明今年（x＋5）岁。",
+        "equation": "x＋x＋5＝25",
+        "steps": [
+          "2x＋5＝25",
+          "2x＝25－5",
+          "2x＝15",
+          "x＝15÷2",
+          "x＝7"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设小华今年x岁，小明今年（x＋5）岁。",
+        "equation": "x+x+5=25",
+        "steps": [
+          "2*x+5=25",
+          "2*x=25-5",
+          "2*x=15",
+          "x=15/2",
+          "x=7"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“设小华今年x岁，小明今年（x＋5）岁。”；最后一步x＝7错误；15÷2应为7.5。",
+      "first_invalid_step": 5,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-019",
+      "question_id": "Q11",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "解：设一支笔x元，则一本练习册(x＋2)元。",
+        "equation": "2(x＋2)＋3x＝29",
+        "steps": [
+          "2x＋4＋3x＝29",
+          "5x＋4＝29",
+          "5x＝29－4",
+          "5x＝24",
+          "x＝24÷5",
+          "x＝4.8"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "解：设一支笔x元，则一本练习册(x＋2)元。",
+        "equation": "2*(x+2)+3*x=29",
+        "steps": [
+          "2*x+4+3*x=29",
+          "5*x+4=29",
+          "5*x=29-4",
+          "5*x=24",
+          "x=24/5",
+          "x=4.8"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设一支笔x元，则一本练习册(x＋2)元。”；5x＋4＝29后写成5x＝24，算术错误；应为25。",
+      "first_invalid_step": 4,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-031",
+      "question_id": "Q15",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "设甲班原来分到x台电脑",
+        "equation": "x － 4 ＝ 56 － x ＋ 4",
+        "steps": [
+          "x － 4 ＝ 60 － x",
+          "x ＋ x ＝ 60 ＋ 4",
+          "2x ＝ 66",
+          "x ＝ 33"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设甲班原来分到x台电脑",
+        "equation": "x-4=56-x+4",
+        "steps": [
+          "x-4=60-x",
+          "x+x=60+4",
+          "2*x=66",
+          "x=33"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“设甲班原来分到x台电脑”；x＋x＝60＋4应为2x＝64，不是66。",
+      "first_invalid_step": 3,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-041",
+      "question_id": "Q06",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "设女生有x人，男生有（x－6）人",
+        "equation": "x＋（x－6）＝42",
+        "steps": [
+          "2x－6＝42",
+          "2x＝42＋6",
+          "2x＝56",
+          "x＝56÷2",
+          "x＝24"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设女生有x人，男生有（x－6）人",
+        "equation": "x+(x-6)=42",
+        "steps": [
+          "2*x-6=42",
+          "2*x=42+6",
+          "2*x=56",
+          "x=56/2",
+          "x=24"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“设女生有x人，男生有（x－6）人”；42＋6应为48，不是56。",
+      "first_invalid_step": 3,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-065",
+      "question_id": "Q09",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "设回家用了x分钟",
+        "equation": "500×12＋400x＝12000",
+        "steps": [
+          "6000＋400x＝12000",
+          "400x＝6000",
+          "x＝12"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设回家用了x分钟",
+        "equation": "500*12+400*x=12000",
+        "steps": [
+          "6000+400*x=12000",
+          "400*x=6000",
+          "x=12"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E6",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E6"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“设回家用了x分钟”；6000÷400应为15，不是12。",
+      "first_invalid_step": 3,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "researcher_written"
+    },
+    {
+      "case_id": "D2b-004",
+      "question_id": "Q02",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "解：设笔x元，则笔记本（x＋12）元。",
+        "equation": "x＋（x＋12）＝28",
+        "steps": [
+          "2x＋12＝28",
+          "2x＝28＋12",
+          "2x＝40",
+          "x＝20"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "解：设笔x元，则笔记本（x＋12）元。",
+        "equation": "x+(x+12)=28",
+        "steps": [
+          "2*x+12=28",
+          "2*x=28+12",
+          "2*x=40",
+          "x=20"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设笔x元，则笔记本（x＋12）元。”；第2步移项符号错误：2x＋12＝28应得2x＝28－12。",
+      "first_invalid_step": 2,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-015",
+      "question_id": "Q04",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "解：设小明回家时每分钟骑x米。",
+        "equation": "300×10＋10x＝5500",
+        "steps": [
+          "3000－10x＝5500",
+          "－10x＝5500＋3000",
+          "－10x＝8500",
+          "x＝850"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "解：设小明回家时每分钟骑x米。",
+        "equation": "300*10+10*x=5500",
+        "steps": [
+          "3000-10*x=5500",
+          "-10*x=5500+3000",
+          "-10*x=8500",
+          "x=850"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设小明回家时每分钟骑x米。”；第一步把3000＋10x写成3000－10x，等式不等价。",
+      "first_invalid_step": 1,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-024",
+      "question_id": "Q14",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "解：设商品原来的价格是x元",
+        "equation": "x×（1＋20%）×（1－10%）＝216",
+        "steps": [
+          "1.2x×0.9＝216",
+          "1.08x＝216",
+          "x＝216×1.08",
+          "x＝233.28"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "解：设商品原来的价格是x元",
+        "equation": "x*(1+(20/100))*(1-(10/100))=216",
+        "steps": [
+          "1.2*x*0.9=216",
+          "1.08*x=216",
+          "x=216*1.08",
+          "x=233.28"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设商品原来的价格是x元”；由1.08x＝216错误地写成x＝216×1.08。",
+      "first_invalid_step": 3,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-027",
+      "question_id": "Q02",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "解：设笔x元，笔记本x＋12元",
+        "equation": "x＋x＋12＝28",
+        "steps": [
+          "2x＋12＝28",
+          "2x＝28＋12",
+          "2x＝40",
+          "x＝20"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "解：设笔x元，笔记本x＋12元",
+        "equation": "x+x+12=28",
+        "steps": [
+          "2*x+12=28",
+          "2*x=28+12",
+          "2*x=40",
+          "x=20"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设笔x元，笔记本x＋12元”；2x＋12＝28移项后应为2x＝28－12。",
+      "first_invalid_step": 2,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-047",
+      "question_id": "Q07",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "设这件商品原来的价格是x元",
+        "equation": "x＋20%x＝180",
+        "steps": [
+          "1.2x＝180",
+          "x＝180－1.2",
+          "x＝178.8"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设这件商品原来的价格是x元",
+        "equation": "x+(20/100)*x=180",
+        "steps": [
+          "1.2*x=180",
+          "x=180-1.2",
+          "x=178.8"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“设这件商品原来的价格是x元”；由1.2x＝180应除以1.2，不能写成180－1.2。",
+      "first_invalid_step": 2,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-051",
+      "question_id": "Q09",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "设小王回家用了x分钟",
+        "equation": "500×12＋400x＝12000",
+        "steps": [
+          "6000＋400x＝12000",
+          "400x＝12000＋6000",
+          "400x＝18000",
+          "x＝18000÷400",
+          "x＝450"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设小王回家用了x分钟",
+        "equation": "500*12+400*x=12000",
+        "steps": [
+          "6000+400*x=12000",
+          "400*x=12000+6000",
+          "400*x=18000",
+          "x=18000/400",
+          "x=450"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "secondary_errors": [
+        "E6"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“设小王回家用了x分钟”；移项符号错误，应为400x＝12000－6000。 次要错误依据：在移项符号错误后，18000÷400又算成450，另有独立算术错误。",
+      "first_invalid_step": 2,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-054",
+      "question_id": "Q13",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "learner_response": {
+        "final_answer_text": "答：骑自行车用了1小时，乘汽车用了1小时。"
+      },
+      "normalized_response": {
+        "final_answer_text": "答：骑自行车用了1小时，乘汽车用了1小时。"
+      },
+      "reference_status": "incorrect",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "B",
+      "diagnosis_status": "uncertain",
+      "evidence": "作答依据：“答：骑自行车用了1小时，乘汽车用了1小时。”；最终答案与题目标准答案不符；仅凭现有内容无法可靠推断错误类型。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-058",
+      "question_id": "Q05",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "解：设宽是x厘米，长是x＋4厘米。",
+        "equation": "2（x＋x＋4）＝28",
+        "steps": [
+          "2x＋x＋4＝28",
+          "3x＋4＝28",
+          "3x＝28－4",
+          "3x＝24",
+          "x＝8"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "解：设宽是x厘米，长是x＋4厘米。",
+        "equation": "2*(x+x+4)=28",
+        "steps": [
+          "2*x+x+4=28",
+          "3*x+4=28",
+          "3*x=28-4",
+          "3*x=24",
+          "x=8"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设宽是x厘米，长是x＋4厘米。”；展开2(x＋x＋4)时，没有把2乘到括号内每一项。",
+      "first_invalid_step": 1,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-060",
+      "question_id": "Q13",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "解：设骑自行车用了x小时，那么乘汽车用了（2－x）小时。",
+        "equation": "12x＋30（2－x）＝36",
+        "steps": [
+          "12x＋60－x＝36",
+          "12x－x＝36－60",
+          "11x＝－24",
+          "x＝－24÷11",
+          "x＝－11分之24"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "解：设骑自行车用了x小时，那么乘汽车用了（2－x）小时。",
+        "equation": "12*x+30*(2-x)=36",
+        "steps": [
+          "12*x+60-x=36",
+          "12*x-x=36-60",
+          "11*x=-24",
+          "x=-24/11",
+          null
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E7",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E7"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“解：设骑自行车用了x小时，那么乘汽车用了（2－x）小时。”；展开30(2－x)时漏掉了x项的系数30。",
+      "first_invalid_step": 1,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-078",
+      "question_id": "Q06",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "设男生有x人",
+        "equation": "x＋x＋6＝42",
+        "steps": [
+          "2x＝42＋6",
+          "2x＝48",
+          "x＝24"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "设男生有x人",
+        "equation": "x+x+6=42",
+        "steps": [
+          "2*x=42+6",
+          "2*x=48",
+          "x=24"
+        ]
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E4",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E4"
+      ],
+      "secondary_errors": [
+        "E7"
+      ],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "作答依据：“设男生有x人”；x为男生人数时，x＋x＋6把女生人数关系写反。 次要错误依据：除人数关系翻译错误外，步骤中2x=42+6也存在独立的移项符号错误。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "researcher_written"
+    },
+    {
+      "case_id": "D2b-002",
+      "question_id": "Q10",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "解：设两人合作需要x天完成全部工作。",
+        "equation": "（1/6＋1/3）x＝1",
+        "steps": [
+          "1/2x＝1",
+          "x＝1÷1/2",
+          "x＝2"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "解：设两人合作需要x天完成全部工作。",
+        "equation": "(1/6+1/3)*x=1",
+        "steps": [
+          null,
+          "x=1/1/2",
+          "x=2"
+        ]
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设两人合作需要x天完成全部工作。”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [
+        "equivalent_equation"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-005",
+      "question_id": "Q07",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "解：设这件商品原来的价格是x元。",
+        "equation": "x×(1＋20%)＝180",
+        "steps": [
+          "1.2x＝180",
+          "x＝180÷1.2",
+          "x＝150",
+          "x＝150"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "解：设这件商品原来的价格是x元。",
+        "equation": "x*(1+(20/100))=180",
+        "steps": [
+          "1.2*x=180",
+          "x=180/1.2",
+          "x=150",
+          "x=150"
+        ]
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设这件商品原来的价格是x元。”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-007",
+      "question_id": "Q14",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设商品原来的价格是x元。",
+        "equation": "216＝x×（1＋20%）×（1－10%）"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设商品原来的价格是x元。",
+        "equation": "216=x*(1+(20/100))*(1-(10/100))"
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设商品原来的价格是x元。”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [
+        "equivalent_equation"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-012",
+      "question_id": "Q14",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设x",
+        "equation": "x×（1＋20%）×（1－10%）＝216"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设x",
+        "equation": "x*(1+(20/100))*(1-(10/100))=216"
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设x”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-014",
+      "question_id": "Q03",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "answer",
+      "state": "S4",
+      "learner_response": {
+        "final_answer_text": "答：这件衣服的原价是200元。"
+      },
+      "normalized_response": {
+        "final_answer_text": "答：这件衣服的原价是200元。"
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“答：这件衣服的原价是200元。”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-016",
+      "question_id": "Q13",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设骑车用了x小时，那么乘车用了（2－x）小时",
+        "equation": "12x ＝ 36 － 30（2－x）"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设骑车用了x小时，那么乘车用了（2－x）小时",
+        "equation": "12*x=36-30*(2-x)"
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设骑车用了x小时，那么乘车用了（2－x）小时”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [
+        "alt_working"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-017",
+      "question_id": "Q12",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设妈妈今年x岁，那么小红今年就是1/4x岁。",
+        "equation": "1/4x＋5＝1/3（x＋5）"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设妈妈今年x岁，那么小红今年就是1/4x岁。",
+        "equation": null
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设妈妈今年x岁，那么小红今年就是1/4x岁。”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [
+        "equivalent_equation"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-018",
+      "question_id": "Q11",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设一支笔x元，则一本练习册（x＋2）元",
+        "equation": "2（x＋2）＋3x＝29"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设一支笔x元，则一本练习册（x＋2）元",
+        "equation": "2*(x+2)+3*x=29"
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设一支笔x元，则一本练习册（x＋2）元”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-020",
+      "question_id": "Q07",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设这件商品原来的价格是x元",
+        "equation": "x＋20%x＝180"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设这件商品原来的价格是x元",
+        "equation": "x+(20/100)*x=180"
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设这件商品原来的价格是x元”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [
+        "equivalent_equation"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-025",
+      "question_id": "Q12",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设妈妈今年x岁，小红今年1/4x岁",
+        "equation": "1/4x＋5＝1/3（x＋5）"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设妈妈今年x岁，小红今年1/4x岁",
+        "equation": null
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设妈妈今年x岁，小红今年1/4x岁”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [
+        "equivalent_equation"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-028",
+      "question_id": "Q05",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设宽为x厘米，则长为x＋4厘米",
+        "equation": "2（x＋x＋4）＝28"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设宽为x厘米，则长为x＋4厘米",
+        "equation": "2*(x+x+4)=28"
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设宽为x厘米，则长为x＋4厘米”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-030",
+      "question_id": "Q12",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设小红今年x岁，那么妈妈今年4x岁。",
+        "equation": "x＋5＝（4x＋5）÷3"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设小红今年x岁，那么妈妈今年4x岁。",
+        "equation": "x+5=(4*x+5)/3"
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设小红今年x岁，那么妈妈今年4x岁。”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [
+        "alt_definition"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-038",
+      "question_id": "Q09",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设小王回家用了x分钟。",
+        "equation": "400x＋500×12＝12000"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设小王回家用了x分钟。",
+        "equation": "400*x+500*12=12000"
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设小王回家用了x分钟。”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [
+        "equivalent_equation"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-055",
+      "question_id": "Q13",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "execution",
+      "state": "S3",
+      "learner_response": {
+        "variable_definition": "解：设骑自行车用了x小时，那乘汽车用了（2－x）小时。",
+        "equation": "12x＋30（2－x）＝36",
+        "steps": [
+          "12x＋60－30x＝36",
+          "60－18x＝36",
+          "18x＝60－36",
+          "18x＝24",
+          "x＝24÷18",
+          "x＝4/3"
+        ]
+      },
+      "normalized_response": {
+        "variable_definition": "解：设骑自行车用了x小时，那乘汽车用了（2－x）小时。",
+        "equation": "12*x+30*(2-x)=36",
+        "steps": [
+          "12*x+60-30*x=36",
+          "60-18*x=36",
+          "18*x=60-36",
+          "18*x=24",
+          "x=24/18",
+          "x=4/3"
+        ]
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“解：设骑自行车用了x小时，那乘汽车用了（2－x）小时。”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [
+        "alt_working"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-075",
+      "question_id": "Q06",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "设男生有x人",
+        "equation": "42－x＝x＋6"
+      },
+      "normalized_response": {
+        "variable_definition": "设男生有x人",
+        "equation": "42-x=x+6"
+      },
+      "reference_status": "correct",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "no_error_detected",
+      "evidence": "作答依据：“设男生有x人”；与题目条件及等价数学关系一致。",
+      "first_invalid_step": null,
+      "tags": [
+        "alt_definition"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "researcher_written"
+    },
+    {
+      "case_id": "D2b-011",
+      "question_id": "Q09",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设x",
+        "equation": "500×12＋400x＝12000"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设x",
+        "equation": "500*12+400*x=12000"
+      },
+      "reference_status": "uncertain",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "C",
+      "diagnosis_status": "uncertain",
+      "evidence": "作答依据：“解：设x”；变量定义或记号信息不足，存在不止一种解释。",
+      "first_invalid_step": null,
+      "tags": [
+        "ambiguous_notation"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-033",
+      "question_id": "Q12",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设x",
+        "equation": "x＋5＝（4x＋5）×1/3"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设x",
+        "equation": "x+5=(4*x+5)*1/3"
+      },
+      "reference_status": "uncertain",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "C",
+      "diagnosis_status": "uncertain",
+      "evidence": "作答依据：“解：设x”；变量定义或记号信息不足，存在不止一种解释。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-036",
+      "question_id": "Q11",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设x元",
+        "equation": "2x＋3x＝29"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设x元",
+        "equation": "2*x+3*x=29"
+      },
+      "reference_status": "uncertain",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "C",
+      "diagnosis_status": "uncertain",
+      "evidence": "作答依据：“解：设x元”；变量定义或记号信息不足，存在不止一种解释。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-056",
+      "question_id": "Q05",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "解：设x厘米",
+        "equation": "2x＋2（x＋4）＝28"
+      },
+      "normalized_response": {
+        "variable_definition": "解：设x厘米",
+        "equation": "2*x+2*(x+4)=28"
+      },
+      "reference_status": "uncertain",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "C",
+      "diagnosis_status": "uncertain",
+      "evidence": "作答依据：“解：设x厘米”；变量定义或记号信息不足，存在不止一种解释。",
+      "first_invalid_step": null,
+      "tags": [
+        "ambiguous_notation"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "llm_generated"
+    },
+    {
+      "case_id": "D2b-080",
+      "question_id": "Q06",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "设x",
+        "equation": "x＋x－6＝42"
+      },
+      "normalized_response": {
+        "variable_definition": "设x",
+        "equation": "x+x-6=42"
+      },
+      "reference_status": "uncertain",
+      "primary_error": null,
+      "error_subtype": null,
+      "candidate_errors": [],
+      "secondary_errors": [],
+      "evidence_level": "C",
+      "diagnosis_status": "uncertain",
+      "evidence": "作答依据：“设x”；变量定义或记号信息不足，存在不止一种解释。",
+      "first_invalid_step": null,
+      "tags": [
+        "ambiguous_notation"
+      ],
+      "annotation_note": "人工初标；正式研究使用前建议由第二标注者独立复核。",
+      "review_status": "reviewed",
+      "response_origin": "researcher_written"
+    },
+    {
+      "case_id": "D2b-082",
+      "question_id": "Q01",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "设小华今年x岁，小明今年y岁。",
+        "equation": "x＋(x＋5)＝25"
+      },
+      "normalized_response": {
+        "variable_definition": "设小华今年x岁，小明今年y岁。",
+        "equation": "x+(x+5)=25"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E2",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E2"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "变量定义分别设为x和y，但方程使用x＋5替代y，变量与方程前后不一致。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "新增候选案例；由助手起草，须由独立标注者复核，不可直接视为独立金标准。",
+      "review_status": "reviewed",
+      "response_origin": "researcher_written"
+    },
+    {
+      "case_id": "D2b-083",
+      "question_id": "Q02",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "设笔的价格为x元，笔记本的价格为y元。",
+        "equation": "x＋(x＋12)＝28"
+      },
+      "normalized_response": {
+        "variable_definition": "设笔的价格为x元，笔记本的价格为y元。",
+        "equation": "x+(x+12)=28"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E2",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E2"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "定义了笔价x和笔记本价y，但方程未使用y，且把笔记本价写成x＋12，变量定义与方程表示不一致。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "新增候选案例；由助手起草，须由独立标注者复核，不可直接视为独立金标准。",
+      "review_status": "reviewed",
+      "response_origin": "researcher_written"
+    },
+    {
+      "case_id": "D2b-084",
+      "question_id": "Q09",
+      "source": "hand_crafted",
+      "split": "dev",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "设小王回家时的速度为x米/分钟。",
+        "equation": "500×12＋400x＝12000"
+      },
+      "normalized_response": {
+        "variable_definition": "设小王回家时的速度为x米/分钟。",
+        "equation": "500*12+400*x=12000"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E2",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E2"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "题目要求回家所用时间，但变量定义的是速度；方程中的400x又把x当作时间使用。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "新增候选案例；由助手起草，须由独立标注者复核，不可直接视为独立金标准。",
+      "review_status": "reviewed",
+      "response_origin": "researcher_written"
+    },
+    {
+      "case_id": "D2b-085",
+      "question_id": "Q12",
+      "source": "hand_crafted",
+      "split": "test",
+      "layer": "modelling",
+      "state": "S2",
+      "learner_response": {
+        "variable_definition": "设妈妈今年x岁，小红今年y岁。",
+        "equation": "x/4＋5＝(x＋5)/3"
+      },
+      "normalized_response": {
+        "variable_definition": "设妈妈今年x岁，小红今年y岁。",
+        "equation": "x/4+5=(x+5)/3"
+      },
+      "reference_status": "incorrect",
+      "primary_error": "E2",
+      "error_subtype": null,
+      "candidate_errors": [
+        "E2"
+      ],
+      "secondary_errors": [],
+      "evidence_level": "A",
+      "diagnosis_status": "diagnosed",
+      "evidence": "变量定义分别设为妈妈年龄x和小红年龄y，但方程完全未使用y，变量定义与方程表达不一致。",
+      "first_invalid_step": null,
+      "tags": [],
+      "annotation_note": "新增候选案例；由助手起草，须由独立标注者复核，不可直接视为独立金标准。",
+      "review_status": "reviewed",
+      "response_origin": "researcher_written"
     }
   ]
 }

@@ -1,0 +1,12 @@
+{
+  "run_id": "20260929-230631",
+  "split": "test",
+  "runs": 3,
+  "n_cases": 20,
+  "prompt_version": "structure-v1",
+  "backend": {
+    "backend": "deepseek",
+    "model": "deepseek-chat",
+    "temperature": 0.3
+  }
+}

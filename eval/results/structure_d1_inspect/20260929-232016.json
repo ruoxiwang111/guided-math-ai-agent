@@ -1,0 +1,1562 @@
+{
+  "prompt_version": "structure-v1",
+  "backend": {
+    "backend": "deepseek",
+    "model": "deepseek-chat",
+    "temperature": 0.3
+  },
+  "results": [
+    {
+      "case_id": "D1-12",
+      "scope": "in_scope",
+      "consistency": "consistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "x/4 + 5 = (x + 5)/3"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 40}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "4 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "3 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "3 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": true,
+          "detail": "computed ['10', '40'] vs independent ['10', '40']"
+        }
+      ],
+      "raw_equation": "x/4 + 5 = (x + 5)/3",
+      "raw_known_quantities": [
+        {
+          "name": "小红今年年龄占妈妈的比例",
+          "value": "1/4",
+          "unit": ""
+        },
+        {
+          "name": "5年后小红年龄占妈妈的比例",
+          "value": "1/3",
+          "unit": ""
+        },
+        {
+          "name": "时间间隔",
+          "value": 5,
+          "unit": "年"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "小红今年的年龄",
+          "expression": "x/4",
+          "unit": "岁"
+        },
+        {
+          "label": "妈妈今年的年龄",
+          "expression": "x",
+          "unit": "岁"
+        }
+      ],
+      "raw_relationship": "5年后，小红的年龄 = 妈妈5年后的年龄 × 1/3",
+      "independent": {
+        "parts": [
+          {
+            "label": "小红今年年龄",
+            "value": "10"
+          },
+          {
+            "label": "妈妈今年年龄",
+            "value": "40"
+          }
+        ]
+      },
+      "run": 1
+    },
+    {
+      "case_id": "D1-13",
+      "scope": "in_scope",
+      "consistency": "inconsistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "12*x + 30*(2 - x) = 36"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 4/3}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "3 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "4 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "4 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": false,
+          "detail": "computed ['2/3', '4/3'] vs independent ['1/2', '3/2']"
+        }
+      ],
+      "raw_equation": "12*x + 30*(2 - x) = 36",
+      "raw_known_quantities": [
+        {
+          "name": "总路程",
+          "value": 36,
+          "unit": "千米"
+        },
+        {
+          "name": "骑自行车速度",
+          "value": 12,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "乘汽车速度",
+          "value": 30,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "总时间",
+          "value": 2,
+          "unit": "小时"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "骑自行车时间",
+          "expression": "x",
+          "unit": "小时"
+        },
+        {
+          "label": "乘汽车时间",
+          "expression": "2 - x",
+          "unit": "小时"
+        }
+      ],
+      "raw_relationship": "骑自行车路程 + 乘汽车路程 = 总路程",
+      "independent": {
+        "parts": [
+          {
+            "label": "骑自行车时间",
+            "value": "1.5"
+          },
+          {
+            "label": "乘汽车时间",
+            "value": "0.5"
+          }
+        ]
+      },
+      "run": 1
+    },
+    {
+      "case_id": "D1-23",
+      "scope": "in_scope",
+      "consistency": "inconsistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "4*x + 20*(1.5 - x) = 22"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 1/2}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "2 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "4 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "4 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": false,
+          "detail": "computed ['1/2', '1'] vs independent ['5/8', '7/8']"
+        }
+      ],
+      "raw_equation": "4*x + 20*(1.5 - x) = 22",
+      "raw_known_quantities": [
+        {
+          "name": "总路程",
+          "value": 22,
+          "unit": "千米"
+        },
+        {
+          "name": "步行速度",
+          "value": 4,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "公交车速度",
+          "value": 20,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "总时间",
+          "value": 1.5,
+          "unit": "小时"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "步行时间",
+          "expression": "x",
+          "unit": "小时"
+        },
+        {
+          "label": "乘车时间",
+          "expression": "1.5 - x",
+          "unit": "小时"
+        }
+      ],
+      "raw_relationship": "步行路程 + 乘车路程 = 总路程",
+      "independent": {
+        "parts": [
+          {
+            "label": "步行时间",
+            "value": "5/8"
+          },
+          {
+            "label": "乘车时间",
+            "value": "7/8"
+          }
+        ]
+      },
+      "run": 1
+    },
+    {
+      "case_id": "D1-25",
+      "scope": "in_scope",
+      "consistency": "inconsistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": false,
+          "detail": "x - 5 == 60 - x + 5"
+        }
+      ],
+      "raw_equation": "x - 5 == 60 - x + 5",
+      "raw_known_quantities": [
+        {
+          "name": "故事书和科普书总本数",
+          "value": 60,
+          "unit": "本"
+        },
+        {
+          "name": "从故事书拿出的本数",
+          "value": 5,
+          "unit": "本"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "原来故事书的本数",
+          "expression": "x",
+          "unit": "本"
+        },
+        {
+          "label": "原来科普书的本数",
+          "expression": "60 - x",
+          "unit": "本"
+        }
+      ],
+      "raw_relationship": "从故事书中拿出5本放到科普书后，两类书的本数相等。",
+      "independent": null,
+      "run": 1
+    },
+    {
+      "case_id": "D1-28",
+      "scope": "in_scope",
+      "consistency": "consistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "x + (x + 5) = 25"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 10}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "2 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "2 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "2 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": true,
+          "detail": "computed ['10', '15'] vs independent ['10', '15']"
+        }
+      ],
+      "raw_equation": "x + (x + 5) = 25",
+      "raw_known_quantities": [
+        {
+          "name": "年龄差",
+          "value": 5,
+          "unit": "岁"
+        },
+        {
+          "name": "年龄和",
+          "value": 25,
+          "unit": "岁"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "小明的年龄",
+          "expression": "x",
+          "unit": "岁"
+        },
+        {
+          "label": "小华的年龄",
+          "expression": "x + 5",
+          "unit": "岁"
+        }
+      ],
+      "raw_relationship": "小明的年龄 + 小华的年龄 = 25岁，且小华比小明大5岁。",
+      "independent": {
+        "parts": [
+          {
+            "label": "小明",
+            "value": "15"
+          },
+          {
+            "label": "小华",
+            "value": "10"
+          }
+        ]
+      },
+      "run": 1
+    },
+    {
+      "case_id": "D1-30",
+      "scope": "in_scope",
+      "consistency": "inconsistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "0.8*x - 10 = 190"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 250}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "1 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "2 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "3 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "3 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": false,
+          "detail": "computed ['250'] vs independent ['495/2']"
+        }
+      ],
+      "raw_equation": "0.8*x - 10 = 190",
+      "raw_known_quantities": [
+        {
+          "name": "折扣率",
+          "value": "0.8",
+          "unit": ""
+        },
+        {
+          "name": "优惠金额",
+          "value": 10,
+          "unit": "元"
+        },
+        {
+          "name": "实际支付",
+          "value": 190,
+          "unit": "元"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "商品原价",
+          "expression": "x",
+          "unit": "元"
+        }
+      ],
+      "raw_relationship": "原价打八折后减去10元等于实际支付金额。",
+      "independent": {
+        "parts": [
+          {
+            "label": "原价",
+            "value": "247.5"
+          }
+        ]
+      },
+      "run": 1
+    },
+    {
+      "case_id": "D1-12",
+      "scope": "in_scope",
+      "consistency": "consistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "x + 5 = (4*x + 5)/3"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 10}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "3 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "3 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "3 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": true,
+          "detail": "computed ['10', '40'] vs independent ['10', '40']"
+        }
+      ],
+      "raw_equation": "x + 5 = (4*x + 5)/3",
+      "raw_known_quantities": [
+        {
+          "name": "小红今年年龄与妈妈今年年龄的比例",
+          "value": "1/4",
+          "unit": ""
+        },
+        {
+          "name": "5年后小红年龄与妈妈年龄的比例",
+          "value": "1/3",
+          "unit": ""
+        },
+        {
+          "name": "时间间隔",
+          "value": 5,
+          "unit": "年"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "小红今年的年龄",
+          "expression": "x",
+          "unit": "岁"
+        },
+        {
+          "label": "妈妈今年的年龄",
+          "expression": "4*x",
+          "unit": "岁"
+        }
+      ],
+      "raw_relationship": "小红今年的年龄是妈妈今年年龄的1/4；5年后，小红的年龄是妈妈年龄的1/3。",
+      "independent": {
+        "parts": [
+          {
+            "label": "小红今年的年龄",
+            "value": "10"
+          },
+          {
+            "label": "妈妈今年的年龄",
+            "value": "40"
+          }
+        ]
+      },
+      "run": 2
+    },
+    {
+      "case_id": "D1-13",
+      "scope": "in_scope",
+      "consistency": "inconsistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "12*x + 30*(2 - x) = 36"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 4/3}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "3 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "4 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "4 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": false,
+          "detail": "computed ['2/3', '4/3'] vs independent ['1/2', '3/2']"
+        }
+      ],
+      "raw_equation": "12*x + 30*(2 - x) = 36",
+      "raw_known_quantities": [
+        {
+          "name": "总路程",
+          "value": 36,
+          "unit": "千米"
+        },
+        {
+          "name": "骑自行车速度",
+          "value": 12,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "乘汽车速度",
+          "value": 30,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "总时间",
+          "value": 2,
+          "unit": "小时"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "骑自行车时间",
+          "expression": "x",
+          "unit": "小时"
+        },
+        {
+          "label": "乘汽车时间",
+          "expression": "2 - x",
+          "unit": "小时"
+        }
+      ],
+      "raw_relationship": "骑自行车路程 + 乘汽车路程 = 总路程",
+      "independent": {
+        "parts": [
+          {
+            "label": "骑自行车",
+            "value": "1.5"
+          },
+          {
+            "label": "乘汽车",
+            "value": "0.5"
+          }
+        ]
+      },
+      "run": 2
+    },
+    {
+      "case_id": "D1-23",
+      "scope": "in_scope",
+      "consistency": "inconsistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "4*x + 20*(1.5 - x) = 22"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 1/2}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "3 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "4 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "4 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": false,
+          "detail": "computed ['1/2', '1'] vs independent ['5/8', '7/8']"
+        }
+      ],
+      "raw_equation": "4*x + 20*(1.5 - x) = 22",
+      "raw_known_quantities": [
+        {
+          "name": "总路程",
+          "value": 22,
+          "unit": "千米"
+        },
+        {
+          "name": "步行速度",
+          "value": 4,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "公交车速度",
+          "value": 20,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "总时间",
+          "value": 1.5,
+          "unit": "小时"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "步行时间",
+          "expression": "x",
+          "unit": "小时"
+        },
+        {
+          "label": "乘车时间",
+          "expression": "1.5 - x",
+          "unit": "小时"
+        }
+      ],
+      "raw_relationship": "步行路程 + 乘车路程 = 总路程",
+      "independent": {
+        "parts": [
+          {
+            "label": "步行时间",
+            "value": "5/8"
+          },
+          {
+            "label": "乘车时间",
+            "value": "7/8"
+          }
+        ]
+      },
+      "run": 2
+    },
+    {
+      "case_id": "D1-25",
+      "scope": "in_scope",
+      "consistency": "consistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "x - 5 = (60 - x) + 5"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 35}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "4 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "2 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "2 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": true,
+          "detail": "computed ['25', '35'] vs independent ['25', '35']"
+        }
+      ],
+      "raw_equation": "x - 5 = (60 - x) + 5",
+      "raw_known_quantities": [
+        {
+          "name": "故事书和科普书总本数",
+          "value": 60,
+          "unit": "本"
+        },
+        {
+          "name": "从故事书拿出的本数",
+          "value": 5,
+          "unit": "本"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "原来故事书的本数",
+          "expression": "x",
+          "unit": "本"
+        },
+        {
+          "label": "原来科普书的本数",
+          "expression": "60 - x",
+          "unit": "本"
+        }
+      ],
+      "raw_relationship": "从故事书中拿出5本放到科普书后，两类书的本数相等。即：故事书原数 - 5 = 科普书原数 + 5。",
+      "independent": {
+        "parts": [
+          {
+            "label": "故事书",
+            "value": "35"
+          },
+          {
+            "label": "科普书",
+            "value": "25"
+          }
+        ]
+      },
+      "run": 2
+    },
+    {
+      "case_id": "D1-28",
+      "scope": "in_scope",
+      "consistency": "consistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "x + (x + 5) = 25"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 10}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "2 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "2 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "2 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": true,
+          "detail": "computed ['10', '15'] vs independent ['10', '15']"
+        }
+      ],
+      "raw_equation": "x + (x + 5) = 25",
+      "raw_known_quantities": [
+        {
+          "name": "年龄差",
+          "value": 5,
+          "unit": "岁"
+        },
+        {
+          "name": "年龄和",
+          "value": 25,
+          "unit": "岁"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "小明的年龄",
+          "expression": "x",
+          "unit": "岁"
+        },
+        {
+          "label": "小华的年龄",
+          "expression": "x + 5",
+          "unit": "岁"
+        }
+      ],
+      "raw_relationship": "两人的年龄之和是25岁，即小明的年龄加上小华的年龄等于25。",
+      "independent": {
+        "parts": [
+          {
+            "label": "小明",
+            "value": "15"
+          },
+          {
+            "label": "小华",
+            "value": "10"
+          }
+        ]
+      },
+      "run": 2
+    },
+    {
+      "case_id": "D1-30",
+      "scope": "in_scope",
+      "consistency": "inconsistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "0.8*x - 10 = 190"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 250}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "1 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "1 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "3 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "3 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": false,
+          "detail": "computed ['250'] vs independent ['495/2']"
+        }
+      ],
+      "raw_equation": "0.8*x - 10 = 190",
+      "raw_known_quantities": [
+        {
+          "name": "折扣",
+          "value": "0.8",
+          "unit": "无"
+        },
+        {
+          "name": "优惠金额",
+          "value": 10,
+          "unit": "元"
+        },
+        {
+          "name": "实际支付",
+          "value": 190,
+          "unit": "元"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "原价",
+          "expression": "x",
+          "unit": "元"
+        }
+      ],
+      "raw_relationship": "原价打八折后减去10元等于实际支付金额。",
+      "independent": {
+        "parts": [
+          {
+            "label": "原价",
+            "value": "247.5"
+          }
+        ]
+      },
+      "run": 2
+    },
+    {
+      "case_id": "D1-12",
+      "scope": "in_scope",
+      "consistency": "consistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "x + 5 = (4*x + 5)/3"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 10}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "1 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "3 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "3 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": true,
+          "detail": "computed ['10', '40'] vs independent ['10', '40']"
+        }
+      ],
+      "raw_equation": "x + 5 = (4*x + 5)/3",
+      "raw_known_quantities": [
+        {
+          "name": "小红今年年龄是妈妈年龄的比例",
+          "value": "1/4",
+          "unit": ""
+        },
+        {
+          "name": "5年后小红年龄是妈妈年龄的比例",
+          "value": "1/3",
+          "unit": ""
+        },
+        {
+          "name": "时间间隔",
+          "value": 5,
+          "unit": "年"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "小红今年的年龄",
+          "expression": "x",
+          "unit": "岁"
+        },
+        {
+          "label": "妈妈今年的年龄",
+          "expression": "4*x",
+          "unit": "岁"
+        }
+      ],
+      "raw_relationship": "5年后，小红的年龄是妈妈年龄的1/3。",
+      "independent": {
+        "parts": [
+          {
+            "label": "小红今年年龄",
+            "value": "10"
+          },
+          {
+            "label": "妈妈今年年龄",
+            "value": "40"
+          }
+        ]
+      },
+      "run": 3
+    },
+    {
+      "case_id": "D1-13",
+      "scope": "in_scope",
+      "consistency": "inconsistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "12*x + 30*(2 - x) = 36"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 4/3}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "4 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "4 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "4 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": false,
+          "detail": "computed ['2/3', '4/3'] vs independent ['1', '1']"
+        }
+      ],
+      "raw_equation": "12*x + 30*(2 - x) = 36",
+      "raw_known_quantities": [
+        {
+          "name": "总路程",
+          "value": 36,
+          "unit": "千米"
+        },
+        {
+          "name": "骑自行车速度",
+          "value": 12,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "乘汽车速度",
+          "value": 30,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "总时间",
+          "value": 2,
+          "unit": "小时"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "骑自行车时间",
+          "expression": "x",
+          "unit": "小时"
+        },
+        {
+          "label": "乘汽车时间",
+          "expression": "2 - x",
+          "unit": "小时"
+        }
+      ],
+      "raw_relationship": "骑自行车路程 + 乘汽车路程 = 总路程",
+      "independent": {
+        "parts": [
+          {
+            "label": "骑自行车",
+            "value": "1"
+          },
+          {
+            "label": "乘汽车",
+            "value": "1"
+          }
+        ]
+      },
+      "run": 3
+    },
+    {
+      "case_id": "D1-23",
+      "scope": "in_scope",
+      "consistency": "inconsistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "4*x + 20*(1.5 - x) = 22"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 1/2}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "4 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "4 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "4 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": false,
+          "detail": "computed ['1/2', '1'] vs independent ['5/8', '7/8']"
+        }
+      ],
+      "raw_equation": "4*x + 20*(1.5 - x) = 22",
+      "raw_known_quantities": [
+        {
+          "name": "总路程",
+          "value": 22,
+          "unit": "千米"
+        },
+        {
+          "name": "步行速度",
+          "value": 4,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "公交车速度",
+          "value": 20,
+          "unit": "千米/小时"
+        },
+        {
+          "name": "总时间",
+          "value": 1.5,
+          "unit": "小时"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "步行时间",
+          "expression": "x",
+          "unit": "小时"
+        },
+        {
+          "label": "乘车时间",
+          "expression": "1.5 - x",
+          "unit": "小时"
+        }
+      ],
+      "raw_relationship": "步行路程 + 乘车路程 = 总路程",
+      "independent": {
+        "parts": [
+          {
+            "label": "步行时间",
+            "value": "5/8"
+          },
+          {
+            "label": "乘车时间",
+            "value": "7/8"
+          }
+        ]
+      },
+      "run": 3
+    },
+    {
+      "case_id": "D1-25",
+      "scope": "in_scope",
+      "consistency": "inconsistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "x - 5 = (60 - x) + 5"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 35}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": false,
+          "detail": "从故事书拿出5本后，故事书剩余本数；科普书增加5本后的本数"
+        }
+      ],
+      "raw_equation": "x - 5 = (60 - x) + 5",
+      "raw_known_quantities": [
+        {
+          "name": "故事书和科普书的总本数",
+          "value": 60,
+          "unit": "本"
+        },
+        {
+          "name": "从故事书拿出的本数",
+          "value": 5,
+          "unit": "本"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "原来故事书的本数",
+          "expression": "x",
+          "unit": "本"
+        },
+        {
+          "label": "原来科普书的本数",
+          "expression": "60 - x",
+          "unit": "本"
+        }
+      ],
+      "raw_relationship": "从故事书中拿出5本放到科普书后，故事书的本数变为x - 5，科普书的本数变为(60 - x) + 5，此时两类书的本数相等。",
+      "independent": null,
+      "run": 3
+    },
+    {
+      "case_id": "D1-28",
+      "scope": "in_scope",
+      "consistency": "consistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "x + (x + 5) = 25"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 10}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "2 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "2 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "1 kept of 1"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "2 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "2 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": true,
+          "detail": "computed ['10', '15'] vs independent ['10', '15']"
+        }
+      ],
+      "raw_equation": "x + (x + 5) = 25",
+      "raw_known_quantities": [
+        {
+          "name": "年龄差",
+          "value": 5,
+          "unit": "岁"
+        },
+        {
+          "name": "年龄和",
+          "value": 25,
+          "unit": "岁"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "小明的年龄",
+          "expression": "x",
+          "unit": "岁"
+        },
+        {
+          "label": "小华的年龄",
+          "expression": "x + 5",
+          "unit": "岁"
+        }
+      ],
+      "raw_relationship": "两人的年龄之和等于25岁。",
+      "independent": {
+        "parts": [
+          {
+            "label": "小明",
+            "value": "15"
+          },
+          {
+            "label": "小华",
+            "value": "10"
+          }
+        ]
+      },
+      "run": 3
+    },
+    {
+      "case_id": "D1-30",
+      "scope": "in_scope",
+      "consistency": "inconsistent",
+      "error": null,
+      "checks": [
+        {
+          "name": "equation_readable",
+          "ok": true,
+          "detail": "0.8*x - 10 = 190"
+        },
+        {
+          "name": "equation_linear_unique",
+          "ok": true,
+          "detail": "{x = 250}"
+        },
+        {
+          "name": "answer_parts_computable",
+          "ok": true,
+          "detail": "1 part(s)"
+        },
+        {
+          "name": "conditions_hold",
+          "ok": true,
+          "detail": "2 condition(s)"
+        },
+        {
+          "name": "alternatives_checked",
+          "ok": true,
+          "detail": "0 kept of 0"
+        },
+        {
+          "name": "known_quantities_numeric",
+          "ok": true,
+          "detail": "3 kept"
+        },
+        {
+          "name": "known_quantities_grounded",
+          "ok": true,
+          "detail": "3 found in the text"
+        },
+        {
+          "name": "independent_solution_agrees",
+          "ok": false,
+          "detail": "computed ['250'] vs independent ['495/2']"
+        }
+      ],
+      "raw_equation": "0.8*x - 10 = 190",
+      "raw_known_quantities": [
+        {
+          "name": "折扣率",
+          "value": "0.8",
+          "unit": ""
+        },
+        {
+          "name": "优惠金额",
+          "value": 10,
+          "unit": "元"
+        },
+        {
+          "name": "实际支付",
+          "value": 190,
+          "unit": "元"
+        }
+      ],
+      "raw_answer_parts": [
+        {
+          "label": "商品原价",
+          "expression": "x",
+          "unit": "元"
+        }
+      ],
+      "raw_relationship": "原价打八折后再减去10元等于实际支付金额。",
+      "independent": {
+        "parts": [
+          {
+            "label": "原价",
+            "value": "247.5"
+          }
+        ]
+      },
+      "run": 3
+    }
+  ]
+}

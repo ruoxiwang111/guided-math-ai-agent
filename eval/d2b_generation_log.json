@@ -1,0 +1,627 @@
+{
+  "runs": [
+    {
+      "run": "20261012-204106",
+      "prompt_version": "d2b-gen-v1",
+      "backend": {
+        "backend": "deepseek",
+        "model": "deepseek-chat",
+        "temperature": 1.0
+      },
+      "seed": 20260930,
+      "n_slots": 60,
+      "n_generated": 60
+    }
+  ],
+  "cases": {
+    "D2b-001": {
+      "run": "20261012-204106",
+      "intended_kind": "language",
+      "question_id": "Q14",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设商品原来的价格是x元。",
+        "equation": "x＋20%－10%＝216"
+      }
+    },
+    "D2b-002": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_altwork",
+      "question_id": "Q10",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "解：设两人合作需要x天完成全部工作。",
+        "equation": "（1/6＋1/3）x＝1",
+        "steps": "1/2x＝1\nx＝1÷1/2\nx＝2"
+      }
+    },
+    "D2b-003": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_altdef",
+      "question_id": "Q02",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设笔记本x元，则笔（x－12）元。",
+        "equation": "x＋（x－12）＝28"
+      }
+    },
+    "D2b-004": {
+      "run": "20261012-204106",
+      "intended_kind": "algebra",
+      "question_id": "Q02",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "解：设笔x元，则笔记本（x＋12）元。",
+        "equation": "x＋（x＋12）＝28",
+        "steps": "2x＋12＝28\n2x＝28＋12\n2x＝40\nx＝20"
+      }
+    },
+    "D2b-005": {
+      "run": "20261012-204106",
+      "intended_kind": "arithmetic",
+      "question_id": "Q07",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "解：设这件商品原来的价格是x元。",
+        "equation": "x×(1＋20%)＝180",
+        "steps": "1.2x＝180\nx＝180÷1.2\nx＝150\nx＝150"
+      }
+    },
+    "D2b-006": {
+      "run": "20261012-204106",
+      "intended_kind": "unit_model",
+      "question_id": "Q13",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设骑自行车用了x分钟，乘汽车用了y分钟",
+        "equation": "12x＋30y＝36"
+      }
+    },
+    "D2b-007": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_equiv",
+      "question_id": "Q14",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设商品原来的价格是x元。",
+        "equation": "216＝x×（1＋20%）×（1－10%）"
+      }
+    },
+    "D2b-008": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_answer",
+      "question_id": "Q12",
+      "layer": "answer",
+      "generated": {
+        "final_answer_text": "答：小红今年10岁，妈妈今年40岁。"
+      }
+    },
+    "D2b-009": {
+      "run": "20261012-204106",
+      "intended_kind": "multi",
+      "question_id": "Q01",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "设小华今年x岁，小明今年（x＋5）岁。",
+        "equation": "x＋x＋5＝25",
+        "steps": "2x＋5＝25\n2x＝25－5\n2x＝15\nx＝15÷2\nx＝7"
+      }
+    },
+    "D2b-010": {
+      "run": "20261012-204106",
+      "intended_kind": "ambiguous",
+      "question_id": "Q13",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设骑自行车用了x小时，乘汽车用了2－x小时。",
+        "equation": "12x＋30×2－x＝36"
+      }
+    },
+    "D2b-011": {
+      "run": "20261012-204106",
+      "intended_kind": "define",
+      "question_id": "Q09",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设x",
+        "equation": "500×12＋400x＝12000"
+      }
+    },
+    "D2b-012": {
+      "run": "20261012-204106",
+      "intended_kind": "define",
+      "question_id": "Q14",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设x",
+        "equation": "x×（1＋20%）×（1－10%）＝216"
+      }
+    },
+    "D2b-013": {
+      "run": "20261012-204106",
+      "intended_kind": "multi",
+      "question_id": "Q08",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "设这件商品的原价是x元",
+        "equation": "0.8x＋10＝190",
+        "steps": "0.8x＝190＋10\n0.8x＝200\nx＝200÷0.8\nx＝250"
+      }
+    },
+    "D2b-014": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_answer",
+      "question_id": "Q03",
+      "layer": "answer",
+      "generated": {
+        "final_answer_text": "答：这件衣服的原价是200元。"
+      }
+    },
+    "D2b-015": {
+      "run": "20261012-204106",
+      "intended_kind": "multi",
+      "question_id": "Q04",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "解：设小明回家时每分钟骑x米。",
+        "equation": "300×10＋10x＝5500",
+        "steps": "3000－10x＝5500\n－10x＝5500＋3000\n－10x＝8500\nx＝850"
+      }
+    },
+    "D2b-016": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_equiv",
+      "question_id": "Q13",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设骑车用了x小时，那么乘车用了（2－x）小时",
+        "equation": "12x ＝ 36 － 30（2－x）"
+      }
+    },
+    "D2b-017": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_altdef",
+      "question_id": "Q12",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设妈妈今年x岁，那么小红今年就是1/4x岁。",
+        "equation": "1/4x＋5＝1/3（x＋5）"
+      }
+    },
+    "D2b-018": {
+      "run": "20261012-204106",
+      "intended_kind": "language",
+      "question_id": "Q11",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设一支笔x元，则一本练习册（x＋2）元",
+        "equation": "2（x＋2）＋3x＝29"
+      }
+    },
+    "D2b-019": {
+      "run": "20261012-204106",
+      "intended_kind": "arithmetic",
+      "question_id": "Q11",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "解：设一支笔x元，则一本练习册(x＋2)元。",
+        "equation": "2(x＋2)＋3x＝29",
+        "steps": "2x＋4＋3x＝29\n5x＋4＝29\n5x＝29－4\n5x＝24\nx＝24÷5\nx＝4.8"
+      }
+    },
+    "D2b-020": {
+      "run": "20261012-204106",
+      "intended_kind": "language",
+      "question_id": "Q07",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设这件商品原来的价格是x元",
+        "equation": "x＋20%x＝180"
+      }
+    },
+    "D2b-021": {
+      "run": "20261012-204106",
+      "intended_kind": "language",
+      "question_id": "Q06",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设女生有x人，则男生有x＋6人。",
+        "equation": "x＋（x＋6）＝42"
+      }
+    },
+    "D2b-022": {
+      "run": "20261012-204106",
+      "intended_kind": "relation",
+      "question_id": "Q01",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设小华今年x岁，小明今年x－5岁。",
+        "equation": "x＋x－5＝25"
+      }
+    },
+    "D2b-023": {
+      "run": "20261012-204106",
+      "intended_kind": "relation",
+      "question_id": "Q13",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设骑自行车用了x小时，乘汽车用了（2－x）小时。",
+        "equation": "12x＝36＋30（2－x）"
+      }
+    },
+    "D2b-024": {
+      "run": "20261012-204106",
+      "intended_kind": "algebra",
+      "question_id": "Q14",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "解：设商品原来的价格是x元",
+        "equation": "x×（1＋20%）×（1－10%）＝216",
+        "steps": "1.2x×0.9＝216\n1.08x＝216\nx＝216×1.08\nx＝233.28"
+      }
+    },
+    "D2b-025": {
+      "run": "20261012-204106",
+      "intended_kind": "goal_model",
+      "question_id": "Q12",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设妈妈今年x岁，小红今年1/4x岁",
+        "equation": "1/4x＋5＝1/3（x＋5）"
+      }
+    },
+    "D2b-026": {
+      "run": "20261012-204106",
+      "intended_kind": "unit_model",
+      "question_id": "Q04",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设小明回家时每分钟骑x千米。",
+        "equation": "300×10＋10x＝5500"
+      }
+    },
+    "D2b-027": {
+      "run": "20261012-204106",
+      "intended_kind": "arithmetic",
+      "question_id": "Q02",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "解：设笔x元，笔记本x＋12元",
+        "equation": "x＋x＋12＝28",
+        "steps": "2x＋12＝28\n2x＝28＋12\n2x＝40\nx＝20"
+      }
+    },
+    "D2b-028": {
+      "run": "20261012-204106",
+      "intended_kind": "ambiguous",
+      "question_id": "Q05",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设宽为x厘米，则长为x＋4厘米",
+        "equation": "2（x＋x＋4）＝28"
+      }
+    },
+    "D2b-029": {
+      "run": "20261012-204106",
+      "intended_kind": "language",
+      "question_id": "Q01",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设小明今年x岁，小华今年y岁。",
+        "equation": "x＋y＝25，x＝y－5"
+      }
+    },
+    "D2b-030": {
+      "run": "20261012-204106",
+      "intended_kind": "language",
+      "question_id": "Q12",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设小红今年x岁，那么妈妈今年4x岁。",
+        "equation": "x＋5＝（4x＋5）÷3"
+      }
+    },
+    "D2b-031": {
+      "run": "20261012-204106",
+      "intended_kind": "arithmetic",
+      "question_id": "Q15",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "设甲班原来分到x台电脑",
+        "equation": "x － 4 ＝ 56 － x ＋ 4",
+        "steps": "x － 4 ＝ 60 － x\nx ＋ x ＝ 60 ＋ 4\n2x ＝ 66\nx ＝ 33"
+      }
+    },
+    "D2b-032": {
+      "run": "20261012-204106",
+      "intended_kind": "goal_answer",
+      "question_id": "Q11",
+      "layer": "answer",
+      "generated": {
+        "final_answer_text": "答：一支笔7元。"
+      }
+    },
+    "D2b-033": {
+      "run": "20261012-204106",
+      "intended_kind": "define",
+      "question_id": "Q12",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设x",
+        "equation": "x＋5＝（4x＋5）×1/3"
+      }
+    },
+    "D2b-034": {
+      "run": "20261012-204106",
+      "intended_kind": "unit_answer",
+      "question_id": "Q09",
+      "layer": "answer",
+      "generated": {
+        "final_answer_text": "答：小王回家用了15米。"
+      }
+    },
+    "D2b-035": {
+      "run": "20261012-204106",
+      "intended_kind": "unit_model",
+      "question_id": "Q13",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设骑自行车用了x分钟，乘汽车用了y小时。",
+        "equation": "12x＋30y＝36"
+      }
+    },
+    "D2b-036": {
+      "run": "20261012-204106",
+      "intended_kind": "define",
+      "question_id": "Q11",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设x元",
+        "equation": "2x＋3x＝29"
+      }
+    },
+    "D2b-037": {
+      "run": "20261012-204106",
+      "intended_kind": "goal_model",
+      "question_id": "Q04",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设小明去学校时骑了x米。",
+        "equation": "x＋300×10＝5500"
+      }
+    },
+    "D2b-038": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_equiv",
+      "question_id": "Q09",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设小王回家用了x分钟。",
+        "equation": "400x＋500×12＝12000"
+      }
+    },
+    "D2b-039": {
+      "run": "20261012-204106",
+      "intended_kind": "unit_model",
+      "question_id": "Q04",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设小明回家时每分钟骑x千米",
+        "equation": "300×10＋10x＝5500"
+      }
+    },
+    "D2b-040": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_altwork",
+      "question_id": "Q09",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "设小王回家用了x分钟。",
+        "equation": "500×12＋400x＝12000",
+        "steps": "6000＋400x＝12000\n400x＝12000－6000\n400x＝6000\nx＝6000÷400\nx＝15"
+      }
+    },
+    "D2b-041": {
+      "run": "20261012-204106",
+      "intended_kind": "arithmetic",
+      "question_id": "Q06",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "设女生有x人，男生有（x－6）人",
+        "equation": "x＋（x－6）＝42",
+        "steps": "2x－6＝42\n2x＝42＋6\n2x＝56\nx＝56÷2\nx＝24"
+      }
+    },
+    "D2b-042": {
+      "run": "20261012-204106",
+      "intended_kind": "goal_answer",
+      "question_id": "Q07",
+      "layer": "answer",
+      "generated": {
+        "final_answer_text": "答：涨价的钱是30元。"
+      }
+    },
+    "D2b-043": {
+      "run": "20261012-204106",
+      "intended_kind": "goal_model",
+      "question_id": "Q11",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设一支笔x元，则一本练习册（x＋2）元",
+        "equation": "2（x＋2）＋3x＝29"
+      }
+    },
+    "D2b-044": {
+      "run": "20261012-204106",
+      "intended_kind": "unit_answer",
+      "question_id": "Q04",
+      "layer": "answer",
+      "generated": {
+        "final_answer_text": "答：小明回家时每分钟骑250米。"
+      }
+    },
+    "D2b-045": {
+      "run": "20261012-204106",
+      "intended_kind": "relation",
+      "question_id": "Q14",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设商品原来的价格是x元。",
+        "equation": "x＋20%－10%＝216"
+      }
+    },
+    "D2b-046": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_altdef",
+      "question_id": "Q15",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设原来乙班分到x台，那么甲班原来分到（56－x）台。",
+        "equation": "56－x－4＝x＋4"
+      }
+    },
+    "D2b-047": {
+      "run": "20261012-204106",
+      "intended_kind": "algebra",
+      "question_id": "Q07",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "设这件商品原来的价格是x元",
+        "equation": "x＋20%x＝180",
+        "steps": "1.2x＝180\nx＝180－1.2\nx＝178.8"
+      }
+    },
+    "D2b-048": {
+      "run": "20261012-204106",
+      "intended_kind": "relation",
+      "question_id": "Q10",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设需要x天完成全部工作。",
+        "equation": "1/6x － 1/3x ＝ 1"
+      }
+    },
+    "D2b-049": {
+      "run": "20261012-204106",
+      "intended_kind": "relation",
+      "question_id": "Q07",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设这件商品原来的价格是x元。",
+        "equation": "x＋20%＝180"
+      }
+    },
+    "D2b-050": {
+      "run": "20261012-204106",
+      "intended_kind": "goal_answer",
+      "question_id": "Q08",
+      "layer": "answer",
+      "generated": {
+        "final_answer_text": "答：实际支付了190元。"
+      }
+    },
+    "D2b-051": {
+      "run": "20261012-204106",
+      "intended_kind": "multi",
+      "question_id": "Q09",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "设小王回家用了x分钟",
+        "equation": "500×12＋400x＝12000",
+        "steps": "6000＋400x＝12000\n400x＝12000＋6000\n400x＝18000\nx＝18000÷400\nx＝450"
+      }
+    },
+    "D2b-052": {
+      "run": "20261012-204106",
+      "intended_kind": "answer_unclear",
+      "question_id": "Q06",
+      "layer": "answer",
+      "generated": {
+        "final_answer_text": "答：男生19人，女生23人。"
+      }
+    },
+    "D2b-053": {
+      "run": "20261012-204106",
+      "intended_kind": "algebra",
+      "question_id": "Q01",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "解：设小华今年x岁，那么小明今年x＋5岁。",
+        "equation": "x＋（x＋5）＝25",
+        "steps": "x＋x＋5＝25\n2x＋5＝25\n2x＝25＋5\n2x＝30\nx＝15"
+      }
+    },
+    "D2b-054": {
+      "run": "20261012-204106",
+      "intended_kind": "answer_unclear",
+      "question_id": "Q13",
+      "layer": "answer",
+      "generated": {
+        "final_answer_text": "答：骑自行车用了1小时，乘汽车用了1小时。"
+      }
+    },
+    "D2b-055": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_altwork",
+      "question_id": "Q13",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "解：设骑自行车用了x小时，那乘汽车用了（2－x）小时。",
+        "equation": "12x＋30（2－x）＝36",
+        "steps": "12x＋60－30x＝36\n60－18x＝36\n18x＝60－36\n18x＝24\nx＝24÷18\nx＝4/3"
+      }
+    },
+    "D2b-056": {
+      "run": "20261012-204106",
+      "intended_kind": "define",
+      "question_id": "Q05",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设x厘米",
+        "equation": "2x＋2（x＋4）＝28"
+      }
+    },
+    "D2b-057": {
+      "run": "20261012-204106",
+      "intended_kind": "correct_equiv",
+      "question_id": "Q15",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设甲班原来分到x台，乙班原来分到（56－x）台。",
+        "equation": "56－x＝x－4－4"
+      }
+    },
+    "D2b-058": {
+      "run": "20261012-204106",
+      "intended_kind": "multi",
+      "question_id": "Q05",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "解：设宽是x厘米，长是x＋4厘米。",
+        "equation": "2（x＋x＋4）＝28",
+        "steps": "2x＋x＋4＝28\n3x＋4＝28\n3x＝28－4\n3x＝24\nx＝8"
+      }
+    },
+    "D2b-059": {
+      "run": "20261012-204106",
+      "intended_kind": "ambiguous",
+      "question_id": "Q15",
+      "layer": "modelling",
+      "generated": {
+        "variable_definition": "解：设原来甲班分到x台，乙班分到56－x台",
+        "equation": "x－4＝56－x＋4"
+      }
+    },
+    "D2b-060": {
+      "run": "20261012-204106",
+      "intended_kind": "algebra",
+      "question_id": "Q13",
+      "layer": "execution",
+      "generated": {
+        "variable_definition": "解：设骑自行车用了x小时，那么乘汽车用了（2－x）小时。",
+        "equation": "12x＋30（2－x）＝36",
+        "steps": "12x＋60－x＝36\n12x－x＝36－60\n11x＝－24\nx＝－24÷11\nx＝－11分之24"
+      }
+    }
+  }
+}

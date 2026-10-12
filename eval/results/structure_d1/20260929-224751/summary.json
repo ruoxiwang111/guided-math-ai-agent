@@ -1,0 +1,53 @@
+{
+  "per_run": [
+    {
+      "n_inputs": 20,
+      "scope_accuracy": 0.75,
+      "equation_correctness": 0.9444444444444444,
+      "field_accuracy_unknown_known": 0.7941176470588235,
+      "consistent_but_wrong_rate": 0.06666666666666667,
+      "n_reference_in_scope": 18,
+      "n_marked_consistent": 15
+    },
+    {
+      "n_inputs": 20,
+      "scope_accuracy": 0.8,
+      "equation_correctness": 0.9444444444444444,
+      "field_accuracy_unknown_known": 0.8235294117647058,
+      "consistent_but_wrong_rate": 0.0,
+      "n_reference_in_scope": 18,
+      "n_marked_consistent": 14
+    },
+    {
+      "n_inputs": 20,
+      "scope_accuracy": 0.75,
+      "equation_correctness": 0.9444444444444444,
+      "field_accuracy_unknown_known": 0.7941176470588235,
+      "consistent_but_wrong_rate": 0.06666666666666667,
+      "n_reference_in_scope": 18,
+      "n_marked_consistent": 15
+    }
+  ],
+  "aggregate": {
+    "scope_accuracy": {
+      "mean": 0.7666666666666667,
+      "min": 0.75,
+      "max": 0.8
+    },
+    "equation_correctness": {
+      "mean": 0.9444444444444444,
+      "min": 0.9444444444444444,
+      "max": 0.9444444444444444
+    },
+    "field_accuracy_unknown_known": {
+      "mean": 0.8039215686274509,
+      "min": 0.7941176470588235,
+      "max": 0.8235294117647058
+    },
+    "consistent_but_wrong_rate": {
+      "mean": 0.044444444444444446,
+      "min": 0.0,
+      "max": 0.06666666666666667
+    }
+  }
+}
