@@ -14,7 +14,7 @@
 - 798 automated tests, including end-to-end sessions with a deliberately faulty language model.
 - Problem reading, 20 held-out inputs × 3 live runs: equation correct 92.6%; no wrong equation passed on as teachable for a solvable problem; one ambiguous input not flagged; over-cautious on two-stage journey and discount problems.
 - Diagnosis on 65 rule-generated cases: 100% when the matcher knows the mutation; with each case's own mutation removed, coverage 68.8% (modelling errors 35.7%) at 100% accuracy and no wrong labels. This is a development result, not an independent test.
-- Diagnosis on an independently annotated test split (40 constructed cases, frozen before the run, second human annotator on 13 cases): every specific label was right and no correct response was flagged, but only 10 of 26 errors received a label (target 60%); modelling errors 1 of 9; **6 of 26 incorrect responses were passed as "no error detected"**. Details and limitations: docs/D2B_RESULTS.md.
+- Diagnosis on an independently annotated test split (40 constructed cases, frozen before the run, second human annotator on 13 cases): every specific label was right and no correct response was flagged, but only 10 of 26 errors received a label (target 60%); modelling errors 1 of 9; **6 of 26 incorrect responses were passed as "no error detected"** (a post-hoc review suggests 4 of those labels were over-strict, leaving 2 of 22). Details and limitations: docs/D2B_RESULTS.md.
 
 **What has not.** Live-hint quality review is pending, and the diagnostic set is small and simulated. No study with learners has been run, so the project makes no claim about learning outcomes.
 
