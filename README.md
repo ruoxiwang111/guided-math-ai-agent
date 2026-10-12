@@ -163,4 +163,6 @@ templates/index.html         the web interface
 
 ## Licence
 
-No licence has been chosen yet. Until one is added, all rights are reserved by the author.
+The code is released under the [MIT License](LICENSE).
+
+The evaluation data (the D2b constructed learner responses and their annotations under `eval/`) is **not** released and is not covered by the MIT licence; it is withheld from the public repository. The aggregate results are reported in [D2b results and limitations](docs/D2B_RESULTS.md).
