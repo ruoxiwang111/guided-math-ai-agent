@@ -8,7 +8,7 @@ A tutor for middle-school **linear-equation word problems** (一元一次方程�
 
 Generative AI writes fluent solutions, and learners can accept them without checking the reasoning. This project builds a tutor whose job is to strengthen the learner's own judgement, and in which every teaching decision comes from a rule that can be inspected, not from a language model's output.
 
-<!-- Add 2-3 sentences in your own words: what you found in your MSc interviews and why that led to this project. -->
+The idea comes from my MSc dissertation, in which I interviewed eight engineering-background postgraduates about how they use and judge generative AI. They neither trusted AI output fully nor rejected it: how much they relied on an answer depended on the risk of the task, what they already knew and whether the output could be verified, and they saw the value of AI as depending on their own ability to judge it. That study was of adult students, not school pupils, so it does not show that this tutor works. This project is my attempt to put the same question into a small setting where answers can be checked, one-variable equation word problems, and to test whether a tutor can support that judgement.
 
 ## How it works
 
