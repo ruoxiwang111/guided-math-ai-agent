@@ -1,12 +1,14 @@
 # AI 陪我学 — AI Guided Math Learning Agent
 
-A guided tutor for middle-school **linear-equation word problems** (一元一次方程应用题). Instead of handing the student a worked solution, it walks them through four stages — understand the problem, build the equation, solve it, verify the answer — and gives graded hints when they go wrong. The aim is to help learners judge whether a solution is correct, not only to read one.
+A tutor for middle-school **linear-equation word problems** (一元一次方程应用题). The learner goes through four stages — understand the problem, build the equation, solve it, check the answer — and gets graded hints when a step is wrong. The aim is for the learner to judge whether a solution is correct, not just to read one.
 
-> **Status: V1 technical prototype.** It has been evaluated offline on constructed data and by the developer's own testing. It has **not** been tested with real learners, and nothing here is evidence that it improves learning. See [Evaluation status](#evaluation-status) and [Limitations](#limitations).
+**Status: V1 technical prototype.** It has been evaluated offline on constructed data and by the developer's own testing. No real learner has used it, and nothing here is evidence that it improves learning. See [Evaluation status](#evaluation-status) and [Limitations](#limitations).
 
 ## Why
 
-Generative AI can produce fluent, plausible solutions, and learners may accept them without checking the reasoning. This project asks what a tutor looks like when its main job is to build the learner's own judgement (appropriate reliance), and when every teaching decision can be traced to a rule rather than to a language model's mood.
+Generative AI writes fluent solutions, and learners can accept them without checking the reasoning. This project builds a tutor whose job is to strengthen the learner's own judgement, and in which every teaching decision comes from a rule that can be inspected, not from a language model's output.
+
+<!-- Add 2-3 sentences in your own words: what you found in your MSc interviews and why that led to this project. -->
 
 ## How it works
 
@@ -22,7 +24,7 @@ The system separates **decisions** from **wording**.
 | Wording | Phrases the hint the state machine chose; falls back to a template if the LLM fails or leaks | Yes (DeepSeek) |
 | Structure extraction | Reads a new problem into unknown / known quantities / equation, then checks it (linear and unique, numbers appear in the text, an independent solve agrees) | Yes (DeepSeek), checked by code |
 
-The language model never changes the state, never decides whether an answer is right, and never sees the reference solution when it writes a low-level hint.
+The language model does not change the state, does not decide whether an answer is right, and does not see the reference solution when it writes a low-level hint.
 
 Other features: a review after each problem (solution path, weak points, similar problems), an independent-attempt mode with no feedback until submission, a command-line runner that prints what every module decided on each turn, and a Quick Solve mode for problems outside Guided Mode's scope.
 
@@ -88,22 +90,24 @@ Use `tests` explicitly: a bare `pytest` also collects `test_deepseek.py`, a conn
 
 ## Evaluation status
 
-The evaluation plan ([docs/evaluation_plan.md](docs/evaluation_plan.md)) defines eight questions (EQ1–EQ8), datasets D1–D5, a freeze rule before each run, and a development/test split. Headline results are meant to come from independent test splits only. This table says what exists today.
+The [evaluation plan](docs/evaluation_plan.md) defines eight questions (EQ1–EQ8), datasets D1–D5 and a rule to freeze each test set before running it. Headline numbers come from independent test splits only. Details and caveats for the diagnosis test are in [D2b results](docs/D2B_RESULTS.md).
 
-| Question | Evidence | Status |
+| Question | Result so far | Status |
 | --- | --- | --- |
-| EQ1 problem structure | **D1-test**, 20 inputs × 3 live runs, commit `f6969cf`, `deepseek-chat`, temperature 0.3: scope accuracy 76.7%, equation correctness 92.6%, field accuracy 82.0%. No wrong equation was accepted as teachable for a solvable problem; 4.4% "consistent but wrong" comes from one ambiguous input the system did not flag. Relationship field (reviewed by hand, first draft by Claude and confirmed by the researcher): 39 of 50 outputs matched, 11 left out one relation | Run |
-| EQ2 diagnosis | **D2b-test** (40 independently annotated cases, frozen, commit `fff51a7`): coverage 10/26 = 38.5% (target ≥60%, not met), conditional accuracy 10/10, 0 wrong labels. Modelling errors 1/9 diagnosed. **6 of 26 incorrect responses were reported as "no error detected"** (4 of these may be over-strict labels; a post-hoc review gives 2 of 22) — see [D2b results](docs/D2B_RESULTS.md). D2a (65 rule-generated mutations): 100% when the matcher sees the mutation list; leave-one-out coverage 68.8%, a development result only | Run (D2b) |
-| EQ3 false alarms | D2b-test: 0 of 11 correct responses flagged as erroneous; 4 returned *uncertain* (3 from deliberate ambiguous-notation prompts) | Run (small n) |
-| EQ4 first invalid step | D2b-test: 8 right, 0 wrong, 1 uncertain of 9 (88.9%; target ≥80% met). D2a: 30/30, but that reference shares the checker's criterion, so it shows agreement, not independent accuracy | Run (small n) |
-| EQ5 hints and leakage | Template hints per level in scripted scenarios; leakage checker tested. No live-hint review yet | Partial |
-| EQ6 follow-up budget | State-machine tests; scripted end-to-end flows. No simulated-trajectory study | Partial |
+| EQ1 problem structure | D1-test (20 inputs, 3 live runs): scope accuracy 76.7%, equation correctness 92.6%, field accuracy 82.0%. No wrong equation was accepted as teachable for a solvable problem. The relationship field was reviewed by hand (39 of 50 matched); the judgement was drafted by Claude and confirmed by the researcher, so it is not independent | Run |
+| EQ2 diagnosis | D2b-test (40 cases, frozen): coverage 10/26 = 38.5% (target ≥60%, not met), 10/10 of the labels given were right. Modelling errors: 1/9 diagnosed. 6 of 26 incorrect responses were reported as "no error detected" | Run |
+| EQ3 false alarms | D2b-test: 0 of 11 correct responses flagged as erroneous; 4 returned *uncertain* | Run, small n |
+| EQ4 first invalid step | D2b-test: 8 right, 0 wrong, 1 uncertain of 9 (target ≥80% met) | Run, small n |
+| EQ5 hints and leakage | Template hints and the leakage checker are tested on scripted scenarios. No live-hint review yet | Partial |
+| EQ6 follow-up budget | State-machine tests and scripted flows. No simulated-trajectory study | Partial |
 | EQ7 mastery rule | Not built | Not run |
-| EQ8 Challenge AI items | 15/15 bank items validated | Done |
+| EQ8 Challenge AI items | 15 of 15 bank items validated | Done |
 
-**Not yet done:** the live-hint review, a larger and more varied diagnostic set with real learner responses, and any study with learners. D2b responses are simulated (mostly drafted by a language model, then screened and annotated by the researcher); a second human annotator labelled 13 of the 60 cases (status agreement 12/13, category agreement 6/9). The result page lists the limitations, including post-run observations on possible label issues.
+Not done yet: the live-hint review, a larger diagnostic set with real learner responses, and any study with learners. The D2b responses are simulated (mostly drafted by a language model, then screened and annotated by the researcher). A second human annotator labelled 13 of the 60 cases.
 
-Software checks: 798 automated tests, including scripted end-to-end sessions in which the language model is replaced by a fake that errs or fails on purpose.
+After the frozen test, three small diagnosis rules (V1.1) were added using the D2b dev split only. The dev result improved (coverage 42.9% to 64.3%), but that is a development result: the V1 test numbers above remain the reported result, and V1.1 needs a new frozen test set.
+
+804 automated tests pass, including scripted end-to-end sessions in which the language model is replaced by a fake that fails on purpose.
 
 ### Reproducing
 
@@ -138,21 +142,20 @@ data/question_bank.json      15 verified problems with mutations and Challenge A
 docs/                        V1 design, error taxonomy, question bank, evaluation plan
 eval/                        datasets (D1, D2a; D2b workbook) and results
 scripts/                     evaluation, dataset building and the terminal runner
-tests/                       798 tests
+tests/                       804 tests
 templates/index.html         the web interface
 ```
 
 ## Limitations
 
-- **Scope.** One topic (one-variable linear equation word problems). Anything else is declined or sent to Quick Solve, by design.
-- **Chinese task, bilingual interface.** The interface can be shown in English (`?lang=en`, or the language button in the header). Only interface text is translated; problems, the tutor's questions, hints and feedback, and the review content stay in Chinese, because the system was built and evaluated on Chinese junior-high mathematics. The English interface does not mean English tutoring is supported, and no evaluation result applies to English problems.
-- **Small, constructed data.** D1 has 20 test inputs, the question bank has 15 problems. With so few cases per category, results are reported as raw counts and rates, not as statistical comparisons between categories.
-- **The designer built the first datasets.** D2a was generated from the same design the system was built on, so it is not an independent test. D2b is meant to fix this, but 49 of its 60 responses were drafted by a language model (DeepSeek) and then screened and annotated by one researcher; a second human annotator covered 13 cases (22%), and disagreements were resolved by the primary annotator. The diagnosis itself is rule-based, so shared-model bias affects the realism of the drafted answers and the LLM-dependent parts (D1 extraction, hint wording), not the diagnosis rules.
-- **Modelling errors are the weak point, and some are missed.** On D2b-test only 1 of 9 modelling errors was diagnosed, and 6 of 26 incorrect responses were reported as "no error detected" (for example, an inconsistent variable definition whose equation still gives the right answer). The design prefers saying "not sure" to guessing, but this is a real gap.
-- **Over-cautious structure check.** In D1, three correct extractions of two-stage journey and discount problems were rejected every run because the independent second solve was wrong; ambiguous problems are not yet detected reliably.
-- **Simulated and developer testing only.** No real learner has used it under study conditions. Developer sessions are functional checks, not evidence of learning.
-- **Any future study with school-age participants** needs institutional ethics approval, consent from parents and assent from the child, data protection and safeguarding arrangements first.
-- **Single LLM provider.** DeepSeek is the only backend wired in.
+- One topic only (one-variable linear equation word problems). Anything else is declined or sent to Quick Solve.
+- The task is Chinese. The interface can be shown in English (`?lang=en`, or the button in the header), but only interface text is translated. Problems, the tutor's questions, hints, feedback and review content stay in Chinese. English tutoring is not supported and no result applies to English problems.
+- The data is small and constructed: 20 test inputs for D1, 15 bank problems, 40 test cases for D2b. Results are raw counts, not comparisons between categories.
+- D2a was generated from the same design as the system, so it is not an independent test. D2b is independent of the rules, but 49 of its 60 responses were drafted by DeepSeek and then screened and annotated by one researcher; a second annotator covered 13 cases, and the first annotator resolved disagreements. Because the diagnosis is rule-based, this affects how realistic the responses are and the LLM-dependent parts (extraction, hint wording), not the diagnosis rules.
+- Modelling errors are the weak point. On D2b-test 1 of 9 was diagnosed, and 6 of 26 incorrect responses were reported as "no error detected", for example a variable definition that contradicts the equation while the equation still gives the right answer. The design prefers "not sure" to guessing, but this gap is real.
+- The structure check is over-cautious: in D1, three correct extractions of two-stage journey and discount problems were rejected every run because the independent second solve was wrong. Ambiguous problems are not yet detected reliably.
+- No real learner has used it under study conditions; developer sessions are functional checks. A study with school-age participants needs ethics approval, parental consent, child assent, and data-protection and safeguarding arrangements first.
+- DeepSeek is the only LLM backend.
 
 ## Documentation
 
