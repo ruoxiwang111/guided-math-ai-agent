@@ -6,7 +6,7 @@
 
 - **Dataset D2b**: 60 learner responses to the 15 question-bank problems, each annotated by the researcher before the system was run (evaluation_plan §4.2). 49 responses were drafted by DeepSeek and then screened, edited and annotated by the researcher; 11 were written by the researcher. Split 20 dev / 40 test, stratified by error category (fixed seed).
 - **System under test**: the rule-based diagnosis (normaliser, SymPy checks, matcher). It makes **no LLM calls**, so a run is deterministic.
-- **Run**: test split only (40 cases), commit `fff51a7`, 2026-10-12, after the dataset was frozen. Output: `eval/results/diagnosis_d2b/20261012-221755-test/`. The dev split was not used for any reported number.
+- **Run**: test split only (40 cases), commit `fff51a7` (hashes were renumbered on 2026-10-15; see [COMMIT_MAP](COMMIT_MAP.md)), 2026-10-12, after the dataset was frozen. Output: `eval/results/diagnosis_d2b/20261012-221755-test/`. The dev split was not used for any reported number.
 - **Second annotator**: one human annotator independently labelled 13 cases (22%), blind to the first labels. Status agreement 12/13 (kappa 0.83); error-category agreement 6/9 among cases both called incorrect (kappa 0.61); first-invalid-step agreement 2/3. Five disagreements were discussed; four first labels were kept (the first annotator decided), one was corrected (D2b-009, a dev case, step 5 → 3). With this few cases the kappa values are unstable and this is **not** a formal inter-rater reliability study.
 
 ## Results (test split, n = 40: 26 incorrect, 11 correct, 3 uncertain)

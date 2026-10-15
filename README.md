@@ -167,6 +167,7 @@ templates/index.html         the web interface
 
 ## Licence
 
-The code is released under the [MIT License](LICENSE).
+- **Code:** [MIT License](LICENSE).
+- **Data:** [Creative Commons Attribution 4.0 (CC BY 4.0)](LICENSE-DATA.md). This covers the question bank (`data/question_bank.json`) and the evaluation datasets and results under `eval/` (D1, D2a, D2b and their annotations). Please credit Ruoxi Wang.
 
-The evaluation data (the D2b constructed learner responses and their annotations under `eval/`) is **not** released and is not covered by the MIT licence; it is withheld from the public repository. The aggregate results are reported in [D2b results and limitations](docs/D2B_RESULTS.md).
+The D2b responses are constructed, not collected from real learners, and no personal data about learners is included. Read [D2b results and limitations](docs/D2B_RESULTS.md) before reusing them: what they can and cannot support is explained there.
